@@ -1,0 +1,196 @@
+
+/******** MAP ***********/
+/*added by cecile*/
+path {
+  fill: rgba(240,240,240,255);
+  stroke: #000;
+  stroke-width: 0.5px;
+}
+
+.foreground {
+  fill: none;
+  stroke: red;
+  stroke-width: 0.5px;
+}
+/******** MAP ***********/
+
+
+body{
+    background-color: white;
+    font-family: sans-serif;
+    overflow: hidden;
+    font-family: 'Lato', sans-serif;
+    /*background-color: black;*/
+  }
+
+  @font-face{
+    font-family: "inknut";
+    /* REMOVED FROM */
+    /* src:url(fonts/InknutAntiqua-Regular.ttf) format("truetype"); */
+  }
+
+  /*InknutAntiqua-Black.ttf
+  InknutAntiqua-Bold.ttf
+  InknutAntiqua-ExtraBold.ttf
+  InknutAntiqua-Light.ttf
+  InknutAntiqua-Medium.ttf
+  InknutAntiqua-Regular.ttf
+  InknutAntiqua-SemiBold.ttf*/
+  
+  .blob{
+    background: white;
+    border:1px solid black;
+    /*border-radius:1000px;*/
+    display: inline-block;
+    vertical-align: bottom;
+    text-align:left;
+    margin-right: 2px;
+  }
+
+  .blob p{
+    display: none;
+    position: relative;
+    bottom:-100%;
+    left:0%;
+    width:50vw;
+  }
+
+  .blob:hover {
+    background-color: black;
+  }
+
+  .blob:hover p{
+    display: block;
+  }
+
+
+  .master {
+    text-transform: uppercase;
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .subcat {
+    font-size: 16px;
+    text-transform: none;
+    padding-left:10px;
+    opacity: 0.5;
+    
+  }
+
+  .keyword {
+    font-size: 12px;
+    padding-left:30px;
+    opacity: 0.3;
+
+  }
+
+
+  #SciencesHumanities{
+    color:red;
+  }
+  
+  #ArtDesign{
+    color:blue;
+  }
+
+  #Sciences{
+    color:green;
+  }
+
+  .Lettrine{
+    font-size: 12px;
+    width:15px;
+    height:15px;
+    background-color:rgba(255,255,255,0.5);
+    border:1px solid black;
+    color: black;
+    padding:10px 5px 5px 5px;
+    margin:5px;
+    text-align: center;
+    font-family: "inknut";
+    line-height: 8px;
+  }
+
+  .Revue{
+    opacity: 0.5;
+    padding:5px;
+    border-bottom:1px solid rgba(0,0,0,0.5);
+    font-size: 7px;
+    font-family: "inknut";
+  }
+
+  .Revue:hover{
+    opacity: 1;
+    font-size: 18px;
+    padding:10px;
+    color:white;
+    background-color: rgba(0,0,0,0.8);
+    line-height:25px;
+  }
+
+  .Revue.active{
+    opacity: 1;
+    font-size: 18px;
+    padding:10px;
+    color:white;
+    background-color: rgba(0,0,0,0.8);
+  }
+  
+  #menu{
+    position:fixed;
+    right: 0px;
+    top:0px;
+    max-height:100vh;
+    width:15%;
+    padding:0px 15px;
+    overflow: scroll;
+    background-color: rgba(255,255,255,0.3);
+    backdrop-filter:blur(5px);
+    /*transition: all 200ms linear;*/
+  }
+  
+  #menu:hover{
+      /*left:0%;*/
+  }
+
+  #menu h2{
+      background-color: rgba(255,255,255,0.9);
+        backdrop-filter:blur(5px);
+      position: sticky;
+      top:0px;	
+      font-size: 18px;
+      padding: 15px;
+      z-index: 1;
+      margin: 0px -15px;
+    font-family: "inknut";
+  }
+
+  #scaleRange{
+    position: fixed;
+    right:calc(50% - 150px);
+    top:5%;
+    width:300px;
+  }
+  
+  svg {
+      transform-origin: -15% 50%;
+  }
+
+  #text_artdesign, #text_sciencessocialhumanities, #text_science{
+      text-transform: uppercase;
+      /*font-weight: bolder;*/
+  }
+
+  circle{
+      transition: all 1s linear;
+  }
+
+  tspan{
+      /*font-weight: 100;*/
+  /*font-family: "inknut";*/
+  }
+
+svg circle.blurred {
+  filter: url(#blur);
+}
