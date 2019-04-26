@@ -4,11 +4,18 @@
     <% include ./partials/head %>
     <body>
 
-         <% include ./partials/menu %>
+    	<nav id="nav-menu">
+    		<button id="testbutton1" type="button">Geographic</button>
+	        <button id="testbutton2" type="button" class="active">Fields</button>
+	        <button id="testbutton3" type="button">Chronologic</button>
+    	</nav>
 
-         <button id="testbutton1" type="button">TEST 1</button>
-         <button id="testbutton2" type="button">TEST 2</button>
-         <button id="testbutton3" type="button">TEST 3</button>
+        <!-- <% include ./partials/menu %> -->
+        <!-- <% include ./partials/journal %> -->
+        <!-- <% include ./partials/objects %> -->
+        <% include ./partials/form %>
+
+         
               
         <% include ./partials/footer %>
     </body>

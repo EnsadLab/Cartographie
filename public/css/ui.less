@@ -1,0 +1,324 @@
+// LESS to CSS
+body{
+	background:rgba(black,0.1);
+
+}
+
+
+// Fonts
+@title_black : "inknut_antiquablack";
+@title_bold : "inknut_antiquabold";
+@title_extrabold : "inknut_antiquaextrabold";
+@title_light : "inknut_antiqualight";
+@title_medium : "inknut_antiquamedium";
+@title_regular : "inknut_antiquaregular";
+@title_semibold : "inknut_antiquasemibold";
+
+@text_bold :"latobold";
+@text_line :"latohairline";
+@text_heavy :"latoheavy";
+@text_light :"latolight";
+@text_reg :"latoregular";
+@text_thin :"latothin";
+
+
+#nav-menu{
+	text-align: center;
+	width:100%;
+	position:fixed;
+	top:20px;
+	left:0px;
+	button{
+		-webkit-appearance:none;
+		border:none;
+		text-transform: uppercase;
+		color:rgba(black, 0.5);
+		font-size: 14px;
+		font-family:@text_heavy;
+		cursor:pointer;
+		background:none;
+		text-shadow: 	0px 0px 20px white,
+						0px 0px 5px white,
+						0px 0px 5px white,
+						0px 0px 15px white,
+						0px 0px 10px white;
+
+
+		&.active{
+			color:rgba(black, 1);
+			border-bottom:2px solid black;		
+		}
+
+		&:hover{
+			color:rgba(black, 1);	
+		}
+
+		&:active{
+			transform: scale(0.98);
+			transition: all 200ms ease-in;
+		}
+
+		&:active, &:focus {
+    		outline-style:none;
+			box-shadow:none;
+			border-color:transparent;
+    	}
+
+	}
+}
+
+#menu{
+	position:fixed;
+    right: 15px;
+    top:0px;
+    max-height:100vh;
+    width:15%;
+    min-width: 250px;
+    overflow: scroll;
+
+    input.search{
+    	-webkit-appearance:none;
+    	border-radius: 3px;
+		background: rgba(white, 0.6);
+		margin: 5px 0px;
+		list-style-type: none;
+		padding:20px 20px 18px 20px;
+		color: black;
+		backdrop-filter:blur(5px);
+		border:none;
+		width: 68%;
+    	margin-left: 40px;
+    	background-image:url(../assets/ico_search.png);
+    	background-size: 25px 25px;
+    	background-repeat: no-repeat;
+    	background-position: 97% 15px;
+
+
+    	&:active,&:focus {
+    		outline-style:none;
+			box-shadow:none;
+			border-color:transparent;
+			filter:invert(1);
+			position:sticky;
+	    	top:5px;
+	    	z-index:100;
+    		border-radius: 3px;
+
+    	}
+    	
+    }
+
+	ul{
+		li{
+			border-radius: 3px;
+			background: rgba(white, 0.6);
+			margin: 5px 0px;
+			list-style-type: none;
+			padding:20px 20px 18px 20px;
+			color: black;
+			backdrop-filter:blur(5px);
+			cursor: pointer;
+
+			h3{
+				font-family: @title_regular;
+				line-height:14px;
+				font-size: 16px;
+				font-weight: none;
+			}
+
+			&:hover{
+				background: rgba(black, 1);
+				color: white;
+			}
+
+			&:active{
+				transform: scale(0.98);
+				transition: all 200ms ease-in;
+			}
+
+			&.letter{
+				width: 12px;
+				line-height: 15px;
+			    background: rgb(0, 0, 0);
+			    color: rgb(255, 255, 255);
+			    font-size: 12px;
+			    padding: 10px;
+			    margin-top: 20px;
+			    border-radius:3px;
+			    font-family: @title_light;
+			}
+		}
+	}
+}
+
+
+
+.form-revue{
+	.add-btn{
+		background-image:url(../assets/ico_add.png);
+		background-size: 29.5px 29.5px;
+	    background-repeat: no-repeat;
+	    background-position: -1.6px -1.6px;
+	    width: 26.5px;
+	    height: 26.5px;
+    	position:fixed;
+    	top:20px;
+    	left:20px;
+    	background-color:white;
+    	border-radius:28px;
+    	cursor:pointer;
+
+    	&:hover{
+    		filter:invert(1);
+    	}
+
+    	&:active{
+			transform: scale(0.9);
+			transition: all 200ms ease-in;
+		}
+	}
+
+	.add-revue-form{
+		display:none;
+	}
+}
+
+.journal-info{
+	position:absolute;
+	width:calc(30% - 20px);
+	min-width:500px;
+	top: 15%;
+	left:calc(60% + 20px);
+
+	h2{
+		width:80%;
+		font-family: @title_regular;
+		line-height:35px;
+		font-size: 32px;
+		font-weight: none;
+	}
+
+	h4{
+		font-family:@text_reg;
+		font-size: 14px;
+	}
+
+	p{
+		font-family:@text_light;
+		font-size: 16px;
+	}
+
+	.keywords{
+		a{
+			font-family:@text_light;
+			font-size: 14px;
+			color:rgba(black, 0.8);
+			text-decoration: none;
+			display:inline-block;
+
+			&:hover{
+				color:rgba(black, 1);
+			}
+
+			&:active{
+				transform: scale(0.98);
+				transition: all 200ms ease-in;
+			}
+		}
+	}
+}
+
+.objects{
+	width:calc(30% - 20px);
+	min-width:500px;
+	top: 40px;
+	position:fixed;
+    right: 15px;
+    max-height: calc(100vh - 40px);
+    overflow: scroll;
+
+	h2{
+		width:80%;
+		font-family: @text_bold;
+		line-height:35px;
+		font-size: 32px;
+		font-weight: none;
+	}
+
+	ul{
+		padding:0px;
+		li{
+			list-style-type: none;
+			width:100%;
+			float:left;
+			margin-bottom:10px;
+			border-radius: 3px;
+			background: rgba(white, 0.6);
+			backdrop-filter:blur(5px);
+			overflow:hidden;
+			cursor:pointer;
+
+
+
+			.polygone{
+				width:150px;
+				height:150px;
+				background:grey;
+				float:left;
+			}
+			
+			.col-right{
+				float: left;
+				margin-left:10px;
+				width:65%;
+				h3{
+					font-family: @title_regular;
+					line-height:14px;
+					font-size: 16px;
+					font-weight: none;
+				}
+
+				.keywords{
+					a{
+						font-family:@text_light;
+						font-size: 14px;
+						color:rgba(black, 0.8);
+						text-decoration: none;
+						display:inline-block;
+
+						&:hover{
+							color:rgba(black, 1);
+						}
+
+						&:active{
+							transform: scale(0.98);
+							transition: all 200ms ease-in;
+						}
+					}
+				}	
+			}
+
+			&:hover{
+				background: rgba(black, 1);
+				color: white;
+
+				.keywords{
+					a{
+						color:rgba(white, 0.8);;
+
+						&:hover{
+							color:rgba(white, 1);
+						}
+					}
+
+				}
+			}
+
+			&:active{
+				transform: scale(0.98);
+				transition: all 200ms ease-in;
+			}
+			
+		}
+	}
+}
