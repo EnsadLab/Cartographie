@@ -296,6 +296,7 @@ function countKeyWordChart(){
 
   function subCatBuilder(name, masterID, id, x, y, r, color, color_t){
     var rect = draw.circle(0).id(id).stroke(color).fill('none').move(x - (r/2), y - (r/2));
+    //var rect = draw.circle(0).id(id).stroke(color).fill('red').move(x - (r/2), y - (r/2));
     var text = draw.text(function(add) {
         // color= "black";
       add.tspan(name).newLine().id("text_"+id).fill(color_t).attr('y', y - (r/2)).dx(x - (r/2)).font({family:'Lato', size:20 , anchor:'middle', weight:300 })

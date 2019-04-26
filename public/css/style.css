@@ -1,17 +1,25 @@
 
 /******** MAP ***********/
 /*added by cecile*/
-path {
-  fill: rgba(240,240,240,255);
-  stroke: #000;
-  stroke-width: 0.5px;
+/* TO CHECK: ALEX (je crois que le foregroud je l'utilise pas...) */
+.boundary {
+  fill: #e2f5ff;
+  stroke: rgb(92, 12, 85);
+  stroke-width: 0.3px; 
 }
 
 .foreground {
   fill: none;
   stroke: red;
-  stroke-width: 0.5px;
+  stroke-width: 3px;
 }
+
+.country-label {
+  fill:  rgb(92, 12, 85);
+  font-size: 10px;
+  opacity: 0.5;
+}
+
 /******** MAP ***********/
 
 
@@ -181,16 +189,16 @@ body{
       text-transform: uppercase;
       /*font-weight: bolder;*/
   }
-
+/*
   circle{
       transition: all 1s linear;
   }
-
+*/
   tspan{
       /*font-weight: 100;*/
   /*font-family: "inknut";*/
   }
-
+/*
 svg circle.blurred {
   filter: url(#blur);
-}
+}*/
