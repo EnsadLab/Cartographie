@@ -1,9 +1,519 @@
 <div class="form-revue">
-	<div class="add-btn"></div>
+	
 	
 	<div class="add-revue-form">
+		<div class="add-btn" id="add-journal"></div>
+		
 		<form action="">
+			<h2>Add your journal <br> •</h2>
+			<div class="fields">
+				<div class="col">
+					<label for="name">Journal's name :</label>
+					<input type="text">
+				</div>
+				
+				<div class="col">
+					<label for="source">Journal's source (link) :</label>
+					<input type="text">
+				</div>
+			</div>
+
+			<div class="fields">
+				<label for="since_year">Publication since</label>
+				<input type="number">
+				<label for="to_year">to</label>
+				<input type="number">
+			</div>
+
+			<div class="fields">
+				<div class="col">
+					<label for="frequency">Frequency :</label>
+					<select name="" id="">
+						<option value="">Irregular</option>
+						<option value="">5 times a year</option>
+						<option value="">Quarterly</option>
+					</select>
+				</div>
+				<div class="col">
+					<label for="issues">Number of issues :</label>
+					<input type="number">
+				</div>
+			</div>
+
+			<div class="fields">
+				<label for="plublisher">Publisher / institution affiliation :</label>
+				<input type="text">
+				<br>
+				<label for="country">Country of publication :</label>
+				<input type="text">
+				<br>
+				<label for="language">Language :</label>
+				<select name="" id="">
+					<option value="">English</option>
+					<option value="">German</option>
+					<option value="">Spanish</option>
+					<option value="">French</option>
+					<option value="">Italian</option>
+				</select>
+				<br>
+				<label for="access">Access</label>
+				<select name="" id="">
+					<option value="">Free online access, paper by subscription</option>
+					<option value="">Free online access</option>
+				</select>
+				<br>
+				<label for="medium">Medium :</label>
+				<select name="" id="">
+					<option value="">Online & print</option>
+					<option value="">Print</option>
+					<option value="">Online</option>
+				</select>
+			</div>
 			
+			<div class="fields">
+				<div class="col">
+					<label for="about">About (up to 150 characters) :</label>
+					<br>
+					<textarea name="" id="" cols="30" rows="10" maxlength="150"></textarea>
+				</div>
+				
+				<div class="col">
+					<label for="pr">PR :</label>
+					
+					<p><input type="radio" name ="pr" value="yes"> yes</p>
+					
+					<p><input type="radio" name ="pr" value="no"> no</p>
+				</div>
+			</div>
+
+			<div class="fields">
+				<label for="note">Note :</label>
+				<br>
+				<textarea name="" id="" cols="30" rows="10" maxlength="150"></textarea>
+			</div>
+
+			<div class="fields form-keywords">
+				<div class="col-3">
+					<ul>
+						<h3>ART-DESIGN</h3>
+						<li>
+							<input type="checkbox" name ="" value="" id="Fine">
+							<label for="Fine">Fine Arts</label>
+
+							<ul>
+								<li>
+									<input type="checkbox" name ="" value="" id="Visual">
+									<label for="Visual">Visual (fine arts)</label>
+
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Sculpture">
+									<label for="Sculpture">Sculpture and installation</label>
+
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Sound">
+									<label for="Sound">Sound (fine arts)</label>
+
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Curatorial">
+									<label for="Curatorial">Curatorial Studies</label>
+
+								</li>
+							</ul>
+						</li>
+						<li>
+							<input type="checkbox" name="" value="" id="design">
+							<label for="design">Design</label>
+						
+							<ul>
+
+								<li>
+									<input type="checkbox" name ="" value="" id="Graphic">
+									<label for="Graphic">Graphic</label>
+
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Sound_d">
+									<label for="Sound_d">Sound (design)</label>
+
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Objects">
+									<label for="Objects">Objects</label>
+
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Fashion">
+									<label for="Fashion">Fashion</label>
+
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Game">
+									<label for="Game">Game Design</label>
+
+								</li>
+							</ul>
+						</li>
+						<li>
+							<input type="checkbox" name ="" value="" id="Performance">
+							<label for="Performance">Performance</label>
+
+						</li>
+						<li>
+							<input type="checkbox" name ="" value="" id="New">
+							<label for="New">New Media and Technological</label>
+
+						</li>
+						<li>
+							<input type="checkbox" name ="" value="" id="Architecture">
+							<label for="Architecture">Architecture</label>
+
+						</li>
+						<li>
+							<input type="checkbox" name ="" value="" id="Literature">
+							<label for="Literature">Literature</label>
+
+						</li>
+						<li>
+							<input type="checkbox" name ="" value="" id="Filmmaking">
+							<label for="Filmmaking">Filmmaking</label>
+
+						</li>
+						<li>
+							<input type="checkbox" name ="" value="" id="Craft">
+							<label for="Craft">Craft</label>
+
+						</li>
+
+					</ul>
+				</div>
+				<div class="col-3">
+					<h3>SS & HUMANITIES</h3>
+					<ul>
+						<li>
+							<input type="checkbox" name ="" value="" id="education">
+							<label for="education">Education</label>
+							<ul>
+								<li>
+									<input type="checkbox" name ="" id="Teacher-Training" value="">
+									<label for="Teacher-Training">Teacher-Training</label>
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Curriculum">
+									<label for="Curriculum">Curriculum development</label>
+									
+								</li>
+							</ul>
+						</li>
+						<li>
+							<input type="checkbox" name ="" value="" id="Religion">
+							<label for="Religion">Religion and Theology</label>
+							
+						</li>
+						<li>
+							<input type="checkbox" name ="" value="" id="Languages">
+							<label for="Languages">Languages</label>
+							
+							<ul>
+								<li>
+									<input type="checkbox" name ="" value="" id="Foreign">
+									<label for="Foreign">Foreign Languages & Cultures</label>
+									
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Linguistic">
+									<label for="Linguistic">Linguistic, translation, comparative literature</label>
+									
+								</li>
+							</ul>
+						</li>
+						<li>
+							<input type="checkbox" name ="" value="" id="History">
+							<label for="History">History</label>
+							
+							<ul>
+								<li>
+									<input type="checkbox" name ="" value="" id="Art">
+									<label for="Art">Art History</label>
+									
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Archeology">
+									<label for="Archeology">Archeology</label>
+									
+								</li>
+							</ul>
+						</li>
+						<li>
+							<input type="checkbox" name ="" value="" id="Philosophy">
+							<label for="Philosophy">Philosophy</label>
+							
+							<ul>
+								<li>
+									<input type="checkbox" name ="" value="" id="Ethics">
+									<label for="Ethics">Ethics</label>
+									
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Aesthetics">
+									<label for="Aesthetics">Aesthetics</label>
+									
+								</li>
+							</ul>
+						</li>
+						<li>
+							<input type="checkbox" name ="" value="" id="Social">
+							<label for="Social">Social and Behavioural</label>
+							
+							<ul>
+								<li>
+									<input type="checkbox" name ="" value="" id="Economics">
+									<label for="Economics">Economics, economic history</label>
+									
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Political">
+									<label for="Political">Political Science</label>
+									
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Media">
+									<label for="Media">Media Studies</label>
+									
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Sociology">
+									<label for="Sociology">Sociology</label>
+									
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Anthropology">
+									<label for="Anthropology">Anthropology</label>
+									
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Ethnology">
+									<label for="Ethnology">Ethnology</label>
+									
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Psychology">
+									<label for="Psychology">Psychology</label>
+									
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Geography">
+									<label for="Geography">Geography</label>
+									
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Digital">
+									<label for="Digital">Digital Humanities</label>
+									
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Science">
+									<label for="Science">Science and Technology Studies</label>
+									
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Peace">
+									<label for="Peace">Peace and Conflict studies / Human rights</label>
+									
+								</li>
+							</ul>
+						</li>
+						<li>
+							<input type="checkbox" name ="" value="" id="Journalism-info">
+							<label for="Journalism-info">Journalism and Information</label>
+							
+							<ul>
+								<li>
+									<input type="checkbox" name ="" value="" id="Journalism">
+									<label for="Journalism">Journalism</label>
+									
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Library">
+									<label for="Library">Library and information studies</label>
+									
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Documentation">
+									<label for="Documentation">Documentation and archival science</label>
+									
+								</li>
+							</ul>
+						</li>
+						<li>
+							<input type="checkbox" name ="" value="" id="Business">
+							<label for="Business">Business, Admin & Management</label>
+							
+							<ul>
+								<li>
+									<input type="checkbox" name ="" value="" id="Retailing">
+									<label for="Retailing">Retailing, marketing, sales, public relations</label>
+									
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Finance">
+									<label for="Finance">Finance and Accounting</label>
+									
+								</li>
+								<li>
+									<input type="checkbox" name ="" value="" id="Secretarial">
+									<label for="Secretarial">Secretarial and office work. </label>
+									
+								</li>
+							</ul>
+						</li>
+						<li>
+							<input type="checkbox" name ="" value="" id="Law">
+							<label for="Law">Law</label>
+							
+						</li>
+					</ul>
+				</div>
+
+				<div class="col-3">
+					<ul>
+						<h3>SCIENCE</h3>
+						<li>
+							<input type="radio" name ="" value="" id="Life">
+							<label for="Life">Life Sciences</label>
+							
+							<ul>
+								<li>
+									<input type="radio" name ="" value="" id="Biology">
+									<label for="Biology">Biology</label>
+									
+								</li>
+								<li>
+									<input type="radio" name ="" value="" id="Clinical">
+									<label for="Clinical">Clinical Sciences</label>
+									
+								</li>
+								<li>
+									<input type="radio" name ="" value="" id="Cognitive">
+									<label for="Cognitive">Cognitive Sciences</label>
+									
+								</li>
+								<li>
+									<input type="radio" name ="" value="" id="Veterinary">
+									<label for="Veterinary">Veterinary Sciences</label>
+									
+								</li>
+							</ul>
+						</li>
+						<li>
+							<input type="radio" name ="" value="" id="Physical">
+							<label for="Physical">Physical Sciences</label>
+							
+							<ul>
+								<li>
+									<input type="radio" name ="" value="" id="Astronomy">
+									<label for="Astronomy">Astronomy and space sciences</label>
+									
+								</li>
+								<li>
+									<input type="radio" name ="" value="" id="Physics">
+									<label for="Physics">Physics</label>
+									
+								</li>
+								<li>
+									<input type="radio" name ="" value="" id="Chemistry">
+									<label for="Chemistry">Chemistry</label>
+									
+								</li>
+								<li>
+									<input type="radio" name ="" value="" id="Geology">
+									<label for="Geology">Geology</label>
+									
+								</li>
+								<li>
+									<input type="radio" name ="" value="" id="Meteorology">
+									<label for="Meteorology">Meteorology</label>
+									
+								</li>
+							</ul>
+						</li>
+						<li>
+							<input type="radio" name ="" value="" id="Mathematics">
+							<label for="Mathematics">Mathematics and statistics</label>
+							
+						</li>
+						<li>
+							<input type="radio" name ="" value="" id="Computer">
+							<label for="Computer">Computer Sciences</label>
+							
+						</li>
+						<li>
+							<input type="radio" name ="" value="" id="Engineering-construction">
+							<label for="Engineering-construction">Engineering and Construction</label>
+							
+							<ul>
+								<li>
+									<input type="radio" name ="" value="" id="Engineering-drawing">
+									<label for="Engineering-drawing">Engineering drawing </label>
+									
+								</li>
+								<li>
+									<input type="radio" name ="" value="" id="Engineering-mechanics">
+									<label for="Engineering-mechanics">Engineering Mechanics and Electronics</label>
+									
+								</li>
+								<li>
+									<input type="radio" name ="" value="" id="Civil">
+									<label for="Civil">Civil Engineering, building, construction</label>
+									
+								</li>
+								<li>
+									<input type="radio" name ="" value="" id="Urban">
+									<label for="Urban">Urban planning</label>
+									
+								</li>
+							</ul>
+						</li>
+						<li>
+							<input type="radio" name ="" value="" id="Manufacturing">
+							<label for="Manufacturing">Manufacturing and processing</label>
+							
+						</li>
+						<li>
+							<input type="radio" name ="" value="" id="Agriculture">
+							<label for="Agriculture">Agriculture, forestry and fishery </label>
+							
+						</li>
+						<li>
+							<input type="radio" name ="" value="" id="Health">
+							<label for="Health">Health</label>
+							
+							<ul>
+								<li>
+									<input type="radio" name ="" value="" id="Medecine">
+									<label for="Medecine">Medecine</label>
+									
+								</li>
+								<li>
+									<input type="radio" name ="" value="" id="Ergonomics">
+									<label for="Ergonomics">Ergonomics</label>
+									
+								</li>
+								<li>
+									<input type="radio" name ="" value="" id="Medical">
+									<label for="Medical">Medical services (include dental)</label>
+									
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<input type="submit" value="submit my journal">
+
 		</form>
 	</div>
 
