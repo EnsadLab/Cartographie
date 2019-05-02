@@ -18,3 +18,23 @@ var options = {
 
 var hackerList = new List('menu', options);
 
+
+
+// Display Form
+
+var addBTN = document.getElementById("add-journal")
+var form =  document.getElementsByClassName("add-revue-form")[0];
+var open = false
+
+
+addBTN.addEventListener("click", function(){
+
+	if(open === false){
+		form.className = "add-revue-form active";	
+		open = true;
+	}else{
+		form.className = "add-revue-form";	
+		open = false;
+	}
+	
+})
