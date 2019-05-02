@@ -49,43 +49,25 @@ function loadMap(){
   d3.json("maps/countries.topo.json", function(error, world) {
     if(error) return console.error(error);
 
-    //console.log("appending boundaries....");
-    //countries
     g.append("g")
         .attr("class", "boundary")
+        .attr("id","map-g")
         .selectAll("boundary")
         .data(topojson.feature(world, world.objects.countries).features)
         .enter().append("path")
-        .attr("d", path);
-        var locations = g.append("g").attr("class", "revueslocations")
-        .selectAll("revueslocations")
-        //.data(dataGeo.features)
-        .data(dataRevue)
-        .enter()
-        .append("polygon")
-        // TO CHECK: ALEX: j'ai fait ça à la va vite.. on définira la taille des triangles
-        // de manière propre ultérieurement.. ET pour l'instant les triangles ne sont pas 
-        // ajusté à la taille du scale...
-        .attr("points",function(d) { 
-            var d = 20; // TODO.. do it properly...
-            var y = Math.sqrt((d*d)-((d*0.5)*(d*0.5)));
-            return "0,"+ y + "," + d*0.5 + ",0," + d + "," + y;
-        })
-        .attr("transform",function(d){
-            // var pt = d.geometry.coordinates;
-            var pt = d.coordinates;
-            var p = projection(pt); 
-            //console.log("pt",pt[0],pt[1],p);
-            var d = 20; // TODO.. do it properly... // get the bounding box... or centroid
-            var x = p[0]-d*0.5;
-            var y = p[1]-d*0.5;
-            return "translate(" +x + "," + y + ")";
-        })
-        .attr("fill","black")
+        .attr("d", path)
+        .attr("class","map-path")
+        .attr("stroke-width","0.3px")
+        .attr("stroke","black")
+        .attr("fill","#FAFAFA")
+        .attr("opacity","0.0")
         ;
-        
+    
+    animateMap();
 
+      
     // TO CHECK: ALEX - .... les labels des pays?? oui/non.. 
+    /*
     g.selectAll(".country-label")
         .data(topojson.feature(world, world.objects.countries).features)
         .enter().append("text")
@@ -94,8 +76,26 @@ function loadMap(){
         .attr("dy", ".35em")
         .style("font-size","2px")
         .text(function(d) { return d.properties.name.toUpperCase();});
+    */
 
   });
+}
+
+function animateMap() {
+  d3.selectAll(".map-path").transition()
+    .duration(1000)
+    .attr("opacity",1.0)
+    ;
+}
+
+function deleteMap() {
+  d3.selectAll(".map-path").transition()
+  .duration(800)
+  .attr("opacity",0.0)
+  .on("end",function(){
+    g.selectAll("*").remove();
+  })
+  ;
 }
 
 function rotateMap(endX) {
@@ -152,15 +152,20 @@ function zoomed() {
 }
 
 function initGeoMap(){
-  
-  d3.selectAll("path").interrupt();
-  cleanSVG();
+
+
+  createProjection();
+  loadMap();
+
+  animateMap();
+  //cleanSVG();
+  startTransitionVizGeo();
+  //cleanSVG();
 
   //var jsonData = d3.json("https://unpkg.com/world-atlas@1.1.4/world/110m.json", drawMap);    
   //var jsonData = d3.json("maps/worldcountries.json",drawMap);
   //var jsonData = d3.json("maps/countries.topo.json",drawMap);
-  createProjection();
-  loadMap();
+
 
 }
 

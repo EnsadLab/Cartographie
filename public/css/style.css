@@ -94,11 +94,18 @@
 /******** MAP ***********/
 /*added by cecile*/
 /* TO CHECK: ALEX (je crois que le foregroud je l'utilise pas...) */
+
+canvas {
+  position: absolute;
+  
+}
+
+/*
 .boundary {
   fill: #e2f5ff;
   stroke: rgb(92, 12, 85);
   stroke-width: 0.3px; 
-}
+}*/
 
 .foreground {
   fill: none;

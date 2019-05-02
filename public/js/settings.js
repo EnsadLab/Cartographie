@@ -9,18 +9,21 @@ var Science_Color = "#F8405E";
 //var debug_mode = false;
 
 // SIZES
-var totalWidth = 950;
-var totalHeight = 750;
+var totalWidth = 1440;//950;
+var totalHeight = 800;
+
+var width = totalWidth;
+var height = totalHeight;
 
 // TO CHECK: ALEX
 
 // RADIUS min and max values
-var rmaster_min = 100;
-var rmaster_max = 120;
-var rsub_min = 5;
-var rsub_max = 15;
+var rmaster_min = 80;
+var rmaster_max = 300;
+var rsub_min = 4;
+var rsub_max = 30;
 var rkey_min = 3;
-var rkey_max = 5;
+var rkey_max = 10;
 
 // Radius distance where sub categories are drawn respect to their master node
 var rmaster_sub = 120;
@@ -29,12 +32,12 @@ var rsub_keyword = 20;
 
 // BUBBLES look
 // subcategories
-var sub_strokeWidthMin = 6;
-var sub_strokeWidthMax = 10;
-var sub_minTrans = 0.2;
-var sub_maxTrans = 0.6;
+var sub_strokeWidthMin = 4;
+var sub_strokeWidthMax = 15;
+var sub_minTrans = 0.1;
+var sub_maxTrans = 0.4;
 // keywords
-var key_minTrans = 0.3;
+var key_minTrans = 0.2;
 var key_maxTrans = 1.0;
 
 
@@ -43,6 +46,8 @@ var distMasterAnim = 50; // rayon d'animation
 var numMasterPathNodes = 10; // le nombre de points utilisé pour créé le path
 var durationMasterAnim = 50000; // la durée.. par la suite--> durée plus petite et path plus simple
 
+// TEXT SIZES
+var masterFontSize = 17;
 
 
 
@@ -56,11 +61,27 @@ function getRandomInt(min,max) {
   
 }
 
+function getArrayWithUniqueElem(a){
+    var result = [];
+    a.forEach(function(item) {
+         if(result.indexOf(item) < 0) {
+             result.push(item);
+         }
+    });
+    return result;
+}
+
+
 // we could use scale.linear instead....
 function mapValue(v,min,max,newMin,newMax) {
     // console.log("map value:",v,min,max,newMin,newMax);
     // convert to float +v blabla...
     return ((v - min)*(newMax-newMin))/(max-min) + newMin;
+}
+
+function clone(selector) {
+    var node = d3.select(selector).node();
+    return d3.select(node.parentNode.insertBefore(node.cloneNode(true), node.nextSibling));
 }
 
 // returns a data PATH string of an array of nb coordinates with edge length d
@@ -120,7 +141,7 @@ function getCoordP2P3(percent,d,h){
 
 function testTriangle(){
 
-    // wil draw a triangle with 11 coords with edge length of 200 and with an offset of (500,500)
+    // will draw a triangle with 11 coords with edge length of 200 and with an offset of (500,500)
     var triangleArray = getTriangleArray(11,200);
     var off = 500;
     triangleArray = test.map(function(pt) {pt[0] += off; pt[1] += off; return pt; });
