@@ -128,7 +128,10 @@ function createSubNodes(node,masterNodeId){
       .attr("font-family","latohairline")
       .attr("text-anchor","middle")
       .style("alignment-baseline","middle")
-      .attr("fill",c)
+      .attr("fill",function(){
+        d.color = c;
+        return c;
+      })//c
       .attr("opacity",0.0)
       .attr("font-size","15")
       ; 
@@ -188,8 +191,11 @@ function createKeywordNodes(subnode, masterNodeId, subNodeId){
       .attr("text-anchor","start")
       .attr("x",d => d.r*1.5)
       .style("alignment-baseline","middle")
-      .attr("fill","c")//c
-      .attr("opacity","0.0")
+      .attr("fill",function(){
+        d.color = c;
+        return "none";
+      })//c
+      .attr("opacity","1.0")
       .attr("font-size","8")
       ; 
 

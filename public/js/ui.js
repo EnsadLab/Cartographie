@@ -332,9 +332,20 @@ function showFormular(show){
 
 function showLabel(show,id){
     if(show){
-        d3.select("#"+id).select("text").attr("opacity","1.0");
+        if(id.startsWith("sub"))
+        {
+            d3.select("#"+id).select("text").attr("opacity","1.0");
+        } else {
+            d3.select("#"+id).select("text").attr("fill","black");
+        }
     }else{
-        d3.select("#"+id).select("text").attr("opacity","0.0");
+        if(id.startsWith("sub"))
+        {
+            d3.select("#"+id).select("text").attr("opacity","0.0");
+        }else{
+            d3.select("#"+id).select("text").attr("fill","none");
+        }
+        
     }
 }
 
