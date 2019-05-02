@@ -47,7 +47,7 @@ function startTransitionVizGeo(){
 
         // POLY TO TRIANGLE MORPHING
         p.transition()
-            //.duration(800)
+            //.duration(1000)
             .duration(getRandomInt(200,500))
             .attr("d",dTri)
             .ease(d3.easeQuad)

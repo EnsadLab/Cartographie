@@ -156,8 +156,8 @@ function startObj(id){
         node.attr("transform","translate(" + (bb.x + bb.width*0.5) + "," + (bb.y + bb.height*0.5)+ ")");
         node.attr("id",d);
 
-        //var r = getRandomInt(rMin,rMax);
-        var r = rArray[getRandomInt(0,rArray.length)];
+        var r = getRandomInt(rMin,rMax);
+        //var r = rArray[getRandomInt(0,rArray.length)];
         //var angleArray 
         var angle = (getRandomInt(0,nbLinks) / nbLinks) * Math.PI * 2.0;
         //angle = - Math.PI * 0.5;
