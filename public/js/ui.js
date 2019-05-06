@@ -2,8 +2,21 @@
 // navigation bar, magazine menu on the right, detailed magazine view and etc..
 
 
-d3.select("#geoView").on("click", function(){ startGeo();})
-d3.select("#vizView").on("click", function(){ startViz();})
+d3.select("#geoView").on("click", function(){ 
+    startGeo();
+    document.getElementById("vizView").className = "";
+    document.getElementById("timelineView").className = "";
+    document.getElementById("geoView").className = "active";
+})
+
+
+d3.select("#vizView").on("click", function(){ 
+    startViz();
+    document.getElementById("vizView").className = "active";
+    document.getElementById("timelineView").className = "";
+    document.getElementById("geoView").className = "";
+
+})
 d3.select("#timelineView").on("click", goingBack ) // TO CHECK: ALEX.. utile pour moi pour l'instant. a laisser
 
 var showViz = true; // for now...
@@ -454,7 +467,7 @@ function createMenu(){
         if(letter != previousLetter){
             d3.select("#menulist")
                     .append("li")
-                    .append("h3")
+                    // .append("h3")
                     .attr("class","letter")
                     .html(letter);
         }
@@ -470,6 +483,8 @@ function createMenu(){
                 .html(d.name);
         previousLetter = letter;
     });
+
+    var hackerList = new List('menu', options);
 }
 
 /*
@@ -632,7 +647,7 @@ var options = {
     valueNames: [ 'revue-title' ]
 };
 
-var hackerList = new List('menu', options);
+
 
 
 
