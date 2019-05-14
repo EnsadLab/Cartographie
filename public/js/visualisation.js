@@ -16,10 +16,19 @@ function createMasterNodes(){
       .enter()
       .append("g") // check diff with join!!
       .attr("id", d => d.id )
-      .attr("transform", d => `translate(${d.x * totalWidth},${d.y * totalHeight})`)
+      .attr("transform", d => `translate(${d.x * width},${d.y * height})`)
       ;
   var div_g = node.append("g")
-      .on("click",function(d){console.log("### mouseclick",d.id);startObj(d.id);});
+  /*
+      .on("mouseenter",function(d){
+        d3.select(this).style("cursor", "pointer");
+      })    
+      .on("mouseleave",function(d){
+        d3.select(this).style("cursor", "default");
+      })
+      .on("click",function(d){console.log("### mouseclick",d.id);startObj(d.id);})
+  */
+      ;
 
   div_g.append("circle")
       .attr("class","master-circle")
@@ -45,6 +54,16 @@ function createMasterNodes(){
       .style("alignment-baseline","middle")
       .attr("fill","white")
       .attr("font-size",masterFontSize)
+      .on("mouseenter",function(d){
+        d3.select(this).style("cursor", "pointer");
+      })    
+      .on("mouseleave",function(d){
+        d3.select(this).style("cursor", "default");
+      })
+      .on("click",function(d){
+        console.log("### mouseclick",d.id);
+        startObj(d.id);
+      })
       ; 
 
   // SUB nodes
@@ -69,7 +88,7 @@ function createSubNodes(node,masterNodeId){
   if(masterNodeId == "master0") fakeSubCategory = subNodesMaster0;
   if(masterNodeId == "master1") fakeSubCategory = subNodesMaster1;
   if(masterNodeId == "master2") fakeSubCategory = subNodesMaster2;
- // nbSubnode = fakeSubCategory.length;
+  //nbSubnode = fakeSubCategory.length;
   //nbKeynode = fakeSubCategory.keywords.length;
   //console.log("nb sub",nbSubnode);
 
@@ -85,10 +104,11 @@ function createSubNodes(node,masterNodeId){
         var index = Math.ceil(i/2.0);
         if(i % 2 == 0 && i != 0) index = nbSubnode - index;
         //console.log("index",index)
+        var sub = result.subCategory.filter( function(data) { return data.id == d.id; })[0];
         var angle = angleOffset + (index / nbSubnode) * Math.PI * 2.0;
+        sub.angleOffset = angle;
         var x = rmaster_sub * Math.cos(angle);
         var y = rmaster_sub * Math.sin(angle);
-       // nbSubNodes++;
         return `translate(${x},${y})`
       })
       ;
@@ -97,15 +117,25 @@ function createSubNodes(node,masterNodeId){
 
   // not sure if it is the right way... but at least we don't have to store the parent g translation
   var div_g = subnode.append("g")
-            .on("mouseenter",function(d){/*console.log("### mouseenter",d.id);*/showLabel(true,d.id);})    
-            .on("mouseleave",function(d){/*console.log("### mouseleave",d.id);*/showLabel(false,d.id);})
-            .on("click",function(d){console.log("### mouseclick",d.id);startObj(d.id);});
+            .on("mouseenter",function(d){
+              /*console.log("### mouseenter",d.id);*/
+              d3.select(this).style("cursor", "pointer");
+              showLabel(true,d.id);
+            })    
+            .on("mouseleave",function(d){
+              /*console.log("### mouseleave",d.id);*/
+              d3.select(this).style("cursor", "default");
+              showLabel(false,d.id);
+            })
+            .on("click",function(d){
+              console.log("### mouseclick",d.id);
+              startObj(d.id);
+            });
 
   div_g.append("circle")
       .attr("r",function(d){
         //var r = getRandomInt(rsub_min,rsub_max);
         var r = mapValue(d.w,sweight_min, sweight_max,rsub_min,rsub_max);
-        //r = 30;
         d.r = r;
         return r;
       })
@@ -117,7 +147,6 @@ function createSubNodes(node,masterNodeId){
       .duration(durationFadeAnim)
       .attr("opacity",function(d){
         var t = mapValue(d.r,rsub_min,rsub_max,sub_maxTrans,sub_minTrans);
-        //t = 0.5;
         return t;
       })
       .attr("fill","none")        
@@ -126,14 +155,17 @@ function createSubNodes(node,masterNodeId){
   div_g.append("text")
       .text(d => d.name)
       .attr("font-family","latohairline")
-      .attr("text-anchor","middle")
-      .style("alignment-baseline","middle")
+      .attr("x",0)
+      .attr("y",0)
       .attr("fill",function(){
         d.color = c;
         return c;
-      })//c
+      })
       .attr("opacity",0.0)
       .attr("font-size","15")
+      .call(wrap,subTextLength,subLineHeight)
+      .attr("text-anchor","middle")
+      .style("alignment-baseline","middle")
       ; 
   
   // KEYWORDS nodes 
@@ -147,8 +179,8 @@ function createKeywordNodes(subnode, masterNodeId, subNodeId){
 
   var result = masterNodes.filter( function(d) { return d.id == masterNodeId; })[0];
   var c = result.color;
-  var nbKeywords = result.subCategory.filter( function(d) { return d.id == subNodeId; })[0].keywords.length;
-  //var nbKeywords = 5;
+  var resultSub = result.subCategory.filter( function(d) { return d.id == subNodeId; })[0];
+  var nbKeyNodes = resultSub.keywords.length;
 
   const keyword = subnode.selectAll("g")
       .data(d => d.keywords)
@@ -156,7 +188,9 @@ function createKeywordNodes(subnode, masterNodeId, subNodeId){
       .append("g")
       .attr("id",d => d.id)
       .attr("transform", (d,i) => {
-        var angle = (i / nbKeywords) * Math.PI * 2.0;
+        var index = Math.ceil(i/2.0);
+        if(i % 2 == 0 && i != 0) index = nbKeyNodes - index;
+        var angle = resultSub.angleOffset + (index / nbKeyNodes) * Math.PI * 2.0;
         var x = (rsub_keyword+10) * Math.cos(angle);
         var y = (rsub_keyword+10) * Math.sin(angle);
         return `translate(${x},${y})`
@@ -164,9 +198,20 @@ function createKeywordNodes(subnode, masterNodeId, subNodeId){
       ;
 
   var div_g = keyword.append("g")
-      .on("mouseenter",function(d){/*console.log("### mouseenter",d.id);*/showLabel(true,d.id);})    
-      .on("mouseleave",function(d){/*console.log("### mouseleave",d.id);*/showLabel(false,d.id);})
-      .on("click",function(d){console.log("### mouseclick",d.id);startObj(d.id);});
+      .on("mouseenter",function(d){
+        /*console.log("### mouseenter",d.id);*/
+        d3.select(this).style("cursor", "pointer");
+        showLabel(true,d.id);
+      })    
+      .on("mouseleave",function(d){
+        /*console.log("### mouseleave",d.id);*/
+        d3.select(this).style("cursor", "default");
+        showLabel(false,d.id);
+      })
+      .on("click",function(d){
+        console.log("### mouseclick",d.id);
+        startObj(d.id);
+      });
 
   div_g.append("circle")
       .attr("id",d => "keyword" + d.id)
@@ -174,6 +219,7 @@ function createKeywordNodes(subnode, masterNodeId, subNodeId){
         //d.r = getRandomInt(rkey_min,rkey_max);
         d.r = mapValue(d.w,kweight_min, kweight_max,rkey_min,rkey_max);
         return d.r
+        //return 10;
       })
       .transition()
       .duration(durationFadeAnim)
@@ -184,50 +230,35 @@ function createKeywordNodes(subnode, masterNodeId, subNodeId){
       //.attr("fill", "none")
       ;
 
-      
   div_g.append("text")
       .text(d => d.name)
       .attr("font-family","latoregular")
-      .attr("text-anchor","start")
       .attr("x",d => d.r*1.5)
+      .attr("y",0) 
+      .attr("text-anchor","start")
       .style("alignment-baseline","middle")
       .attr("fill",function(){
         d.color = c;
         return "none";
-      })//c
+      })
       .attr("opacity","1.0")
       .attr("font-size","8")
+      .call(wrap,keywordsTextLength,keywordsLineHeight)
+      .style("alignment-baseline","middle")
+      .selectAll("tspan").style("alignment-baseline","middle")
       ; 
 
   
 }
 
 var animVizRunning = false;
-function restartAnimNodes(){
-  masterAnims = [];
-  subAnims = [];
-  keyAnims = [];
-
-  startAnimNodes();
-  /*
-  console.log("restartAnimNodes");
-  for(var i=0; i<masterAnims.length;i++){
-    masterAnims[i].start();
-  }
-
-  for(var i=0; i<subAnims.length;i++){
-    subAnims[i].start();
-  }
-
-  for(var i=0; i<keyAnims.length;i++){
-    keyAnims[i].start();
-  }*/
-  animVizRunning = true;
-}
 
 function startAnimNodes(){
 
   console.log("start anim");
+  masterAnims = [];
+  subAnims = [];
+  keyAnims = [];
 
   for(var i=0; i<3; i++){
     var anim = new Anim("#master"+i,60,5,10);
@@ -272,8 +303,6 @@ function drawViz(){
 }
 
 
-
-
 // TO CHECK: ALEX - master nodes grads and filter
 function createDefs(){
 
@@ -299,21 +328,22 @@ function createDefs(){
 }
 
 function loadVisualisation(){
-    //cleanSVG();
     animVizRunning = false;
     deleteVizNodes();
     createDefs();
     svg.append("g").attr("id","obj-nodes");
     svg.append("g").attr("id","nodes");
+    svg.append("g").attr("id","map");
+    svg.append("g").attr("id","map-nodes");
+    svg.append("g").attr("id","timeline");
 }
 
 
-function restartVisualisation(){
+function initVisualisation(){
 
   if(!vizdataLoaded){
     animVizRunning = false;
     createMasterNodes();
-    //restartAnimNodes();
     console.log("finished viz initialisation");
   }
 

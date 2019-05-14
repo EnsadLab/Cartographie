@@ -9,31 +9,30 @@ var Science_Color = "#F8405E";
 //var debug_mode = false;
 
 // SIZES
-var totalWidth = 1440;//950;
-var totalHeight = 800;
+var scale = 1.0;
+var width = 1440;//950;
+var height = 800;
 
-var width = totalWidth;
-var height = totalHeight;
 
 // TO CHECK: ALEX
 
 // RADIUS min and max values
-var rmaster_min = 80;
-var rmaster_max = 300;
-var rsub_min = 4;
-var rsub_max = 30;
-var rkey_min = 3;
-var rkey_max = 10;
+var rmaster_min = 80 * scale;
+var rmaster_max = 300 * scale;
+var rsub_min = 4 * scale;
+var rsub_max = 30 * scale;
+var rkey_min = 3 * scale;
+var rkey_max = 10 * scale;
 
 // Radius distance where sub categories are drawn respect to their master node
-var rmaster_sub = 120;
+var rmaster_sub = 120 * scale;
 // Radius distance where keywords are drawn respect to their sub category
-var rsub_keyword = 20;
+var rsub_keyword = 20 * scale;
 
 // BUBBLES look
 // subcategories
-var sub_strokeWidthMin = 4;
-var sub_strokeWidthMax = 15;
+var sub_strokeWidthMin = 4 * scale;
+var sub_strokeWidthMax = 15 * scale;
 var sub_minTrans = 0.1;
 var sub_maxTrans = 0.4;
 // keywords
@@ -42,14 +41,47 @@ var key_maxTrans = 1.0;
 
 
 // ANIMATION of the master nodes
-var distMasterAnim = 50; // rayon d'animation 
+var distMasterAnim = 50 * scale; // rayon d'animation 
 var numMasterPathNodes = 10; // le nombre de points utilisé pour créé le path
-var durationMasterAnim = 50000; // la durée.. par la suite--> durée plus petite et path plus simple
+var durationMasterAnim = 50000 * scale; // la durée.. par la suite--> durée plus petite et path plus simple
 
 // TEXT SIZES
 var masterFontSize = 17;
 
+// TEXT LENGTH and LINE HEIGHT - keywords and sub labels
+var keywordsTextLength = 70;
+var keywordsLineHeight = 7; 
+var subTextLength = 50;
+var subLineHeight = 15;
 
+// OBJ VIEW
+var defaultObjectOpacity = 0.5;
+var minObjectOpacity = 0.3;
+var maxObjectOpacity = 1.0;
+var xCenterObjView = width/3.0;
+var yCenterObjView = height/2.0;
+// OBJ DASH CIRCLES
+var firstRadius = 100;
+var secondRadius = 200;
+var thirdRadius = 300;
+var radiusOpacity = 0.2;
+var dasharrayNB = 6;
+var radiusObject = 10; 
+var rMinObject = 100;
+var rMaxObject = 300;
+
+// MAP
+var triangleDefaultOpacity = 0.1;
+var triangleEdgeLength = 20; // edge lenth du triangle
+var triangleHightlighted = 30;
+var mapBackground = "#FAFAFA";
+var mapStrokeWidth = 0.3;
+var strokeColor = "black";
+
+// TIMELINE
+var barColor = "#DADADA";
+var barHeight = 5;
+var stepBetweenBars = 2;
 
 // useful general functions
 function cleanSVG(){
@@ -71,6 +103,28 @@ function getArrayWithUniqueElem(a){
     return result;
 }
 
+function getArrayWithUniqueElemAndKey(a){
+    var result = [];
+    var nb_min = Number.MAX_SAFE_INTEGER;
+    var nb_max = 0;
+    var nb_second_max = 0;
+    a.forEach(function(item) {
+        var d = result.filter(function(d){ return d.id == item});
+        if(d.length == 0){
+            var r = a.filter(function(d){return d == item}).length;
+            var parent = dataLinks.find( data => data.id == item).parent;
+            result.push({id: item, nb: r, parent: parent});
+            if(r > nb_max) {nb_second_max = nb_max; nb_max = r;}
+            if(r > nb_second_max && r < nb_max) nb_second_max = r;
+            if(r < nb_min) nb_min = r;
+        }
+    });
+    result.push({id:"DATA_MIN",nb:nb_min});
+    result.push({id:"DATA_MAX",nb:nb_max});
+    result.push({id:"DATA_SECOND_MAX",nb:nb_second_max});
+    return result;
+}
+
 
 // we could use scale.linear instead....
 function mapValue(v,min,max,newMin,newMax) {
@@ -82,6 +136,119 @@ function mapValue(v,min,max,newMin,newMax) {
 function clone(selector) {
     var node = d3.select(selector).node();
     return d3.select(node.parentNode.insertBefore(node.cloneNode(true), node.nextSibling));
+}
+
+
+// to test wrapping function
+function testWrap(){
+
+    svg.append("text")
+      .text("Peace and Conflict studies / Human rights Peace and Conflict studies / Human rights")
+      .attr("font-family","latoregular")
+      .attr("text-anchor","start")
+      .attr("x",100)
+      .attr("y",35)
+      .style("alignment-baseline","middle")
+      .attr("fill",function(){
+        return "pink";
+      })
+      .attr("opacity","1.0")
+      .attr("font-size","8")
+      .call(wrap,15,5)
+      ; 
+    svg.append("text")
+      .text("SOCIAL AND BEHAVORIAL")
+      .attr("font-family","latohairline")
+      .attr("x",100)
+      .attr("y",100)
+      //.attr("text-anchor","middle")
+      //.style("alignment-baseline","middle")
+      .attr("fill",function(){
+        return "orange";
+      })
+      .attr("opacity",1.0)
+      .attr("font-size","15")
+      .call(wrap,subTextLength,subLineHeight)
+      ; 
+
+}
+
+function wrap(text, width, lineHeight) {
+    text.each(function () {
+        var text = d3.select(this),
+            words = text.text().split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0, 
+            x = text.attr("x"),
+            y = text.attr("y"),
+            dy = 0;
+            
+            tspan = text.text(null)
+                        .append("tspan")
+                        .attr("x", x)
+                        .attr("y", y)
+                        .attr("dy", dy);
+                        
+        while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = text.append("tspan")
+                            .attr("x", x)
+                            .attr("y", y)
+                            .attr("dy", ++lineNumber * lineHeight + dy)
+                            .text(word);
+            }
+        }
+        var yCentered = +y - ((lineNumber) * lineHeight) * 0.5;
+        d3.select(this).attr("y",yCentered)
+            .selectAll("tspan")
+            .attr("y",yCentered)
+        ;
+    });
+    
+}
+
+// returns a data PATH string of an array of nb coordinates with w and h sizes
+// useful when interpolating between an arbitrary shape of nb coordinates to a rectangle
+function getRectanglePath(nb,w,h,offset){
+    var datas = getRectangleArray(nb,w,h);
+    datas = datas.map(function(pt) {pt[0] += offset[0]; pt[1] += offset[1]; return pt; });
+    var d = "M" + datas.join("L") + "Z";
+    return d;
+}
+
+// returns an array of nb coordinates with w and h sizes
+// useful when interpolating between an arbitrary shape of nb coordinates to a rectangle
+function getRectangleArray(nb,w,h){
+    var datas = [nb];
+    if(nb < 4){console.log("TODO!!!!! nb < 4");}
+    datas[0] = [0,0]; // top left
+    var index_topRight = Math.floor(nb/2.0)-1;
+    datas[index_topRight] = [w,0]; // top right
+
+    var index_bottomRight = Math.floor(nb/2.0);
+    datas[index_bottomRight] = [w,h]; // bottom right
+    datas[nb-1] = [0,h]; // botttom left
+
+    // datas in between
+    var index = 0;
+    for(var i=1; i<index_topRight; i++){
+        var wi = (index+1) * (w/(index_topRight));
+        datas[i] = [wi,0];
+        index++;
+    }
+    var index = 0;
+    for(var i=index_bottomRight+1; i<nb-1; i++){
+        var wi = w - (index+1) * (w/(nb-1-index_bottomRight));
+        datas[i] = [wi,h];
+        index++;
+    }
+    return datas;
 }
 
 // returns a data PATH string of an array of nb coordinates with edge length d

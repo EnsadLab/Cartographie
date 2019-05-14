@@ -51,6 +51,7 @@ function drawFrame(){
     //console.log("draw frame");
     drawViz();
     drawCanvas();
+    updateUI();
 }
 
 
@@ -105,8 +106,8 @@ function initCanvas(){
 function initSVG(){
     // TO CHECK: ALEX - si ça t'ennuies trop, mets le border du svg à 0.
     svg = d3.select("#svg")
-    .attr("width",totalWidth)
-    .attr("height",totalHeight)
+    .attr("width",width)
+    .attr("height",height)
     // .style("border", "1px solid black")
     .style("border", "none")
     ;
@@ -193,6 +194,13 @@ function init(){
 
     // init our controller 
     initController();
+    //blup();
+
+    //initTimeline();
+
+    //testMorphing60();
+    //testMorphing();
+    //testMorphingToRect();
     
     // start our internal update loop
     var fps = 30;

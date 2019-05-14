@@ -8,7 +8,7 @@ var dataRevue = [
 	},
 
 	{
-		name : "ArchÃ©e " ,
+		name : "Archée " ,
 		keywords :[ "New Media and Technological", "Aesthetics", "Science and Technology Studies"],
 	},
 

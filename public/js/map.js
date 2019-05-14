@@ -16,7 +16,7 @@ var gRevues;
 function createProjection(){
   projection = d3.geoMercator()
   .scale(153)
-  .translate([totalWidth/2,totalHeight/1.5])
+  .translate([width/2,height/1.5])
   .rotate([rotated,0,0]); //center on USA
 
   path = d3.geoPath().projection(projection);
@@ -38,7 +38,7 @@ function createProjection(){
   })
   .call(zoom);
 
-  g = svg.append("g");
+  g = d3.select("#map").append("g");
   gRevues = svg.append("g");
 
   rotateMap(760);
@@ -57,13 +57,13 @@ function loadMap(){
         .enter().append("path")
         .attr("d", path)
         .attr("class","map-path")
-        .attr("stroke-width","0.3px")
-        .attr("stroke","black")
-        .attr("fill","#FAFAFA")
+        .attr("stroke-width",mapStrokeWidth)
+        .attr("stroke",strokeColor)
+        .attr("fill",mapBackground)
         .attr("opacity","0.0")
         ;
     
-    animateMap();
+    showMap(800);
 
       
     // TO CHECK: ALEX - .... les labels des pays?? oui/non.. 
@@ -81,33 +81,33 @@ function loadMap(){
   });
 }
 
-function animateMap() {
+function showMap(d) {
   d3.selectAll(".map-path").transition()
-    .duration(1000)
+    .duration(d)
     .attr("opacity",1.0)
     ;
 }
 
-function deleteMap() {
+function hideAndDeleteMap(d) {
   d3.selectAll(".map-path").transition()
-  .duration(800)
-  .attr("opacity",0.0)
-  .on("end",function(){
-    g.selectAll("*").remove();
-  })
+    .duration(d)
+    .attr("opacity",0.0)
+    .on("end",function(){
+      g.selectAll("*").remove();
+    })
   ;
 }
 
 function rotateMap(endX) {
-  projection.rotate([rotated + (endX - initX) * 360 / (s * totalWidth),0,0]);
+  projection.rotate([rotated + (endX - initX) * 360 / (s * width),0,0]);
   g.selectAll('path').attr('d', path);
   gRevues.selectAll('path').attr('d', path);
 }
 
 function zoomended(){
   if(s !== 1) return;
-  rotated = rotated + ((d3.mouse(this)[0] - initX) * 360 / (s * totalWidth));
-  rotated = rotated + ((mouse[0] - initX) * 360 / (s * totalWidth));
+  rotated = rotated + ((d3.mouse(this)[0] - initX) * 360 / (s * width));
+  rotated = rotated + ((mouse[0] - initX) * 360 / (s * width));
   mouseClicked = false;
 }  
 
@@ -121,13 +121,13 @@ function zoomed() {
   var h = 0;
 
   t[0] = Math.min(
-      (totalWidth/totalHeight)  * (s - 1), 
-      Math.max( totalWidth * (1 - s), t[0] )
+      (width/height)  * (s - 1), 
+      Math.max( width * (1 - s), t[0] )
   );
 
   t[1] = Math.min(
       h * (s - 1) + h * s, 
-      Math.max(totalHeight  * (1 - s) - h * s, t[1])
+      Math.max(height  * (1 - s) - h * s, t[1])
   );
 
   g.attr("transform", "translate(" + t + ")scale(" + s + ")");
@@ -135,7 +135,7 @@ function zoomed() {
   //g.attr("transform", "translate(" + [0,0] + ")scale(" + s + ")");
 
   //adjust the stroke width based on zoom level
-  d3.selectAll(".boundary").style("stroke-width", 0.3 / s);
+  d3.selectAll(".boundary").style("stroke-width", mapStrokeWidth / s);
 
   // adjust the triangle sizes!! TODO
 
@@ -153,19 +153,8 @@ function zoomed() {
 
 function initGeoMap(){
 
-
   createProjection();
   loadMap();
-
-  animateMap();
-  //cleanSVG();
-  startTransitionVizGeo();
-  //cleanSVG();
-
-  //var jsonData = d3.json("https://unpkg.com/world-atlas@1.1.4/world/110m.json", drawMap);    
-  //var jsonData = d3.json("maps/worldcountries.json",drawMap);
-  //var jsonData = d3.json("maps/countries.topo.json",drawMap);
-
 
 }
 

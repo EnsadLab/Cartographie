@@ -4,9 +4,113 @@ var allRevuePoly = [];
 
 function startTransitionVizGeo(){
 
-    console.log("--> startTransitionVizGeo");
+    console.log("----> START TransitionVizGeo");
+    morphVizToGeo();
+    makeNodeDisappear(1000);
+    console.log("----> END TransitionVizGeo");
 
+}
+
+
+function startTransitionGeoViz(){
+
+    console.log("----> START TransitionGeoViz");
+    hideAndDeleteMap(800);
+    morphGeoToViz();
+
+    svg.append("circle")
+            .attr("id","TODELETELINES")
+            .transition()
+            .duration(1000)
+            .on("end",function(){
+                console.log("DELETE OBJECTS END StartTransitionGeoViz");
+                startAnimNodes();
+                vizdataLoaded = true;
+                d3.selectAll(".morphpoly").remove();
+            })
+            ;
+
+    console.log("----> END TransitionGeoViz");
+}
+
+function startTransitionVizTimeline(){
+    console.log("----> START TransitionVizTimeline");
+    morphVizToTimeline();
+    makeNodeDisappear(1000);
+    console.log("----> END TransitionVizTimeline");
+}
+
+function startTransitionTimelineViz(){
+    
+}
+
+function startTransitionTimelineGeo(){
+
+}
+
+function startTransitionGeoTimeline(){
+    
+}
+
+
+
+function morphVizToGeo(){
+
+
+    loadAllRevuePoly();
+    dataRevue.forEach(function(d,i){
+
+        // get poly
+        var dPoly = allRevuePoly.find(data => data.id == "poly" + d.id).data;
+
+        // create path
+        var p = d3.select("#map").append("path")
+            .attr("id","morph"+d.id)
+            .attr("class","morphpoly")
+            .attr("fill","none")
+            .attr("stroke","black")
+            .attr("opacity",0.05)
+            .attr("d",dPoly)
+            .attr('pointer-events', 'visibleStroke')
+            .style("z-index",10)
+            ;
+
+        // get triangle
+        var offset = projection(d.locationCoords);
+        var dTri = getTrianglePath(dPoly.length,triangleEdgeLength,offset);
+
+        // POLY TO TRIANGLE MORPHING
+        p.transition()
+            .duration(getRandomInt(200,500))
+            .attr("d",dTri)
+            .ease(d3.easeQuad)
+            .delay(getRandomInt(0,600))
+            .on("start",function(){
+                d3.select(this).attr("opacity","0.05");
+                //d3.select(this).attr("opacity","1.0");
+            })
+            .attr("stroke","black")
+            .attr("opacity",1.0)
+            .on("end",function(){
+                d3.select(this).attr("fill","black");
+                d3.select(this).attr("opacity",triangleDefaultOpacity);
+            })
+            ;
+    });
+
+}
+
+function morphVizToTimeline(){
     // get all polygons
+
+    loadAllRevuePoly();
+    dataRevue.forEach(function(d,i){
+        // get triangle
+        var offset = projection(d.locationCoords);
+        var dTri = getTrianglePath(coords.length,triangleEdgeLength,offset);
+    });
+
+
     dataRevue.forEach(function(d,i){
 
         //console.log("ID???",d.id);
@@ -27,11 +131,11 @@ function startTransitionVizGeo(){
         allRevuePoly.push({id:"poly" + id, data: dPoly});
 
         // get triangle
-        var edgeLength = 15; // edge lenth du triangle
         var offset = projection(d.locationCoords);
-        var dTri = getTrianglePath(coords.length,edgeLength,offset);
+        var dTri = getTrianglePath(coords.length,triangleEdgeLength,offset);
 
-        var p = svg.append("path")
+        //var p = svg.append("path")
+        var p = d3.select("#map").append("path")
             .attr("id","morph"+id)
             .attr("class","morphpoly")
             .attr("fill","none")
@@ -40,9 +144,6 @@ function startTransitionVizGeo(){
             .attr("d",dPoly)
             .attr('pointer-events', 'visibleStroke')
             .style("z-index",10)
-            //.on("mouseover",function(){console.log("### mouseenter",d.id);showRevueOnMenu(true,d.id);})
-            //.on("mouseleave",function(){console.log("### mouseleave",d.id);showRevueOnMenu(false,d.id);})
-            //.on("click",function(){console.log("### mouseclick",d.id);startDetail(d.id);})
             ;
 
         // POLY TO TRIANGLE MORPHING
@@ -56,107 +157,19 @@ function startTransitionVizGeo(){
                 d3.select(this).attr("opacity","0.05");
                 //d3.select(this).attr("opacity","1.0");
             })
+            .attr("stroke","black")
             .attr("opacity",1.0)
             .on("end",function(){
                 d3.select(this).attr("fill","black");
+                d3.select(this).attr("opacity",triangleDefaultOpacity);
             })
             ;
-
     });
-
-
-    // make nodes disappear
-    var d = 1000;
-    for(var i=0; i<3; i++){
-        var selg = d3.select("#master"+i);
-        selg.transition()
-           // .attr("transform",'translate('+ width*0.5 + ',' + height*0.5 + ')')
-            .duration(d)
-            ;
-        var selCircle = selg.select("g").select("circle");
-        selCircle.transition()
-           // .attr("r",0)
-            .attr("opacity",0.0)
-            .duration(d)
-            ;
-        var selText = selg.select("g").select("text");
-        //console.log("seltext",selText);
-        selText.transition()
-            .attr("opacity",0.0)
-            //.attr("fill","black")
-            .duration(d)
-            ;
-    }
-
-    d = 500;
-    for(var i=0; i<nbSubNodes;i++){
-        var selg = d3.select("#sub"+i);
-            selg.transition()
-           // .attr("transform",'translate('+ 0 + ',' + 0 + ')')
-            .duration(d)
-            ;
-        var selCircle = selg.select("g").select("circle");
-        selCircle.transition()
-           // .attr("r",0)
-            .attr("opacity",0.0)
-            .duration(d)
-            ;
-        var selText = selg.select("g").select("text");
-            selText.transition()
-            //.attr("r",300)
-            .attr("opacity",0.0)
-            .attr("fill","black")
-            .duration(d)
-            ;
-    }
-    
-    d = 500;
-    for(var i=0; i<nbKeyNodes;i++){
-        var selg = d3.select("#key"+i);
-            selg.transition()
-            //.attr("transform",'translate('+ 0 + ',' + 0 + ')')
-            .duration(d)
-            ;
-        var selCircle = selg.select("g").select("circle");
-        selCircle.transition()
-          //  .attr("r",0)
-            .attr("opacity",0.0)
-            .duration(d)
-            ;
-        var selText = selg.select("g").select("text");
-        selText.transition()
-            //.attr("r",300)
-            .on("start",function(){d3.select(this).attr("opacity","0.0");}) // devrait pas etre nécessaire.... ou est le bug?
-            .duration(d)
-            .attr("opacity",0.0)
-            ;
-    }
-
-
-    var circle = svg.append("circle")
-                .attr("id","TODELETEVIZ")
-                .transition()
-                .duration(1000)
-                .on("end",function(){
-                    console.log("DELETE OBJECTS END StartTransitionVizGeo");
-                    d3.select("#master0").remove();
-                    d3.select("#master1").remove();
-                    d3.select("#master2").remove();
-                })
-                ;
-
-    console.log("----> END StartTransitionVizGeo");
-
 }
 
-
-function startTransitionGeoViz(){
-
-    console.log("startTransitionGeoViz");
-    deleteMap();
-
-    // get all polygons
-    dataRevue.forEach(function(d,i){
+function morphGeoToViz(){
+     // get all polygons
+     dataRevue.forEach(function(d,i){
 
         var id = d.id;
 
@@ -190,48 +203,60 @@ function startTransitionGeoViz(){
             ;
 
     });
+}
 
-    var circle = svg.append("circle")
-            .attr("id","TODELETELINES")
-            .transition()
-            .duration(1000)
-            .on("end",function(){
-                console.log("DELETE OBJECTS END StartTransitionGeoViz");
-                restartAnimNodes();
-                vizdataLoaded = true;
-                d3.selectAll(".morphpoly").remove();
-            })
-            ;
+function loadAllRevuePoly(){
+    dataRevue.forEach(function(d,i){
 
+        //console.log("ID???",d.id);
+        var id = d.id;
 
-    console.log("----> END StartTransitionGeoViz");
+        // get polygon
+        var s_coords = "";
+        var coords = [];
+        d.links.forEach( function(l,i){
+            //console.log("link",l);
+            var bb = d3.select("#" + l).select("g").select("circle").node().getBoundingClientRect();
+            var x = bb.x + bb.width*0.5;
+            var y = bb.y + bb.height*0.5;
+            coords.push([x,y]);
+            //s_coords += x + "," + y + " ";
+        });
+        var dPoly = "M" + coords.join("L") + "Z";
+        allRevuePoly.push({id:"poly" + id, data: dPoly});
+    });
 }
 
 function makeNodeDisappear(d){
+
+    // MASTER NODES
     for(var i=0; i<3; i++){
         var selg = d3.select("#master"+i);
-        var selCircle = selg.select("g").select("circle");
-        selCircle.transition()
+        selg.select("g").select("circle")
+            .transition()
             .attr("opacity",0.0)
             .duration(d)
             ;
     }
+    // SUB NODES
     for(var i=0; i<nbSubNodes;i++){
         var selg = d3.select("#sub"+i);
-        var selCircle = selg.select("g").select("circle");
-        selCircle.transition()
+        selg.select("g").select("circle")
+            .transition()
             .attr("opacity",0.0)
             .duration(d)
             ;
     }
+    // KEY NODES
     for(var i=0; i<nbKeyNodes;i++){
         var selg = d3.select("#key"+i);
-        var selCircle = selg.select("g").select("circle");
-        selCircle.transition()
+        selg.select("g").select("circle")
+            .transition()
             .attr("opacity",0.0)
             .duration(d)
             ;
     }
+    // TRICK FOR NOW.. in order to delete svg objects
     var circle = svg.append("circle")
                 .attr("id","TODELETEVIZ")
                 .transition()
@@ -302,6 +327,132 @@ function testMorphing60(){
     }
 }
 
+function testMorphingToRect(){
+    cleanSVG();
+  
+    // où le poly est placé
+    var xMin = 50; var xMax = 200; var yMin = 200; var yMax = 400;
+    var randomPoly = d3.range(getRandomInt(4,15)).map(function(d,i){
+            return [getRandomInt(xMin,xMax),getRandomInt(yMin,yMax)];
+          });    
+    var dPoly = "M" + randomPoly.join("L") + "Z";   
+
+    // dessine le poly en orange pour debugging
+    svg.append("path")
+    .attr("stroke","black")
+    .attr("fill","orange") // "orange"
+    .attr("d",dPoly)
+    ;
+
+    var wRect = 300;
+    var hRect = 40;
+
+    var offset = [450,300]; // offset du rectangle
+    var dRect = getRectanglePath(randomPoly.length,wRect,hRect,offset);
+
+    // dessine le rectangle en orange pour debugging
+    svg.append("path")
+        .attr("stroke","black")
+        .attr("fill","orange") // "orange"
+        .attr("d",dRect)
+        ;
+
+    // démarre l'animation
+    svg.append("path")
+      .attr("stroke","black")
+      .attr("fill","none")
+      .attr("d",dPoly)
+      .transition()
+      .duration(1000)
+      .attr("d",dRect)
+      .on("end",function(){testMorphingToRect();})
+      ;
+
+}
+
+function testMorphingToRectDEBUG(){
+
+    cleanSVG();
+  
+    // où le poly est placé
+    var xMin = 50; var xMax = 200; var yMin = 200; var yMax = 400;
+    var randomPoly = d3.range(getRandomInt(4,15)).map(function(d,i){
+            return [getRandomInt(xMin,xMax),getRandomInt(yMin,yMax)];
+          });    
+    var dPoly = "M" + randomPoly.join("L") + "Z";   
+    
+     // dessine le poly en orange pour debugging
+     svg.append("path")
+        .attr("stroke","black")
+        .attr("fill","orange") // "orange"
+        .attr("d",dPoly)
+        ;
+
+    // points
+    /* bug when adding also dots on rectangles..
+    svg.selectAll("circle")
+        .data(randomPoly)
+        .enter()
+        .append("circle")
+        .attr("cx",d => d[0])
+        .attr("cy",d => d[1])
+        .attr("r",3)
+        .attr("fill","black")
+        .attr("opacity",1.0)
+        ;*/
+
+    var wRect = 300;
+    var hRect = 40;
+
+    var offset = [450,300]; // offset du rectangle
+    //var dRect = getRectanglePath(4,wRect,hRect,offset);
+    var dRect = getRectangleArray(randomPoly.length,wRect,hRect);
+    console.log("drect",dRect);
+    var datas = dRect.map(function(pt) {pt[0] += offset[0]; pt[1] += offset[1]; return pt; });
+    var d = "M" + datas.join("L") + "Z";
+    console.log("datas",datas,datas.length);
+
+    // dessine le rectangle en orange pour debugging
+    svg.append("path")
+        .attr("stroke","black")
+        .attr("fill","orange") // "orange"
+        .attr("d",d)
+        ;
+
+    // points
+    svg.selectAll("circle")
+        .data(datas)
+        .enter()
+        .append("circle")
+        .attr("cx",d => d[0])
+        .attr("cy",d => d[1])
+        .attr("r",5)
+        .attr("fill","black")
+        .attr("opacity",1.0)
+        ;
+
+    // index label
+    svg.selectAll("text")
+        .data(datas)
+        .enter()
+        .append("text")
+        .attr("x",d => d[0])
+        .attr("y",d => d[1])
+        .text(function(d,i){ return i;})
+        ;
+
+    // démarre l'animation
+    svg.append("path")
+        .attr("stroke","black")
+        .attr("fill","none")
+        .attr("d",dPoly)
+        .transition()
+        .duration(1000)
+        .attr("d",d)
+        .on("end",function(){testMorphingToRect();})
+        ;
+}
+
 function testMorphing(){
 
     cleanSVG();
@@ -331,6 +482,8 @@ function testMorphing(){
       .attr("fill","none") // "orange"
       .attr("d",dTri)
       ;
+
+    
     
     // démarre l'animation
     svg.append("path")

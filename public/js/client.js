@@ -23,23 +23,23 @@ var scount = 0;
 var kcount = 0;
 var dataLinks = [];
 function genDatas(){
-    masterNodes.forEach(function(d,i){
-        d.id = "master"+mcount;
-        dataLinks.push({id:d.id,name:d.name});
+    masterNodes.forEach(function(dM,i){
+        dM.id = "master"+mcount;
+        dataLinks.push({id:dM.id,name:dM.name,parent:dM.id});
         mcount++;
-        d.subCategory.forEach(function(d,i){
+        dM.subCategory.forEach(function(d,i){
             d.id = "sub"+scount;
-            dataLinks.push({id:d.id,name:d.name});
+            dataLinks.push({id:d.id,name:d.name,parent:dM.id});
             scount++;
             d.keywords.forEach(function(d,i){
                 d.id = "key"+kcount;
-                dataLinks.push({id:d.id,name:d.name});
+                dataLinks.push({id:d.id,name:d.name,parent:dM.id});
                 kcount++;
             })
         })
     });
-   // console.log("dataLinks",dataLinks);
-   // console.log("masterNodes",masterNodes);
+    //console.log("dataLinks",dataLinks);
+    //console.log("masterNodes",masterNodes);
     getWeight();
 
     nbSubNodes = scount;
@@ -73,11 +73,18 @@ function getWeight(){
         allLinks = allLinks.concat(d.links);
         rcount++;
 
+        // FAKING LOCATIONS
         var fakeIndex = getRandomInt(0,8);
-        d.locationCoords = [fakeLocations[fakeIndex][0] + getRandomInt(0,40)-20,fakeLocations[fakeIndex][1] + getRandomInt(0,20)-10 ];
-        //d.locationCoords = [fakeLocations[2][0] + getRandomInt(0,50)-25,fakeLocations[2][1] + getRandomInt(0,20)-10];
+        //d.locationCoords = [fakeLocations[fakeIndex][0] + getRandomInt(0,40)-20,fakeLocations[fakeIndex][1] + getRandomInt(0,20)-10 ];
+        d.locationCoords = fakeLocations[fakeIndex];
+
+        // FAKING STARTING AND END DATE
+        var xStart = getRandomInt(1950,2000);
+        var xEnd = getRandomInt(30,50) + xStart;
+        xEnd = 2019;
+        d.time = [xStart,xEnd];
     });
-    //console.log("data",dataRevue);
+    console.log("data",dataRevue);
     allLinks.sort();
     //console.log("allLinks",allLinks);
 
@@ -95,8 +102,10 @@ function getWeight(){
                 nbCountKey += nb;
                 if(nb < kweight_min) kweight_min = nb;
                 if(nb > kweight_max) kweight_max = nb;
+                
             })
             nbCountSub += nbCountKey;
+            d.keywords.sort( compareWeight );
             if(nbCountSub < sweight_min) sweight_min = nbCountSub;
             if(nbCountSub > sweight_max) sweight_max = nbCountSub;
             //console.log("---> for sub node",d.id," occurences",nbCountSub);
@@ -108,6 +117,7 @@ function getWeight(){
         if(nbCountMaster < mweight_min) mweight_min = nbCountMaster;
         if(nbCountMaster > mweight_max) mweight_max = nbCountMaster;
         d.w = nbCountMaster;
+        d.angleOffset = 0;
     });
     //console.log("MASTER MIN MAX",mweight_min,mweight_max);
     //console.log("SUB MIN MAX",sweight_min,sweight_max);
