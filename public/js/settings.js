@@ -153,6 +153,35 @@ function clone(selector) {
     return d3.select(node.parentNode.insertBefore(node.cloneNode(true), node.nextSibling));
 }
 
+function scaleCoords(coords,d){
+    var box = getBox(coords);
+    var scaleCoords = [];
+    var newH,newW,r,offsetX,offsetY;
+    if(box.w > box.h){
+        newH = d*box.h/box.w;
+        newW = d;
+        r = d/box.w;
+        offsetX = -box.x*r;
+        offsetY = -box.y*r + (d - newH)*0.5;
+    } else if(box.h > box.w){
+        newW = d*box.w/box.h;
+        newH = d;
+        r = d/box.h;
+        offsetY = -box.y*r;
+        offsetX = -box.x*r + (d-newW)*0.5;
+    }
+    for(var i=0; i<coords.length; i++){
+        var c = coords[i].coord;
+        //console.log("c",c,r);
+        var newMinx = box.x*r;
+        var newMiny = box.y*r;
+        //scaleCoords.push([c[0]*r - newMinx,c[1]*r - newMiny]);
+        scaleCoords.push([c[0]*r + offsetX,c[1]*r + offsetY]);
+    }
+    //console.log("return coords",scaleCoords);
+    return scaleCoords;
+}
+
 
 // to test wrapping function
 function testWrap(){

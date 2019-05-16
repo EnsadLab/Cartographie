@@ -86,7 +86,7 @@ function initController(){
     startViz();
 
     d3.select("#svg").on("click", function() {
-        console.log("CLICK");
+        //console.log("CLICK");
         if(state == State.DETAIL_VIEW || (state == State.OBJ_VIEW && !startingSTARTOBJ)){
             goingBack();
         }
@@ -213,7 +213,7 @@ function startObj(id){
   
     var uniqueLinks = getArrayWithUniqueElemAndKey(result);
     //console.log("result",result);
-    console.log("uniqueLinks",uniqueLinks);
+    //console.log("uniqueLinks",uniqueLinks);
     createDashBackgroundCircles();
     var nbLinks = uniqueLinks.length;
     var min = uniqueLinks.find( d => d.id == "DATA_MIN").nb;
@@ -223,7 +223,7 @@ function startObj(id){
     var nbMaster1 = uniqueLinks.filter( d => d.parent == "master1").length;
     var nbMaster2 = uniqueLinks.filter( d => d.parent == "master2").length;
     var countMaster0 = 0; var countMaster1 = 0; var countMaster2 = 0;
-    console.log("MIN/MAX",min,max,max2);
+    //console.log("MIN/MAX",min,max,max2);
     uniqueLinks.forEach(function(d,i){
         if(d.id.startsWith("DATA")) return;
         var bb = d3.select("#"+d.id).node().getBoundingClientRect();
@@ -858,23 +858,38 @@ function loadObjMenu(id,revueConnectedToObj){
             .data(revueConnectedToObj)
             .enter()
             .append("li")
+            .attr("id",d => "thumbnail"+d.id)
             .on("mouseenter",function(d){/*console.log("### mouseenter",d);*/showObjOnMap(true,d.id);})
             .on("mouseleave",function(d){/*console.log("### mouseleave",d);*/showObjOnMap(false,d.id);})
             .on("click",function(d){/*console.log("### mouseclick",d);*/startDetail(d.id);})
             ;
 
-    //var divPoly = li.append("div").attr("class","polygone");
-    var svgPoly = li.append("div").attr("class","polygone").append("svg")
-        .attr("width",75)
-        .attr("height",75)
-        .attr("x",0)
-        .attr("y",0)
-        ;
+     //console.log("COUCOU rrevueConnectedToObjec",revueConnectedToObj);
+     for(var i=0; i<revueConnectedToObj.length;i++){
+        var revueId = revueConnectedToObj[i].id;
+        //console.log("revue",revueConnectedToObj[i]);
+        var revuePoly = allRevuePoly.find(data => data.id == "poly" + revueId);
+        //console.log("revuePoly",revuePoly);
+        var coords = revuePoly.coords;
+        var newCoords = scaleCoords(coords,75);
+        var data = "M" + newCoords.join("L") + "Z";
+        var svgPoly = d3.select("#thumbnail" + revueId)
+                        .append("div").attr("class","polygone")
+                        .append("svg")
+                        .attr("width",75)
+                        .attr("height",75)
+                        .attr("x",0)
+                        .attr("y",0);
         svgPoly.append("rect")
-        .attr("width",150)
-        .attr("height",150)
-        .attr("fill","white")
-        ;
+            .attr("width",150)
+            .attr("height",150)
+            .attr("fill","white")
+            ;
+        svgPoly.append("path")
+                .attr("d",data)
+                .attr("fill","black")
+                ;
+     }
     
     var div = li.append("div").attr("class","col-right");            
     div.append("h3").html(d => d.name);
@@ -883,7 +898,7 @@ function loadObjMenu(id,revueConnectedToObj){
 
 
 function showObjOnMap(show,id){
-    console.log("--> showObjOnMap",show,id);
+    //console.log("--> showObjOnMap",show,id);
     var revue = dataRevue.filter( function(d) { return d.id == id; })[0];
     //console.log("found revue",revue);
 
