@@ -79,7 +79,7 @@ function drawCanvas(){
             d.links.forEach( function(l,i){
         
             //console.log("link",l);
-            var bb = d3.select("#" + l).select("g").select("circle").node().getBoundingClientRect();
+            var bb = d3.select("#nodes").select("#" + l).select("g").select("circle").node().getBoundingClientRect();
             var x = bb.x + bb.width*0.5;
             var y = bb.y + bb.height*0.5;
             coords.push([x,y]);
@@ -111,6 +111,10 @@ function initSVG(){
     // .style("border", "1px solid black")
     .style("border", "none")
     ;
+
+
+    
+    
 
     /*
     var w = 500;
@@ -211,7 +215,7 @@ function init(){
 
 window.requestAnimationFrame(function(/* time */ time){
     // time ~= +new Date // the unix time
-    console.log("time",time);
+    //console.log("time",time);
 });
 
 

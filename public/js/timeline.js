@@ -5,120 +5,203 @@ var startYear = 1950;
 var endYear = 2019;
 var middleYear = 1980;
 
-var xScale;
-var timeline;
+var timelineWidth = 1200;
+var timelineHeight = 700;
+var w,h;
 
-// Data
-var dataPoints = [1955, 1970, 1985, 2010];
-var circles;
-var rectangles;
+var svgViewport;
+var innerSpace;
+var xAxisScale;
+var gX;
+
+var timelineRevues;
+
+var g;
 
 function initTimeline(){
 
-    var dims = {
-        width: 1250,
-        height: 800,
-        svg_dx: 100,
-        svg_dy: 100
-    };
-
-    // Zoom
-    var zoom = d3.zoom()
-        .extent([[dims.svg_dx, dims.svg_dy], [dims.width-(dims.svg_dx*2), dims.height-dims.svg_dy]])
-        .scaleExtent([1, 10])
-        .translateExtent([[dims.svg_dx, dims.svg_dy], [dims.width-(dims.svg_dx*2), dims.height-dims.svg_dy]])
-        .on('zoom', zoomed);
-
-    // Scale
-    xScale = d3.scaleLinear()
-        //.domain([0, 5000])
-        .domain([new Date(startYear), new Date(endYear)])
-        .range([dims.svg_dx, dims.width-(dims.svg_dx*2)]);
-
-    // Axis
-    var xAxis = d3.axisBottom(xScale);
-
-    // Main svg
-    timeline = d3.select('#timeline') // euh.. on construit un svg ds un autre.. un peu bof, non?
-        .append("svg")
-        .attr("width", dims.width)
-        .attr("height", dims.height)
-        .append("g")
-        .attr("fill","orange")
-        .attr("transform", "translate(100, 700)");
+    var svgWidth = timelineWidth;
+    var svgHeight = timelineHeight;
+    
+    var margin = {top: 30, right: 100, bottom: 50, left: 200};
+    
+    w = svgWidth - margin.left - margin.right;
+    h = svgHeight - margin.top - margin.bottom;
+    
+    var originalCircle = {"cx" : -150 ,
+                          "cy" : -15 ,
+                          "r"  : 20};
+    
+    svgViewport = d3.select("#timeline")//d3.select("body")
+      .append('svg')
+      .attr('width', svgWidth)
+      .attr('height', svgHeight)
+      ;
+     // .style("background", "red");
+    
 
     
-    var rect = timeline
-        .append("rect")
-        .attr("x", 0)
-        .attr("y", -550)//-25)
-        .attr("width", dims.width)
-        .attr("height", 550)
-        //.style("fill", "pink")
-        .style("fill", "none")
+    // create scale objects
+    xAxisScale =d3.scaleLinear()
+      //.domain([-200,-100])
+      .domain([new Date(startYear), new Date(endYear)])
+      .range([0,w]);
+
+    
+    var yAxisScale = d3.scaleLinear()
+      .domain([-10,-20])
+      .range([h,0]);
+    
+    // create axis objects
+    var xAxis = d3.axisBottom(xAxisScale);
+    var yAxis = d3.axisLeft(yAxisScale);
+
+    xAxis.tickFormat(d3.format(""));
+
+    // Zoom Function
+    var zoom = d3.zoom()
+        .on("zoom", zoomFunction);
+    
+    // Inner Drawing Space
+    innerSpace = svgViewport.append("g")
+        .attr("class", "inner_space")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
         .call(zoom);
+    
+    // append some dummy data
+    /*
+    var circles = innerSpace.append('circle')
+        .attr("id","circles")
+        .attr("cx", xAxisScale(1980))
+        .attr("cy", yAxisScale(originalCircle.cy))
+        .attr('r', originalCircle.r)
+    */
 
-
-    //loadDatas();
     loadRevues();
 
-
-    // axis
-    var axis = timeline.append("g").attr("id","axis-x");
-
-    d3.select("#axis-x").style("font-size",20)
-                        .style("font-family","latolight")
-                        ;
-
-
-    // Jump to position when loading.... 
-    startTransition(startYear,endYear);
-
-
-    function zoomed() {
-        var transform = d3.event.transform;
-
-        // Zoom the circles
-        var xNewScale = transform.rescaleX(xScale);
-
-        /*
-        circles.attr("cx", function (d) {return xNewScale(d);})
-            //.attr("cy",300)
+    svgViewport.append("rect")
+            .attr("x",0)
+            .attr("y",margin.top)
+            .attr("width",margin.left)
+            .attr("height",h)
+            .attr("fill","white")
+            .attr("opacity",1.0)
             ;
-        rectangles.attr("x", xNewScale(1980))
-            .attr("width",xNewScale(2000)-xNewScale(1980))
+
+    svgViewport.append("rect")
+            .attr("x",w + margin.left)
+            .attr("y",margin.top)
+            .attr("width",margin.left)
+            .attr("height",h)
+            .attr("fill","white")
+            .attr("opacity",1.0)
             ;
-        */
-       timelineRevues.attr("x", d => xNewScale(d.time[0]))
-                    .attr("width", d => xNewScale(d.time[1]) - xNewScale(d.time[0]))
+    
+    // Draw Axis
+    gX = innerSpace.append("g")
+        .attr("class", "axis axis--x")
+        .style("font-size",20)
+        .style("font-family","latolight")
+        .attr("transform", "translate(0," + h + ")")
+        .call(xAxis);
+    
+    /*
+    var gY = innerSpace.append("g")
+        .attr("class", "axis axis--y")
+        .call(yAxis);
+    */
+    
+    // append zoom area
+    var view = innerSpace.append("rect")
+      .attr("class", "zoom")
+      .attr("width", w)
+      .attr("height", h)
+      .call(zoom)
+    
+    function zoomFunction(){
+      // create new scale ojects based on event
+      var new_xScale = d3.event.transform.rescaleX(xAxisScale)
+      var new_yScale = d3.event.transform.rescaleY(yAxisScale)
+      //console.log(d3.event.transform)
+
+      // update rectangle revues
+      var transform = d3.event.transform;
+      var xNewScale = transform.rescaleX(xAxisScale);
+      timelineRevues.attr("x", d => xNewScale(d.time[0]))
+        .attr("width", d => xNewScale(d.time[1]) - xNewScale(d.time[0]))
+        ;
+
+      // update axes
+      gX.call(xAxis.scale(new_xScale));
+      //gY.call(yAxis.scale(new_yScale));
+    
+      // update circle
+      //circles.attr("transform", d3.event.transform)
+    
+    };
+    
+}
+
+function loadRevues(){
+    console.log("datarevues loading.....");
+    dataRevue.sort(sortRevueAccordingToStartTime);
+    y = h -15;
+    timelineRevues = innerSpace.selectAll("rect")
+                    .data(dataRevue)
+                    .enter()
+                    .append("rect")
+                    .attr("id",d => "timeline"+d.id)
+                    .attr("class","timelineRect")
+                    .attr("x",function(d){
+                        return xAxisScale(d.time[0]);
+                    })
+                    .attr("y",function(d){
+                        y -= stepBetweenBars + barHeight;
+                        return y;
+                    })
+                    .attr("width",function(d){
+                        return xAxisScale(d.time[1]) - xAxisScale(d.time[0]);
+                    })
+                    .attr("height",barHeight)
+                    .attr("fill",barColor)
+                    .attr("opacity",0.0)
                     ;
 
-        // Zoom the axis
-        xAxis.scale(xNewScale);
-        // axis.call(xAxis.tickFormat(d3.format("")).ticks(d3.timeYear));
-        axis.call(xAxis.tickFormat(d3.format("")));
-    }
-
-    function startTransition(s,e) {
-        // Position to (500, 1500) at start
-        // to jump to [500,1500] we need to calculate a new scale factor (k)...
-        var k = (xScale(endYear) - xScale(startYear)) / (xScale(e) - xScale(s));
-
-        // ...and then a translate to [500, 0]
-        var tx = dims.svg_dx - (k * xScale(s));
-
-        var t = d3.zoomIdentity.translate(tx, 0).scale(k);
-
-        // Rescale the axis
-        xAxis.scale(t.rescaleX(xScale));
-        axis.attr("transform", "translate(0,-20)")
-            .call(xAxis);
-
-        // Rescale the circles
-        rect.call(zoom.transform, t);
-    }
 }
-var timelineRevues;
+
+function showRevueRectangles(){
+    timelineRevues.transition()
+            .duration(10)
+            .delay(function(d,i){
+                //var d = i*10;
+                var d = getRandomInt(0,50)*10;
+                return d;
+            })
+            .on("end",function(d){
+                d3.select(this).attr("opacity",1.0);
+            })
+            ;
+}
+
+function hideTimeline(){
+    console.log("delete Timeline");
+    //d3.select('#timeline').select("svg").remove();
+    timelineRevues.transition()
+            .duration(10)
+            .delay(function(d,i){
+                //var d = i*10;
+                var d = getRandomInt(0,30)*10;
+                return d;
+            })
+            .on("end",function(d){
+                d3.select(this).attr("opacity",0.0);
+            })
+            ;
+    gX.transition().duration(1000).attr("opacity",0.0)
+        .on("end",function(d){
+            d3.select('#timeline').select("svg").remove();
+        });
+}
 
 function sortRevueAccordingToStartTime(a,b){
     if(a.time[0] > b.time[0]) return 1;
@@ -126,56 +209,3 @@ function sortRevueAccordingToStartTime(a,b){
     else return 0;
 }
 
-function loadRevues(){
-    console.log("datarevues loading.....");
-    dataRevue.sort(sortRevueAccordingToStartTime);
-    y = -30;
-    timelineRevues = timeline.selectAll("rect")
-                    .data(dataRevue)
-                    .enter()
-                    .append("rect")
-                    .attr("id",d => "timeline"+d.id)
-                    .attr("x",function(d){
-                        return xScale(d.time[0]);
-                    })
-                    .attr("y",function(d){
-                        y -= stepBetweenBars + barHeight;
-                        return y;
-                    })
-                    .attr("width",function(d){
-                        return xScale(d.time[1]) - xScale(d.time[0]);
-                    })
-                    .attr("height",barHeight)
-                    .attr("fill",barColor)
-                    .attr("opacity",1.0)
-                    ;
-
-}
-
-function loadDatas(){
-    circles = timeline.selectAll('circle')
-        .data(dataPoints)
-        .enter()
-        .append('circle')
-        .attr("cy",-100)
-        .attr('r', 7)
-        .attr('cx', function (d) {
-            return xScale(d);
-        });
-    var y = -50;  
-   // for(var i=0; i<100; i++){
-        var xStart = getRandomInt(1950,2020);
-        xStart = 1980;
-        var xEnd = getRandomInt(30,50) + xStart;
-        xEnd = 2000;
-        rectangles = timeline
-            .append("rect")
-            .attr("x",xScale(xStart))
-            .attr("y",y)
-            .attr("width",xScale(xEnd)-xScale(xStart))
-            .attr("height",barHeight)
-            .attr("fill",barColor)
-            ;
-        y -= 8;
-  //  }
-}

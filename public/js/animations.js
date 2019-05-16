@@ -55,24 +55,44 @@ class Anim {
       this.t = 0.0;
       this.dt = 0.0;
       this.fps = 60;
+      this.delay = 0.0;
+      this.nbFramesDelay = 0;
+      this.dtDelay = 0;
+      this.running = false;
     }
 
     update(){
-      if(this.t < 1.0){
+
+      if(this.t <= 1.0){
+         this.t += this.dtDelay;
+         if(this.t >= 1.0){
+           this.t = 0;
+           this.nbFramesDelay = 0;
+           this.running = true;
+         }
+      } 
+
+      if(this.running && this.t < 1.0){
         this.t += this.dt;
         this.alpha += this.deltaAlpha;
+      } else {
+        this.running = false;
       }
+      //console.log("alpha",this.alpha,this.nbFramesDelay,this.running,this.dtDelay,this.t);
       return this.alpha;
     }
     
-    start(alphaStart,alphaEnd,time){
+    start(alphaStart,alphaEnd,time,delay){
         this.alphaStart = alphaStart;
         this.alphaEnd = alphaEnd;
         this.alpha = this.alphaStart;
         this.nbFrames = this.fps*time;
+        this.nbFramesDelay = this.fps*delay;
+        this.dtDelay = 1.0/this.nbFramesDelay;
         this.deltaAlpha = (this.alphaEnd-this.alphaStart)/this.nbFrames;
         this.dt = 1.0/this.nbFrames;
         this.t = 0.0;
+        this.running = false;
     }
 
   };

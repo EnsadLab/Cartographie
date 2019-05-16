@@ -13,9 +13,6 @@ var scale = 1.0;
 var width = 1440;//950;
 var height = 800;
 
-
-// TO CHECK: ALEX
-
 // RADIUS min and max values
 var rmaster_min = 80 * scale;
 var rmaster_max = 300 * scale;
@@ -83,6 +80,11 @@ var barColor = "#DADADA";
 var barHeight = 5;
 var stepBetweenBars = 2;
 
+// DETAIL VIEW
+var xCenterDetailView = width/3.0;
+var yCenterDetailView = height/2.0;
+
+
 // useful general functions
 function cleanSVG(){
     d3.selectAll("svg > *").remove();
@@ -125,6 +127,19 @@ function getArrayWithUniqueElemAndKey(a){
     return result;
 }
 
+function getBox(coords){
+    var x=Number.MAX_SAFE_INTEGER;y=Number.MAX_SAFE_INTEGER;xMax=0;yMax=0; w=0,h=0;
+    coords.forEach(function(d,i){
+        var coord = d.coord;
+        if(coord[0] < x) x = coord[0];
+        if(coord[1] < y) y = coord[1];
+        if(coord[0] > xMax) xMax = coord[0];
+        if(coord[1] > yMax) yMax = coord[1];
+    })
+    w = xMax-x;
+    h = yMax-y;
+    return {x:x,y:y,xMax:xMax,yMax:yMax,w:w,h:h,cx:x+w*0.5,cy:y+h*0.5};
+}
 
 // we could use scale.linear instead....
 function mapValue(v,min,max,newMin,newMax) {
@@ -255,7 +270,7 @@ function getRectangleArray(nb,w,h){
 // useful when interpolating between an arbitrary shape of nb coordinates to a triangle
 function getTrianglePath(nb,d,offset){
     var datas = getTriangleArray(nb,d);
-    datas = datas.map(function(pt) {pt[0] += offset[0]; pt[1] += offset[1]; return pt; });
+    datas = datas.map(function(pt) {pt[0] += offset[0]-d*0.5; pt[1] += offset[1] - d*0.5; return pt; });
     var d = "M" + datas.join("L") + "Z";
     return d;
 }

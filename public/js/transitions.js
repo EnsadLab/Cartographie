@@ -15,7 +15,8 @@ function startTransitionVizGeo(){
 function startTransitionGeoViz(){
 
     console.log("----> START TransitionGeoViz");
-    hideAndDeleteMap(800);
+    //hideAndDeleteMap(800);
+    hideMap(800);
     morphGeoToViz();
 
     svg.append("circle")
@@ -26,7 +27,8 @@ function startTransitionGeoViz(){
                 console.log("DELETE OBJECTS END StartTransitionGeoViz");
                 startAnimNodes();
                 vizdataLoaded = true;
-                d3.selectAll(".morphpoly").remove();
+                d3.selectAll(".morphopoly").remove();
+                deleteMap();
             })
             ;
 
@@ -35,24 +37,160 @@ function startTransitionGeoViz(){
 
 function startTransitionVizTimeline(){
     console.log("----> START TransitionVizTimeline");
-    morphVizToTimeline();
+    morphAllVizToTimeline();
     makeNodeDisappear(1000);
+    svg.append("circle")
+            .attr("id","TODELETELINES")
+            .transition()
+            .duration(1200)
+            .on("end",function(){
+                console.log("DELETE OBJECTS END StartTransitionVizTimeline");
+                d3.selectAll(".morphopoly").remove();
+                d3.selectAll(".timelineRect").attr("opacity",1.0);
+            })
+            ;
     console.log("----> END TransitionVizTimeline");
 }
 
 function startTransitionTimelineViz(){
-    
-}
+    console.log("----> START TransitionTimelineViz");
 
-function startTransitionTimelineGeo(){
+    d3.selectAll(".timelineRect")
+                .transition()
+                .duration(1000)
+                .delay(function(d){
+                    var delay = getRandomInt(0,800);
+                    console.log("delay",delay);
+                    return delay;
+                })
+                .on("start",function(d){
+                    d3.select(this).attr("opacity",0.0);
+                })
+                ;
+    morphTimelineToViz();
 
+    svg.append("circle")
+            .attr("id","dummy")
+            .transition()
+            .duration(400)
+            .on("end",function(d){
+                animAlpha.start(0,1.0,0.5,0.0);
+                vizdataLoaded = true;
+            })
+            ;
+
+    svg.append("circle")
+            .attr("id","TODELETELINES")
+            .transition()
+            .duration(800)
+            .on("end",function(){
+                console.log("DELETE OBJECTS END StartTransitionGeoViz");
+                startAnimNodes();
+                d3.selectAll(".morphopoly").remove();
+                hideTimeline();
+            })
+            ;
+
+    console.log("----> END TransitionTimelineViz");
 }
 
 function startTransitionGeoTimeline(){
-    
+    console.log("----> START TransitionGeoTimeline");
+    //hideAndDeleteMap(800);
+    hideMap(800);
+    morphGeoToTimeline();
+    makeNodeDisappear(1000);
+    svg.append("circle")
+            .attr("id","TODELETELINES")
+            .transition()
+            .duration(1200)
+            .on("end",function(){
+                console.log("DELETE OBJECTS END StartTransitionVizTimeline");
+                d3.selectAll(".morphopoly").remove();
+                d3.selectAll(".timelineRect").attr("opacity",1.0);
+                deleteMap();
+            })
+            ;
+    console.log("----> END TransitionGeoTimeline");
 }
 
 
+function startTransitionTimelineGeo(){
+    console.log("----> START TransitionTimelineGeo");
+
+    
+    d3.selectAll(".timelineRect")
+                .transition()
+                .duration(1000)
+                .delay(function(d){
+                    var delay = getRandomInt(0,800);
+                    //console.log("delay",delay);
+                    return delay;
+                })
+                .on("start",function(d){
+                    d3.select(this).attr("opacity",0.0);
+                })
+                ;
+    morphTimelineToGeo();
+    svg.append("circle").attr("id","TODELETELINES").transition().duration(800)
+        .on("end",function(){
+            console.log("DELETE OBJECTS END startTransitionTimelineGeo");
+            //d3.selectAll(".morphopoly").remove();
+            //d3.selectAll(".timelineRect").remove();
+            hideTimeline();
+        })
+        ;
+    console.log("----> END TransitionTimelineGeo");
+}
+
+function createGeoTriPath(expectRevueId){
+
+    dataRevue.forEach(function(d,i){
+
+        // get poly
+        var revuePoly = allRevuePoly.find(data => data.id == "poly" + d.id);
+
+        // get triangle
+        var offset = projection(d.locationCoords);
+        var dTri = getTrianglePath(revuePoly.nb,triangleEdgeLength,offset);
+
+        // create path
+        var p = d3.select("#map").append("path")
+            .attr("id","morph"+d.id)
+            .attr("class",function(data){
+                if((d.id) == expectRevueId){
+                    return "morphPolyDetailToTriGeo";
+                }else{
+                    return "morphopoly";
+                }
+            })
+            .attr("fill","black")
+            .attr("opacity",0.0)
+            .attr("stroke","black")
+            .attr("stroke-opacity",0.0)
+            .attr("d",dTri)
+            ;
+    });
+
+    
+    d3.selectAll(".morphopoly").transition()
+            .duration(1000)
+            .delay(function(d,i){
+                var d = i*100;
+                //return d;
+                return 100;
+            })
+            .attr("stroke-opacity",1.0)
+            .attr("opacity",triangleDefaultOpacity)
+            //.attr("fill","orange")
+            ;
+
+}
+
+function createTimelineRectPath(){
+
+    
+}
 
 function morphVizToGeo(){
 
@@ -61,23 +199,34 @@ function morphVizToGeo(){
     dataRevue.forEach(function(d,i){
 
         // get poly
-        var dPoly = allRevuePoly.find(data => data.id == "poly" + d.id).data;
+        var revuePoly = allRevuePoly.find(data => data.id == "poly" + d.id);
 
         // create path
         var p = d3.select("#map").append("path")
             .attr("id","morph"+d.id)
-            .attr("class","morphpoly")
+            .attr("class","morphopoly")
             .attr("fill","none")
             .attr("stroke","black")
             .attr("opacity",0.05)
-            .attr("d",dPoly)
+            .attr("d",revuePoly.data)
             .attr('pointer-events', 'visibleStroke')
             .style("z-index",10)
             ;
 
         // get triangle
         var offset = projection(d.locationCoords);
-        var dTri = getTrianglePath(dPoly.length,triangleEdgeLength,offset);
+        if(d.id == "revue0") console.log("coords",d.locationCoords,offset);
+        var dTri = getTrianglePath(revuePoly.nb,triangleEdgeLength,offset);
+
+        /* DEBUG - to show the coordinates
+        d3.select("#map").append("circle")
+                    .attr("cx",offset[0])
+                    .attr("cy",offset[1])
+                    .attr("r",20)
+                    .attr("fill","orange")
+                    .attr("opacity",0.1)
+                    ;
+        */
 
         // POLY TO TRIANGLE MORPHING
         p.transition()
@@ -100,55 +249,138 @@ function morphVizToGeo(){
 
 }
 
-function morphVizToTimeline(){
+function morphAllVizToTimeline(){
+    
     // get all polygons
-
     loadAllRevuePoly();
-    dataRevue.forEach(function(d,i){
-        // get triangle
-        var offset = projection(d.locationCoords);
-        var dTri = getTrianglePath(coords.length,triangleEdgeLength,offset);
-    });
-
 
     dataRevue.forEach(function(d,i){
+        // get poly
+        var revuePoly = allRevuePoly.find(data => data.id == "poly" + d.id);
 
-        //console.log("ID???",d.id);
-        var id = d.id;
 
-        // get polygon
-        var s_coords = "";
-        var coords = [];
-        d.links.forEach( function(l,i){
-            //console.log("link",l);
-            var bb = d3.select("#" + l).select("g").select("circle").node().getBoundingClientRect();
-            var x = bb.x + bb.width*0.5;
-            var y = bb.y + bb.height*0.5;
-            coords.push([x,y]);
-            //s_coords += x + "," + y + " ";
-        });
-        var dPoly = "M" + coords.join("L") + "Z";
-        allRevuePoly.push({id:"poly" + id, data: dPoly});
-
-        // get triangle
-        var offset = projection(d.locationCoords);
-        var dTri = getTrianglePath(coords.length,triangleEdgeLength,offset);
-
-        //var p = svg.append("path")
-        var p = d3.select("#map").append("path")
-            .attr("id","morph"+id)
-            .attr("class","morphpoly")
+        // create path
+        var p = d3.select("#timeline").append("path")
+            .attr("id","morph"+d.id)
+            .attr("class","morphopoly")
             .attr("fill","none")
             .attr("stroke","black")
             .attr("opacity",0.05)
-            .attr("d",dPoly)
+            .attr("d",revuePoly.data)
             .attr('pointer-events', 'visibleStroke')
             .style("z-index",10)
             ;
 
-        // POLY TO TRIANGLE MORPHING
+        // get Rectangle
+        var revueRect = d3.select("#timeline" + d.id); 
+        if(revueRect.node() == null){
+            console.log("DEBUG: revuerect with ID #timeline" + d.id + " could not be FOUND");
+            return;
+        }
+        var bb = revueRect.node().getBoundingClientRect();
+        var x = bb.x + bb.width*0.5;
+        var y = bb.y + bb.height*0.5;
+        var offset = [bb.x,bb.y];
+        var dRect = getRectanglePath(revuePoly.nb,bb.width,barHeight,offset);
+
+        // POLY TO RECTANGLE MORPHING
         p.transition()
-            //.duration(1000)
+            .duration(getRandomInt(200,500))
+            .attr("d",dRect)
+            .ease(d3.easeQuad)
+            .delay(getRandomInt(0,600))
+            .on("start",function(){
+                d3.select(this).attr("opacity","0.05");
+            })
+            .attr("stroke","black")
+            .on("end",function(){
+                d3.select(this).attr("fill",barColor);
+                d3.select(this).attr("opacity",1.0);
+                d3.select(this).attr("stroke","none")
+            })
+            ;
+    });
+}
+
+function morphGeoToTimeline(){
+    dataRevue.forEach(function(d,i){
+
+        // get poly - no need to reload the allRevuePoly datas
+        var revuePoly = allRevuePoly.find(data => data.id == "poly" + d.id);
+
+        // get exisiting poly TRIANGLE path
+        var mPath = d3.select("#morph" + d.id);
+
+        // get Rectangle
+        var revueRect = d3.select("#timeline" + d.id); 
+        if(revueRect.node() == null){
+            console.log("DEBUG: revuerect with ID #timeline" + d.id + " could not be FOUND");
+            return;
+        }
+        var bb = revueRect.node().getBoundingClientRect();
+        var x = bb.x + bb.width*0.5;
+        var y = bb.y + bb.height*0.5;
+        var offset = [bb.x,bb.y];
+        var dRect = getRectanglePath(revuePoly.nb,bb.width,barHeight,offset);
+
+
+        // Start MORPHING from triangle TO rect 
+        mPath.transition()
+            .duration(getRandomInt(200,500))
+            .attr("d",dRect)
+            .ease(d3.easeQuad)
+            .delay(getRandomInt(0,600))
+            .on("start",function(){
+                d3.select(this).attr("fill","none");
+                d3.select(this).attr("opacity","0.5");
+            })
+            .attr("stroke","black")
+            .on("end",function(){
+                d3.select(this).attr("fill",barColor);
+                d3.select(this).attr("opacity",1.0);
+                d3.select(this).attr("stroke","none")
+            })
+            ;
+
+    });
+}
+
+function morphTimelineToGeo(){
+    dataRevue.forEach(function(d,i){
+
+        // get poly - no need to reload the allRevuePoly datas
+        var revuePoly = allRevuePoly.find(data => data.id == "poly" + d.id);
+
+        // get Rectangle
+        var revueRect = d3.select("#timeline" + d.id); 
+        if(revueRect.node() == null){
+            console.log("DEBUG: revuerect with ID #timeline" + d.id + " could not be FOUND");
+            return;
+        }
+        var bb = revueRect.node().getBoundingClientRect();
+        var x = bb.x + bb.width*0.5;
+        var y = bb.y + bb.height*0.5;
+        var offset = [bb.x,bb.y];
+        var dRect = getRectanglePath(revuePoly.nb,bb.width,barHeight,offset);
+
+         // create path
+         var p = d3.select("#map").append("path")
+            .attr("id","morph"+d.id)
+            .attr("class","morphopoly")
+            .attr("fill","none")
+            .attr("stroke","black")
+            .attr("stroke-opacity",0.4) //0.03
+            .attr("d",dRect)
+            .attr('pointer-events', 'visibleStroke')
+            .style("z-index",10)
+            ;
+
+        // get triangle
+        var offset = projection(d.locationCoords);
+        var dTri = getTrianglePath(revuePoly.nb,triangleEdgeLength,offset);
+
+        // RECT TO TRIANGLE MORPHING
+        p.transition()
             .duration(getRandomInt(200,500))
             .attr("d",dTri)
             .ease(d3.easeQuad)
@@ -164,32 +396,23 @@ function morphVizToTimeline(){
                 d3.select(this).attr("opacity",triangleDefaultOpacity);
             })
             ;
+
     });
 }
 
 function morphGeoToViz(){
-     // get all polygons
-     dataRevue.forEach(function(d,i){
 
-        var id = d.id;
+    // get all polygons
+    loadAllRevuePoly();
 
-        // get polygon
-        var s_coords = "";
-        var coords = [];
-        d.links.forEach( function(l,i){
-            //console.log("link",l);
-            var bb = d3.select("#" + l).select("g").select("circle").node().getBoundingClientRect();
-            var x = bb.x + bb.width*0.5;
-            var y = bb.y + bb.height*0.5;
-            coords.push([x,y]);
-            //s_coords += x + "," + y + " ";
-        });
-        var dPoly = "M" + coords.join("L") + "Z";
+    dataRevue.forEach(function(d,i){
+        // get poly
+        var revuePoly = allRevuePoly.find(data => data.id == "poly" + d.id);
 
-        //console.log("dpoly",dPoly);
+        // get exisiting poly TRIANGLE path
+        var mPath = d3.select("#morph" + d.id);
 
-        var mPath = d3.select("#morph" + id);
-        //console.log("id","morph"+id);
+        // start MORPHING triangle to poly
         mPath.transition()
             .delay(getRandomInt(0,500))
             .duration(800)
@@ -197,15 +420,64 @@ function morphGeoToViz(){
             .on("start",function(){
                 d3.select(this).attr("opacity",0.5);
             })
-            //.on("end",function(){})
             .attr("opacity",0.0)//0.03
-            .attr("d",dPoly)
+            .attr("d",revuePoly.data)
+            ;
+    });
+
+}
+
+function morphTimelineToViz(){
+    // get all polygons
+    loadAllRevuePoly();
+
+    dataRevue.forEach(function(d,i){
+        // get poly
+        var revuePoly = allRevuePoly.find(data => data.id == "poly" + d.id);
+
+        // get Rectangle
+        var revueRect = d3.select("#timeline" + d.id); 
+        if(revueRect.node() == null){
+            console.log("DEBUG: revuerect with ID #timeline" + d.id + " could not be FOUND");
+            return;
+        }
+        var bb = revueRect.node().getBoundingClientRect();
+        var x = bb.x + bb.width*0.5;
+        var y = bb.y + bb.height*0.5;
+        var offset = [bb.x,bb.y];
+        var dRect = getRectanglePath(revuePoly.nb,bb.width,barHeight,offset);
+
+         // create path
+         var p = d3.select("#timeline").append("path")
+            .attr("id","morph"+d.id)
+            .attr("class","morphopoly")
+            .attr("fill","none")
+            .attr("stroke","black")
+            .attr("stroke-opacity",0.03)
+            .attr("d",dRect)
+            .attr('pointer-events', 'visibleStroke')
+            .style("z-index",10)
             ;
 
+        //console.log("revuePoly",revuePoly.data);
+        // start MORPHING Rectangle to poly
+        p.transition()
+            .delay(getRandomInt(0,500))
+            .duration(800)
+            .attr("fill","none")
+            .on("start",function(){
+                d3.select(this).attr("opacity",0.5);
+                d3.select(this).attr("stroke-opacity",0.4);
+            })
+            .attr("opacity",0.03)//0.03
+            .attr("d",revuePoly.data)
+            ;
     });
 }
 
 function loadAllRevuePoly(){
+
+    allRevuePoly = [];
     dataRevue.forEach(function(d,i){
 
         //console.log("ID???",d.id);
@@ -214,16 +486,31 @@ function loadAllRevuePoly(){
         // get polygon
         var s_coords = "";
         var coords = [];
+        var coordsData = [];
         d.links.forEach( function(l,i){
             //console.log("link",l);
-            var bb = d3.select("#" + l).select("g").select("circle").node().getBoundingClientRect();
+            var bb = d3.select("#nodes").select("#" + l).select("g").select("circle").node().getBoundingClientRect();
             var x = bb.x + bb.width*0.5;
             var y = bb.y + bb.height*0.5;
             coords.push([x,y]);
+            coordsData.push({coord:[x,y],link:l});
             //s_coords += x + "," + y + " ";
         });
+        if(coords.length < 4){
+            var nbMin = 4;
+            var index = coords.length;
+            if(coords.length >= 1){
+                while(index < nbMin){
+                    coords.push(coords[0]);
+                    index++;
+                }
+            }else {
+                console.log("DEBUG:---- coords == 0 ???")
+            }
+            
+        }
         var dPoly = "M" + coords.join("L") + "Z";
-        allRevuePoly.push({id:"poly" + id, data: dPoly});
+        allRevuePoly.push({id:"poly" + id, data: dPoly, nb: coords.length, coords: coordsData});
     });
 }
 

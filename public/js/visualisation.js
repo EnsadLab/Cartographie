@@ -61,7 +61,7 @@ function createMasterNodes(){
         d3.select(this).style("cursor", "default");
       })
       .on("click",function(d){
-        console.log("### mouseclick",d.id);
+        console.log("### mouseclick !!!!!!",d.id);
         startObj(d.id);
       })
       ; 
@@ -255,7 +255,7 @@ var animVizRunning = false;
 
 function startAnimNodes(){
 
-  console.log("start anim");
+  //console.log("start anim");
   masterAnims = [];
   subAnims = [];
   keyAnims = [];
@@ -336,6 +336,8 @@ function loadVisualisation(){
     svg.append("g").attr("id","map");
     svg.append("g").attr("id","map-nodes");
     svg.append("g").attr("id","timeline");
+    svg.append("g").attr("id","detail-nodes");
+    
 }
 
 
@@ -344,7 +346,8 @@ function initVisualisation(){
   if(!vizdataLoaded){
     animVizRunning = false;
     createMasterNodes();
-    console.log("finished viz initialisation");
+    loadAllRevuePoly();
+    console.log("finished init visualisation");
   }
 
 }

@@ -84,7 +84,7 @@ function getWeight(){
         xEnd = 2019;
         d.time = [xStart,xEnd];
     });
-    console.log("data",dataRevue);
+    //console.log("data",dataRevue);
     allLinks.sort();
     //console.log("allLinks",allLinks);
 
