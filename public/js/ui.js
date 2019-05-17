@@ -881,9 +881,9 @@ function loadObjMenu(id,revueConnectedToObj){
                         .attr("x",0)
                         .attr("y",0);
         svgPoly.append("rect")
-            .attr("width",150)
-            .attr("height",150)
-            .attr("fill","white")
+            .attr("width",75)
+            .attr("height",75)
+            .attr("fill","none")
             ;
         svgPoly.append("path")
                 .attr("d",data)

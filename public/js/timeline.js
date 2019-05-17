@@ -85,7 +85,7 @@ function initTimeline(){
             .attr("width",margin.left)
             .attr("height",h)
             .attr("fill","white")
-            .attr("opacity",1.0)
+            .attr("opacity",0.0)
             ;
 
     svgViewport.append("rect")
@@ -94,7 +94,7 @@ function initTimeline(){
             .attr("width",margin.left)
             .attr("height",h)
             .attr("fill","white")
-            .attr("opacity",1.0)
+            .attr("opacity",0.0)
             ;
     
     // Draw Axis
