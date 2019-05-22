@@ -1,3 +1,17 @@
+var testRevue = {
+	//id: "revue0",
+	keywords: [ 
+		"Fine Arts",
+		"Literature",
+		"Filmmaking",
+		"Science and Technology Studies"
+	],
+
+	//links: ["sub1", "sub6", "sub5", "key26"], // généré par cécile
+	locationCoords: [121, 31], // A RAJOUTER
+	name: "Alliage ",
+	time: [1977, 2019] // A RAJOUTER
+}
 
 
 var dataRevue = [

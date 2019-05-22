@@ -86,12 +86,43 @@ function initController(){
     // start visualisation
     startViz();
 
+    // if(state == State.DETAIL_VIEW){
+
+    // }
+    
+
     d3.select("#svg").on("click", function() {
         //console.log("CLICK");
         if(state == State.DETAIL_VIEW || (state == State.OBJ_VIEW && !startingSTARTOBJ)){
             goingBack();
         }
     });
+}
+
+
+function toggleControllerDetails(show){
+    if(show){
+         d3.select("#svg").on("mouseover", function() {
+            d3.selectAll(".back-btn").style("opacity",1);
+            d3.select(this).style("cursor", "pointer");
+        });
+
+        d3.select("#svg").on("mouseout", function() {
+            d3.selectAll(".back-btn").style("opacity",0);
+            d3.select(this).style("cursor", "default");
+        });
+    }else{// removeLitener
+        d3.select("#svg").on("mouseover", null);
+        d3.select("#svg").on("mouseover", function(){
+            d3.select(this).style("cursor", "default");
+        });
+
+        d3.select("#svg").on("mouseout", null);
+        d3.select("#svg").on("mouseout", function(){});
+    }
+
+    console.log(show);
+   
 }
 
 
@@ -434,6 +465,7 @@ function startObj(id){
     // show ui elements
     loadObjMenu(id,revueConnectedToObj);
     showObjMenu(true);
+    toggleControllerDetails(true);
 }
 
 function createDashBackgroundCircles(){
@@ -469,6 +501,10 @@ function createDashBackgroundCircles(){
 }
 
 
+
+
+
+
 function startDetail(revueId){
     console.log("--> startDetail",revueId);
     if(state == State.DETAIL_VIEW) return;
@@ -480,6 +516,7 @@ function startDetail(revueId){
 
     if(previousState == State.VIZ_VIEW){
         loadAllRevuePoly();
+
     }
 
     // hide ui elements
@@ -509,6 +546,8 @@ function startDetail(revueId){
         popupObjectLinked(500,300);
         makeNodeDisappear(500);
         animAlpha.start(1.0,0.0,0.5);
+        d3.selectAll(".back-btn").html("Fields");
+
     } else if(previousState == State.GEO_VIEW){
         morphTriGeoToPolyDetail(revueId,500,trans);
         d3.select("#detail-obj-nodes").attr("transform","translate("+ trans[0] + "," + trans[1] + ")");
@@ -517,23 +556,31 @@ function startDetail(revueId){
         hideAndDeleteMap(800);
         //hideMap(800);
         fadeAndDeleteTriangles(800);
+        d3.selectAll(".back-btn").html("Geographic");
+
     } else if(previousState == State.TIMELINE_VIEW){
         morphRectToPolyDetail(revueId,500,trans);
         d3.select("#detail-obj-nodes").attr("transform","translate("+ trans[0] + "," + trans[1] + ")");
         d3.select("#text-detail-nodes").attr("transform","translate("+ trans[0] + "," + trans[1] + ")");
         popupObjectLinked(500,300);
         makeTimelineDisappear(0);
+        d3.selectAll(".back-btn").html("Chronologic");
     } else if(previousState == State.OBJ_VIEW){
         // TODO
         morphObjToDetail(currentRevueId,trans);
         //d3.select("#detail-obj-nodes").attr("transform","translate("+ trans[0] + "," + trans[1] + ")");
         //popupObjectLinked(500,300);
         hideAndDeleteObjView(500);
+        d3.selectAll(".back-btn").html("Fields");
+
     }
 
     // show ui elements
     loadDetailRevue(revueId);
     showRevueDetail(true);
+
+    toggleControllerDetails(true);
+
 }
 
 function cloneObjectLinkedToDetail(revueId,trans){
@@ -767,13 +814,28 @@ function showLabel(show,id){
 
 function goingBack(){
     if(state == State.DETAIL_VIEW){
-        if(previousState == State.VIZ_VIEW) startViz();
-        else if(previousState == State.GEO_VIEW) startGeo();
-        else if(previousState == State.TIMELINE_VIEW) startTimeline();
-        else if(previousState == State.OBJ_VIEW) startViz();
+        toggleControllerDetails(false);
+        if(previousState == State.VIZ_VIEW) {
+            startViz(); 
+        }
+        else if(previousState == State.GEO_VIEW) {
+            startGeo(); 
+        }
+        else if(previousState == State.TIMELINE_VIEW) {
+            startTimeline(); 
+        }
+        else if(previousState == State.OBJ_VIEW) {
+            startViz(); 
+        }
     }else if(state == State.OBJ_VIEW){
-        startViz();
+        {
+            startViz(); 
+            toggleControllerDetails(false);
+
+        }
     }
+
+
 }
 
 
@@ -962,7 +1024,7 @@ function createMenu(){
         if(letter != previousLetter){
             d3.select("#menulist")
                     .append("li")
-                    .append("h3")
+                    // .append("h3")
                     .attr("class","letter")
                     .html(letter);
         }
@@ -978,6 +1040,9 @@ function createMenu(){
                 .html(d.name);
         previousLetter = letter;
     });
+
+    // Search engine
+    var hackerList = new List('menu', options);
 }
 
 /*
@@ -1154,6 +1219,7 @@ function loadDetailRevue(id){
                     .append("a")//.remove();
                     .html(function(d){return d;})
                     ;*/
+
 }
 
 function updateUI(){
@@ -1187,7 +1253,7 @@ var options = {
     valueNames: [ 'revue-title' ]
 };
 
-var hackerList = new List('menu', options);
+
 
 
 
@@ -1202,21 +1268,39 @@ function changeColor(enter){
 }
 // Display Form
 
-var addBTN = document.getElementById("add-journal")
+var addBTN = document.getElementById("add-journal");
+var layerClose = document.getElementsByClassName("layer-close")[0];
 var form =  document.getElementsByClassName("add-revue-form")[0];
-var open = false
+var open = false;
 
+layerClose.addEventListener("click", function(){
+    showFormRevue(false);
+});
 
 addBTN.addEventListener("click", function(){
 
-	if(open === false){
-		form.className = "add-revue-form active";	
-		open = true;
-	}else{
-		form.className = "add-revue-form";	
-		open = false;
-	}
+    if(open){
+        showFormRevue(false); 
+    }else{
+        showFormRevue(true);
+
+    }
 	
-})
+});
+
+
+
+
+function showFormRevue(show){
+    if(show){
+        form.className = "add-revue-form active"; 
+        layerClose.className = "layer-close active"; 
+        open = true;
+    }else{
+        form.className = "add-revue-form";  
+        layerClose.className = "layer-close";
+        open = false;
+    }
+}
 
 

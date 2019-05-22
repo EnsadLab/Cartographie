@@ -1,8 +1,8 @@
 // LESS to CSS
-body{
-	// background:rgba(black,0.1);
+// body{
+// 	background:rgba(black,0.1);
 
-}
+// }
 
 
 // Fonts
@@ -23,6 +23,8 @@ body{
 
 
 @green :rgb(0, 150, 91);
+
+
 
 #nav-menu{
 	text-align: center;
@@ -85,16 +87,16 @@ body{
 		background: rgba(white, 0.6);
 		margin: 5px 0px;
 		list-style-type: none;
-		padding:20px 20px 18px 0px;
+		padding:20px 20px 18px 20px;
 		color: black;
 		backdrop-filter:blur(5px);
-		border:none;
-		width: calc(68% + 20px);
+		border:1px solid black;
+		width: 65%;
     	margin-left: 40px;
     	background-image:url(../assets/ico_search.png);
     	background-size: 25px 25px;
     	background-repeat: no-repeat;
-    	background-position: 97% 15px;
+    	background-position: 95% 15px;
 
 
 
@@ -105,7 +107,6 @@ body{
 			filter:invert(1);
     		border-radius: 3px;
 			padding:20px 20px 18px 20px;
-			width: calc(68%);
     		backdrop-filter:none;
 
     	}
@@ -129,6 +130,8 @@ body{
 				font-size: 10px;
 				font-weight: none;
 				margin:0px;
+				hyphens: auto;
+				word-break: break-word;
 			}
 
 			&:hover{
@@ -139,6 +142,7 @@ body{
 					line-height:22px;
 					font-size: 16px;
 					font-weight: none;
+					hyphens: auto;
 				}
 
 			}
@@ -185,6 +189,23 @@ body{
 
 
 .form-revue{
+
+	.layer-close{
+		position:fixed;
+		top:0px;
+		z-index:100;
+		background:rgba(black, 0.3);
+		right: 0;
+	    width: 0vw;
+	    height: 0vh;
+	    cursor:pointer;
+
+	    &.active{
+			width: 45vw;
+	    	height: 100vh;	    	
+	    }
+	}
+
 	.add-btn{
 		background-image:url(../assets/ico_add.png);
 		background-size: 29.5px 29.5px;
@@ -221,7 +242,7 @@ body{
 		z-index:100;
 
 		&.active{
-			width:100%;
+			width:55vw;
 			height: 100vh;
 			font-family:@text_reg;
 			background:rgba(black, 0.3);
@@ -229,7 +250,8 @@ body{
 			form{
 				opacity:1;
 		    	z-index:10;
-		    	width:768px;
+		    	// width:768px;
+		    	width:100%;
 
 
 			}
@@ -441,66 +463,123 @@ body{
 }
 
 .journal-info{
-	position:absolute;
-	width:calc(30% - 20px);
-	min-width:500px;
-	top: 15%;
-	left:calc(60% + 20px);
 
-	h2{
-		width:80%;
-		font-family: @title_regular;
-		line-height:35px;
-		font-size: 32px;
-		font-weight: none;
-	}
+	// .bg-art, .bg-sc, .bg-sh{
+	// 	width:100vw;
+	// 	height:100vh;
+	// 	position:fixed;
+	// 	left:0px;
+	// 	top:0px;
+	// 	opacity:0.1;
+	// 	z-index:-1;
+	// }
+	
+	// .bg-art{
+	// 	background: linear-gradient(to bottom, rgba(0,163,245,1) 0%,rgba(0,163,245,0) 50%);	
+	// }
 
-	h4{
-		font-family:@text_reg;
-		font-size: 14px;
-	}
+	// .bg-sc{
+	// 	background: linear-gradient(135deg, rgba(249,64,94,0) 50%,rgba(249,64,94,1) 100%);
+	// }
 
-	p{
-		font-family:@text_light;
-		font-size: 16px;
-		margin-bottom: 0px;
-	}
+	// .bg-sh{
+	// 	background: linear-gradient(45deg, rgba(103,72,144,1) 0%,rgba(103,72,144,0) 50%);
+	// }
 
-	.source a{
-		display:block;
-		font-style: italic;
-		margin-top:0px;
-		font-size: 10px;
-		color:blue;
-		margin-bottom: 20px;
-	}
 
-	.keywords{
-		a{
-			font-family:@text_light;
+	.content{
+		position:absolute;
+		width:30vw;
+		top: 15vh;
+		left:60vw;
+		padding:15px;
+		background:rgba(white, 0.7);
+		backdrop-filter:blur(5px);
+
+		h2{
+			width:80%;
+			font-family: @title_regular;
+			line-height:40px;
+			font-size: 32px;
+			font-weight: none;
+			margin: 15px 0;
+			hyphens: auto;
+		}
+
+		h4{
+			font-family:@text_reg;
 			font-size: 14px;
-			color:rgba(black, 0.8);
-			text-decoration: none;
-			display:inline-block;
+		}
 
-			&:hover{
-				color:rgba(black, 1);
-			}
+		p{
+			font-family:@text_light;
+			font-size: 16px;
+			margin-bottom: 0px;
+		}
 
-			&:active{
-				transform: scale(0.98);
-				transition: all 200ms ease-in;
+		.source a{
+			display:block;
+			font-style: italic;
+			margin-top:0px;
+			font-size: 10px;
+			color:blue;
+			margin-bottom: 20px;
+		}
+
+		.keywords{
+			a{
+				font-family:@text_light;
+				font-size: 14px;
+				color:rgba(black, 0.8);
+				text-decoration: none;
+				display:inline-block;
+
+				&:hover{
+					color:rgba(black, 1);
+				}
+
+				&:active{
+					transform: scale(0.98);
+					transition: all 200ms ease-in;
+				}
 			}
 		}
 	}
+	
+}
+
+.back-btn{
+	position:fixed;
+	left:10vw;
+	top:calc(15% + 30px);
+	opacity:0;
+	transition: opacity 200ms ease-out;
+	z-index:-1;
+
+	&:before{
+		content:" ";
+		display:inline-block;
+		background-image:url(../assets/ico_back.png);
+		width:15px;
+		height:15px;
+		position: relative;
+    	left: -3px;
+    	top: 2px;
+		background-size:cover;
+		background-position:center;
+		background-repeat:no-repeat;
+
+	}
+	
+
 }
 
 .objects{
 	width:calc(30% - 20px);
-	min-width:500px;
+	min-width:400px;
 	top: 40px;
 	position:fixed;
-    right: 15px;
+    right: 0px;
     max-height: calc(100vh - 40px);
     overflow: scroll;
 
@@ -508,51 +587,64 @@ body{
 		width:80%;
 		font-family: @text_bold;
 		line-height:35px;
-		font-size: 32px;
+		font-size: 18px;
 		font-weight: none;
+		hyphens: auto;
+
+		span{
+			color:grey;
+			font-size: 32px;
+			display:block;
+		}
 	}
 
 	ul{
 		padding:0px;
 		li{
 			list-style-type: none;
-			width:100%;
+			width:90%;
+			padding:10px;
 			float:left;
-			margin-bottom:10px;
-			border-radius: 3px;
+			margin-top:10px;
+			border-radius: 0px;
 			background: rgba(white, 0.6);
 			backdrop-filter:blur(5px);
 			overflow:hidden;
 			cursor:pointer;
+			border-bottom:1px solid rgba(black, 0.1);
+
+			&:last-child{
+				margin-bottom:100px;
+			}
 
 
 
 			.polygone{
 				width:75px;
 				height:75px;
-				background:grey;
-				float:left;
+				display:inline;
 
-				// svg{
-				// 	display:none;
-				// }
 			}
 			
 			.col-right{
-				float: left;
-				margin-left:10px;
-				width:65%;
+				display:inline-block;
+				margin-left:20px;
+				width:55%;
 				h3{
 					font-family: @title_regular;
-					line-height:18px;
-					font-size: 12px;
+					line-height: 28px;
+					font-size: 18px;
+				    height: 69px;
+				    vertical-align: middle;
+				    display: table-cell;
 					font-weight: none;
+					hyphens: auto;
 				}
 
 				.keywords{
 					a{
 						font-family:@text_light;
-						font-size: 14px;
+						font-size: 18px;
 						color:rgba(black, 0.8);
 						text-decoration: none;
 						display:inline-block;
@@ -572,6 +664,13 @@ body{
 			&:hover{
 				background: rgba(black, 1);
 				color: white;
+				border-radius: 3px;
+
+				svg{
+					path{
+						fill:white;
+					}
+				}
 
 				.keywords{
 					a{
