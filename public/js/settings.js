@@ -9,29 +9,32 @@ var Science_Color = "#F8405E";
 //var debug_mode = false;
 
 // SIZES
-var scale = 1.0;
-var width = 1440;//950;
-var height = 800;
+var scale = 1;
+// var width = 1440 * scale;//950;
+// var height = 900 * scale;
+
+var width = window.innerWidth;//950;
+var height = window.innerHeight * scale;
 
 // RADIUS min and max values
-var rmaster_min = 80 * scale;
-var rmaster_max = 300 * scale;
-var rsub_min = 4 * scale;
-var rsub_max = 30 * scale;
-var rkey_min = 3 * scale;
-var rkey_max = 10 * scale;
+var rmaster_min = 100 * scale;//80
+var rmaster_max = 400 * scale;//300
+var rsub_min = 5 * scale;//4
+var rsub_max = 40 * scale;//30
+var rkey_min = 2 * scale;//3
+var rkey_max = 20 * scale;//10
 
 // Radius distance where sub categories are drawn respect to their master node
-var rmaster_sub = 120 * scale;
+var rmaster_sub = 160 * scale;//120
 // Radius distance where keywords are drawn respect to their sub category
-var rsub_keyword = 20 * scale;
+var rsub_keyword = 30 * scale;//20
 
 // BUBBLES look
 // subcategories
 var sub_strokeWidthMin = 4 * scale;
 var sub_strokeWidthMax = 15 * scale;
 var sub_minTrans = 0.1;
-var sub_maxTrans = 0.4;
+var sub_maxTrans = 0.6;//0.4
 // keywords
 var key_minTrans = 0.2;
 var key_maxTrans = 1.0;
@@ -52,8 +55,8 @@ var subTextLength = 50;
 var subLineHeight = 15;
 
 // OBJ VIEW
-var defaultObjectOpacity = 0.5;
-var minObjectOpacity = 0.3;
+var defaultObjectOpacity = 0.7;
+var minObjectOpacity = 0.1;
 var maxObjectOpacity = 1.0;
 var xCenterObjView = width/3.0;
 var yCenterObjView = height/2.0;
@@ -63,7 +66,7 @@ var secondRadius = 200;
 var thirdRadius = 300;
 var radiusOpacity = 0.2;
 var dasharrayNB = 6;
-var radiusObject = 10; 
+var radiusObject = 12; 
 var rMinObject = 100;
 var rMaxObject = 300;
 
@@ -71,9 +74,9 @@ var rMaxObject = 300;
 var triangleDefaultOpacity = 0.1;
 var triangleEdgeLength = 20; // edge lenth du triangle
 var triangleHightlighted = 30;
-var mapBackground = "#FAFAFA";
-var mapStrokeWidth = 0.3;
-var strokeColor = "black";
+var mapBackground = "#E5F6FE";
+var mapStrokeWidth = 0;
+var strokeColor = "white";
 
 // TIMELINE
 var barColor = "#DADADA";
