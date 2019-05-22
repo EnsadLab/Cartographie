@@ -10,8 +10,8 @@ var Science_Color = "#F8405E";
 
 // SIZES
 var scale = 1.0;
-var width = 1440;//950;
-var height = 800;
+var width = 1440 * scale;//950;
+var height = 800 * scale;
 
 // RADIUS min and max values
 var rmaster_min = 80 * scale;
@@ -37,19 +37,16 @@ var key_minTrans = 0.2;
 var key_maxTrans = 1.0;
 
 
-// ANIMATION of the master nodes
-var distMasterAnim = 50 * scale; // rayon d'animation 
-var numMasterPathNodes = 10; // le nombre de points utilisé pour créé le path
-var durationMasterAnim = 50000 * scale; // la durée.. par la suite--> durée plus petite et path plus simple
-
 // TEXT SIZES
-var masterFontSize = 17;
+var masterFontSize = 17*scale;
+var subFontSize = 15*scale;
+var keyFontSize = 8*scale;
 
 // TEXT LENGTH and LINE HEIGHT - keywords and sub labels
-var keywordsTextLength = 70;
-var keywordsLineHeight = 7; 
-var subTextLength = 50;
-var subLineHeight = 15;
+var keywordsTextLength = 70*scale;
+var keywordsLineHeight = 7*scale; 
+var subTextLength = 50*scale;
+var subLineHeight = 15*scale;
 
 // OBJ VIEW
 var defaultObjectOpacity = 0.5;
@@ -58,14 +55,25 @@ var maxObjectOpacity = 1.0;
 var xCenterObjView = width/3.0;
 var yCenterObjView = height/2.0;
 // OBJ DASH CIRCLES
-var firstRadius = 100;
-var secondRadius = 200;
-var thirdRadius = 300;
+var firstRadius = 100*scale;
+var secondRadius = 200*scale;
+var thirdRadius = 300*scale;
 var radiusOpacity = 0.2;
 var dasharrayNB = 6;
-var radiusObject = 10; 
-var rMinObject = 100;
-var rMaxObject = 300;
+var radiusObject = 10*scale; 
+var rMinObject = firstRadius;
+var rMaxObject = thirdRadius;
+
+// OBJ FONT SIZES
+var keywordFontSizeOBJ = 11*scale; // label on ob view
+var subFontSizeOBJ = 12*scale;
+var masterFontSizeOBJ = 16*scale;
+var keywordsTextLengthOBJ = 100*scale; // length of label on obj view
+var keywordsLineHeightOBJ = 12*scale; 
+var subTextLengthOBJ = 100*scale;
+var subLineHeightOBJ = 15*scale;
+var masterTextLengthOBJ = 100*scale;
+var masterLineHeightOBJ = 15*scale;
 
 // MAP
 var triangleDefaultOpacity = 0.1;
@@ -77,8 +85,8 @@ var strokeColor = "black";
 
 // TIMELINE
 var barColor = "#DADADA";
-var barHeight = 5;
-var stepBetweenBars = 2;
+var barHeight = 5; // TO ASK ALEX: depending on scale as well?
+var stepBetweenBars = 2; // TO ASK ALEX: depending on scale as well?
 
 // DETAIL VIEW
 var xCenterDetailView = width/3.0;
@@ -145,6 +153,7 @@ function getBox(coords){
 function mapValue(v,min,max,newMin,newMax) {
     // console.log("map value:",v,min,max,newMin,newMax);
     // convert to float +v blabla...
+    // TODO: careful:: MAX-MIN COULD EQUAL ZERO
     return ((v - min)*(newMax-newMin))/(max-min) + newMin;
 }
 
@@ -227,6 +236,8 @@ function wrap(text, width, lineHeight) {
             x = text.attr("x"),
             y = text.attr("y"),
             dy = 0;
+
+            d3.select(this).selectAll("tspan").remove();
             
             tspan = text.text(null)
                         .append("tspan")

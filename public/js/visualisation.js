@@ -113,9 +113,7 @@ function createSubNodes(node,masterNodeId){
       })
       ;
 
-  //console.log("node length",node.size(),subnode.size());
 
-  // not sure if it is the right way... but at least we don't have to store the parent g translation
   var div_g = subnode.append("g")
             .on("mouseenter",function(d){
               /*console.log("### mouseenter",d.id);*/
@@ -134,7 +132,6 @@ function createSubNodes(node,masterNodeId){
 
   div_g.append("circle")
       .attr("r",function(d){
-        //var r = getRandomInt(rsub_min,rsub_max);
         var r = mapValue(d.w,sweight_min, sweight_max,rsub_min,rsub_max);
         d.r = r;
         return r;
@@ -162,7 +159,7 @@ function createSubNodes(node,masterNodeId){
         return c;
       })
       .attr("opacity",0.0)
-      .attr("font-size","15")
+      .attr("font-size",subFontSize)
       .call(wrap,subTextLength,subLineHeight)
       .attr("text-anchor","middle")
       .style("alignment-baseline","middle")
@@ -242,7 +239,7 @@ function createKeywordNodes(subnode, masterNodeId, subNodeId){
         return "none";
       })
       .attr("opacity","1.0")
-      .attr("font-size","8")
+      .attr("font-size",keyFontSize)
       .call(wrap,keywordsTextLength,keywordsLineHeight)
       .style("alignment-baseline","middle")
       .selectAll("tspan").style("alignment-baseline","middle")
@@ -325,19 +322,6 @@ function createDefs(){
                        .attr("stdDeviation", 5)
                        ;
 
-}
-
-function loadVisualisation(){
-    animVizRunning = false;
-    deleteVizNodes();
-    createDefs();
-    svg.append("g").attr("id","obj-nodes");
-    svg.append("g").attr("id","nodes");
-    svg.append("g").attr("id","map");
-    svg.append("g").attr("id","map-nodes");
-    svg.append("g").attr("id","timeline");
-    svg.append("g").attr("id","detail-nodes");
-    
 }
 
 

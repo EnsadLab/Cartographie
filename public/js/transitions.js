@@ -29,6 +29,7 @@ function startTransitionGeoViz(){
                 vizdataLoaded = true;
                 d3.selectAll(".morphopoly").remove();
                 deleteMap();
+                d3.select(this).remove();
             })
             ;
 
@@ -38,6 +39,7 @@ function startTransitionGeoViz(){
 function startTransitionVizTimeline(){
     console.log("----> START TransitionVizTimeline");
     morphAllVizToTimeline();
+    makeAxisAppear(1000,800);
     makeNodeDisappear(1000);
     svg.append("circle")
             .attr("id","TODELETELINES")
@@ -47,6 +49,7 @@ function startTransitionVizTimeline(){
                 console.log("DELETE OBJECTS END StartTransitionVizTimeline");
                 d3.selectAll(".morphopoly").remove();
                 d3.selectAll(".timelineRect").attr("opacity",1.0);
+                d3.select(this).remove();
             })
             ;
     console.log("----> END TransitionVizTimeline");
@@ -55,19 +58,23 @@ function startTransitionVizTimeline(){
 function startTransitionTimelineViz(){
     console.log("----> START TransitionTimelineViz");
 
+    var delay_axis = 300; // delay because axis disappears first
+
     d3.selectAll(".timelineRect")
                 .transition()
-                .duration(1000)
+                .duration(800)
                 .delay(function(d){
-                    var delay = getRandomInt(0,800);
-                    console.log("delay",delay);
+                    var delay = delay_axis + getRandomInt(0,600);
                     return delay;
                 })
                 .on("start",function(d){
                     d3.select(this).attr("opacity",0.0);
                 })
                 ;
-    morphTimelineToViz();
+    morphTimelineToViz(delay_axis);
+
+    //makeTimelineDisappear(1000); // TODO: to rethink...
+    makeAxisDisappear(500);
 
     svg.append("circle")
             .attr("id","dummy")
@@ -76,6 +83,7 @@ function startTransitionTimelineViz(){
             .on("end",function(d){
                 animAlpha.start(0,1.0,0.5,0.0);
                 vizdataLoaded = true;
+                d3.select(this).remove();
             })
             ;
 
@@ -87,7 +95,8 @@ function startTransitionTimelineViz(){
                 console.log("DELETE OBJECTS END StartTransitionGeoViz");
                 startAnimNodes();
                 d3.selectAll(".morphopoly").remove();
-                hideTimeline();
+                makeTimelineDisappear(0);
+                d3.select(this).remove();
             })
             ;
 
@@ -109,6 +118,7 @@ function startTransitionGeoTimeline(){
                 d3.selectAll(".morphopoly").remove();
                 d3.selectAll(".timelineRect").attr("opacity",1.0);
                 deleteMap();
+                d3.select(this).remove();
             })
             ;
     console.log("----> END TransitionGeoTimeline");
@@ -118,29 +128,38 @@ function startTransitionGeoTimeline(){
 function startTransitionTimelineGeo(){
     console.log("----> START TransitionTimelineGeo");
 
+    var delay_axis = 300; // delay because axis disappears first
     
     d3.selectAll(".timelineRect")
                 .transition()
-                .duration(1000)
+                .duration(800)
                 .delay(function(d){
-                    var delay = getRandomInt(0,800);
-                    //console.log("delay",delay);
+                    var delay = delay_axis + getRandomInt(0,600);
                     return delay;
                 })
                 .on("start",function(d){
                     d3.select(this).attr("opacity",0.0);
                 })
                 ;
-    morphTimelineToGeo();
-    svg.append("circle").attr("id","TODELETELINES").transition().duration(800)
+
+    morphTimelineToGeo(delay_axis);
+
+    makeAxisDisappear(500);
+
+    svg.append("circle").attr("id","TODELETELINES").transition().duration(2000)
         .on("end",function(){
             console.log("DELETE OBJECTS END startTransitionTimelineGeo");
             //d3.selectAll(".morphopoly").remove();
             //d3.selectAll(".timelineRect").remove();
-            hideTimeline();
+            makeTimelineDisappear(0);
+            d3.select(this).remove();
         })
         ;
     console.log("----> END TransitionTimelineGeo");
+}
+
+function makeTriGeoDisappear(){
+
 }
 
 function createGeoTriPath(expectRevueId){
@@ -345,7 +364,7 @@ function morphGeoToTimeline(){
     });
 }
 
-function morphTimelineToGeo(){
+function morphTimelineToGeo(delay_axis){
     dataRevue.forEach(function(d,i){
 
         // get poly - no need to reload the allRevuePoly datas
@@ -369,7 +388,7 @@ function morphTimelineToGeo(){
             .attr("class","morphopoly")
             .attr("fill","none")
             .attr("stroke","black")
-            .attr("stroke-opacity",0.4) //0.03
+            .attr("stroke-opacity",0.0) //0.03
             .attr("d",dRect)
             .attr('pointer-events', 'visibleStroke')
             .style("z-index",10)
@@ -382,12 +401,15 @@ function morphTimelineToGeo(){
         // RECT TO TRIANGLE MORPHING
         p.transition()
             .duration(getRandomInt(200,500))
+            //.duration(800)
             .attr("d",dTri)
             .ease(d3.easeQuad)
-            .delay(getRandomInt(0,600))
+            .delay(delay_axis + getRandomInt(0,600))
+            //.delay(getRandomInt(0,600))
             .on("start",function(){
                 d3.select(this).attr("opacity","0.05");
                 //d3.select(this).attr("opacity","1.0");
+                d3.select(this).attr("stroke-opacity",0.4);
             })
             .attr("stroke","black")
             .attr("opacity",1.0)
@@ -427,7 +449,7 @@ function morphGeoToViz(){
 
 }
 
-function morphTimelineToViz(){
+function morphTimelineToViz(delay_axis){
     // get all polygons
     loadAllRevuePoly();
 
@@ -462,7 +484,7 @@ function morphTimelineToViz(){
         //console.log("revuePoly",revuePoly.data);
         // start MORPHING Rectangle to poly
         p.transition()
-            .delay(getRandomInt(0,500))
+            .delay(delay_axis + getRandomInt(0,500))
             .duration(800)
             .attr("fill","none")
             .on("start",function(){
@@ -514,8 +536,8 @@ function loadAllRevuePoly(){
     });
 }
 
-function makeNodeDisappear(d){
-
+function makeNodeDisappear(d,reload){
+    console.log("--> make node disappear",reload);
     // MASTER NODES
     for(var i=0; i<3; i++){
         var selg = d3.select("#master"+i);
@@ -543,7 +565,7 @@ function makeNodeDisappear(d){
             .duration(d)
             ;
     }
-    // TRICK FOR NOW.. in order to delete svg objects
+    // create dummy anim to delete OBJECTS
     var circle = svg.append("circle")
                 .attr("id","TODELETEVIZ")
                 .transition()
@@ -553,6 +575,11 @@ function makeNodeDisappear(d){
                     d3.select("#master0").remove();
                     d3.select("#master1").remove();
                     d3.select("#master2").remove();
+                    d3.select(this).remove();
+                    if(reload){
+                        state = State.LOAD;
+                        startViz();
+                    }
                 })
                 ;
 

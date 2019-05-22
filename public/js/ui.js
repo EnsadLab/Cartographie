@@ -35,6 +35,7 @@ d3.select("#timelineView").on("click", function(){
 
 var updatePolyPos = false;
 var startingSTARTOBJ = false;
+var comingFromViz = false;
 
 var currentRevueId;
 var currentNBLinks;
@@ -95,15 +96,25 @@ function initController(){
 
 
 function startGeo(){
-    if(state == State.GEO_VIEW) return; // TODO: TO ASK ALEX
 
     previousState = state;
     state = State.GEO_VIEW;
-    if(state != previousState){
-        initGeoMap(); // will show it as well
+
+    
+    if(previousState == State.GEO_VIEW){
+        //recenter();
+        //return;
+        showMenu(false);
+        hideAndDeleteMap(500,true);
+        fadeAndDeleteTriangles(500);
+        return;
     }
 
-    if(previousState == State.VIZ_VIEW){
+    initGeoMap(); // will show it as well
+    if(previousState == State.LOAD){
+        createGeoTriPath();
+        showMenu(true);
+    }else if(previousState == State.VIZ_VIEW){
         startTransitionVizGeo();
     }else if(previousState == State.TIMELINE_VIEW){
         startTransitionTimelineGeo();
@@ -122,16 +133,21 @@ function startGeo(){
 }
 
 function startViz(){
-    if(state == State.VIZ_VIEW) return; // TODO: TO ASK ALEX
 
     previousState = state;
     state = State.VIZ_VIEW;
     console.log("state",getName(state),getName(previousState));
 
+    if(previousState == State.VIZ_VIEW){
+        showMenu(false);
+        makeNodeDisappear(200,true);
+        return;
+    }
+
     vizdataLoaded = false;
     initVisualisation();
-    
     showMenu(true);
+
     if(previousState == State.LOAD){
         vizdataLoaded = true;
         startAnimNodes();
@@ -163,23 +179,35 @@ function startViz(){
 
 
 function startTimeline(){
-    if(state == State.TIMELINE_VIEW) return; // TODO: TO ASK ALEX
+    //if(state == State.TIMELINE_VIEW) return; // TODO: TO ASK ALEX
 
     previousState = state;
     state = State.TIMELINE_VIEW;
 
+    if(previousState == State.TIMELINE_VIEW){
+        //dezoomTimeline();
+        //return;
+        showMenu(false);
+        makeTimelineDisappear(500,true);
+        return;
+    }
+
     initTimeline();
-    if(previousState == State.VIZ_VIEW){
+    makeAxisAppear(1000,600);
+    if(previousState == State.LOAD){
+        showMenu(true);
+        showRevueRectangles();
+    } else if(previousState == State.VIZ_VIEW){
         startTransitionVizTimeline();
     } else if(previousState == State.GEO_VIEW){
         startTransitionGeoTimeline();
-    }else if(previousState == State.DETAIL_VIEW){
+    } else if(previousState == State.DETAIL_VIEW){
         showRevueDetail(false);
         showMenu(true);
         showRevueRectangles();
         morphDetailToRect(currentRevueId);
         hideObjectLinked(300);
-    }else if(previousState == State.OBJ_VIEW){
+    } else if(previousState == State.OBJ_VIEW){
         hideAndDeleteObjView(500);
         showRevueRectangles();
         showObjMenu(false);
@@ -189,7 +217,7 @@ function startTimeline(){
 
 
 function startObj(id){
-    if(state == State.OBJ_VIEW) return;
+    //if(state == State.OBJ_VIEW) return;
     console.log("--> startObj",id);
     startingSTARTOBJ = true;
     previousState = state;
@@ -197,7 +225,11 @@ function startObj(id){
 
     // we know we come from VIZ_VIEW
     // hide ui elements
-    showMenu(false);
+    if(previousState == State.VIZ_VIEW){
+        showMenu(false);
+    }else if(previousState == State.OBJ_VIEW){
+        showObjMenu(false);
+    }
 
     // graphic elements
 
@@ -211,10 +243,16 @@ function startObj(id){
         }
     }
   
-    var uniqueLinks = getArrayWithUniqueElemAndKey(result);
+    
     //console.log("result",result);
     //console.log("uniqueLinks",uniqueLinks);
-    createDashBackgroundCircles();
+    if(previousState == State.VIZ_VIEW){
+        createDashBackgroundCircles();
+    }
+
+
+    var uniqueLinks = getArrayWithUniqueElemAndKey(result);
+    console.log("uniqueLinks",uniqueLinks);
     var nbLinks = uniqueLinks.length;
     var min = uniqueLinks.find( d => d.id == "DATA_MIN").nb;
     var max = uniqueLinks.find( d => d.id == "DATA_MAX").nb;
@@ -223,60 +261,145 @@ function startObj(id){
     var nbMaster1 = uniqueLinks.filter( d => d.parent == "master1").length;
     var nbMaster2 = uniqueLinks.filter( d => d.parent == "master2").length;
     var countMaster0 = 0; var countMaster1 = 0; var countMaster2 = 0;
+    console.log("nbmasters",d.parent,nbMaster0,nbMaster1,nbMaster2);
+
+    
+    if(previousState == State.OBJ_VIEW){
+        d3.select("#obj-nodes").selectAll(".g-objects").each(function(d,i){
+            var node = d3.select(this);
+            var id = node.attr("id");
+            var r = uniqueLinks.find( data => data.id == id);
+            //console.log("r",r);
+            if(r == undefined){
+                var n = dataLinks.find(data => data.id == id).name;
+                //console.log("removing obj",id,n);
+                //console.log("?",d3.select(this).node());
+                //d3.select(this).select("circle").attr("r",25);
+                //d3.select(this).remove();
+                //d3.select(this).attr("class","toberemoved");
+                
+                node.select("circle").transition()
+                        .duration(1000)
+                        .attr("opacity",0.0)
+                        .attr("stroke-opacity",0.0)
+                        .attr("stroke-opacity",0.0)
+                        .on("end",function(d){
+                            //console.log("should remove");
+                            node.remove();
+                        })
+            }
+        })
+    }
+
     //console.log("MIN/MAX",min,max,max2);
     uniqueLinks.forEach(function(d,i){
         if(d.id.startsWith("DATA")) return;
-        var bb = d3.select("#"+d.id).node().getBoundingClientRect();
-        var node = clone("#"+d.id + " g");
-        node.selectAll("g").remove();
-        document.getElementById("obj-nodes").appendChild(node.node());
-        node.attr("transform","translate(" + (bb.x + bb.width*0.5) + "," + (bb.y + bb.height*0.5)+ ")");
-        node.attr("id",d.id);
 
+        var master = masterNodes.filter( function(data) { return data.id == d.parent; })[0];
+
+        // radius
         var r = mapValue(d.nb,max,min,rMinObject,rMaxObject);
         //var r = mapValue(d.nb,max2,min,rMinObject,rMaxObject);
         //r = rMaxObject - Math.floor((d.nb-min)/4) * rMinObject;
-        //console.log("!!!",d.nb,min,max,Math.floor((d.nb-min)/4),r);
+        console.log("!!!",d.nb,max,min,rMinObject,rMaxObject);
         var angle;
         if(d.parent == "master0"){
-            // angle = Math.random()*Math.PI*2.0/3.0 + 7.0*Math.PI/6.0;
-            angle = (countMaster0/nbMaster0)*Math.PI*2.0/3.0 + 7.0*Math.PI/6.0;
+            /*if(nbMaster0 == 0) angle = 0;
+            else*/ angle = (countMaster0/nbMaster0)*Math.PI*2.0/3.0 + 7.0*Math.PI/6.0;
             countMaster0++;
         }else if(d.parent == "master1"){
-            angle = (countMaster1/nbMaster1)*Math.PI*2.0/3.0 + Math.PI/2.0;
+            /*if(nbMaster1 == 0) angle = 0;
+            else*/ angle = (countMaster1/nbMaster1)*Math.PI*2.0/3.0 + Math.PI/2.0;
             countMaster1++;
         }else if(d.parent == "master2"){
-            angle = (countMaster2/nbMaster2)*Math.PI*2.0/3.0 - Math.PI/6.0;
+            /*if(nbMaster2 == 0) angle = 0;
+            else*/ angle = (countMaster2/nbMaster2)*Math.PI*2.0/3.0 - Math.PI/6.0;
             countMaster2++;
         }
-
+        // position
         var x = (r) * Math.cos(angle);
         var y = (r) * Math.sin(angle);
+        if(d.id == id){ x=0; y=0;}
+        console.log("x,y",x,y,r,angle);
 
-        if(d.id == id){
-            x=0; y=0;
+        var node;
+        if(previousState == State.VIZ_VIEW){
+            var bb = d3.select("#"+d.id).node().getBoundingClientRect();
+            node = clone("#"+d.id + " g");
+            node.selectAll("g").remove();
+            document.getElementById("obj-nodes").appendChild(node.node());
+            node.attr("transform","translate(" + (bb.x + bb.width*0.5) + "," + (bb.y + bb.height*0.5)+ ")");
+            node.attr("id",d.id);
+            node.attr("class","g-objects")
+        } else if(previousState == State.OBJ_VIEW){
+            // if node is already here.. do nothing..
+            node = d3.select("#obj-nodes").select("#"+d.id);
+            if(node.node() == null){ 
+                console.log("not found")
+                node = d3.select("#obj-nodes").append("g").attr("id",d.id);
+                var circle = node.append("circle").attr("r",radiusObject).attr("fill",master.color).attr("opacity",defaultObjectOpacity);
+                if(d.id.startsWith("key")) {
+
+                }else if(d.id.startsWith("sub")) {
+                    circle.attr("fill","none")  
+                    .style("stroke",master.color)
+                    .style("stroke-width",7);
+                }else{
+                    circle.attr("fill", function(d, i) { return "url(#grad" + i + ")"; });
+                }
+                
+                node.append("text");
+                node.attr("transform",'translate('+ (xCenterObjView+x) + ',' + (yCenterObjView+y) + ')');
+            }
         }
 
+        
+
         node.on("mouseenter",function(d){
-            console.log("### mouseenter");
+            //console.log("### mouseenter");
             d3.select(this).style("cursor", "pointer");
             showLabelOnHover(true,this);
           })    
           .on("mouseleave",function(d){
-            console.log("### mouseleave");
+            //console.log("### mouseleave");
             d3.select(this).style("cursor", "default");
             showLabelOnHover(false,this);
           })
           .on("click",function(d){
-            // DO NOTHING FOR NOW..
-            //console.log("### mouseclick");
+             startingSTARTOBJ = true;
+             console.log("### mouseclick: reorganise objects... of id ",d3.select(this).attr("id"));
+             startObj(d3.select(this).attr("id"));
           });
+
+        var fontSize,xText,textLength,lineHeight,c;
+        
+        
+        if(d.id.startsWith("key")) {
+            fontSize = keywordFontSizeOBJ; 
+            xText = 15 * scale; 
+            textLength = keywordsTextLengthOBJ; 
+            lineHeight = keywordsLineHeightOBJ;
+            c = "black";
+        }else if(d.id.startsWith("sub")) {
+            fontSize = subFontSizeOBJ; 
+            xText = 20 * scale; 
+            textLength = subTextLengthOBJ; 
+            lineHeight = subLineHeightOBJ;
+            c = master.color;
+        }else {
+            fontSize = masterFontSizeOBJ; 
+            xText = 20 * scale; 
+            textLength = masterTextLengthOBJ; 
+            lineHeight = masterLineHeightOBJ;
+            c = master.color;
+        }
+        
+        var t = dataLinks.find( function(data) { return data.id == d.id; }).name;
 
         node.transition()
                 .duration(1000)     
                 .attr("transform",'translate('+ (xCenterObjView+x) + ',' + (yCenterObjView+y) + ')');
                 ;
-        
         node.select("circle")
                 .transition()
                 .duration(1000)
@@ -284,42 +407,29 @@ function startObj(id){
                 .attr("r",radiusObject)
                 ;
         node.select("text")
+                .text(t)
                 .attr("font-family","latoregular")
                 .attr("text-anchor","start")
-                .attr("x",function(){
-                    if(d3.select(this).attr("font-size") == 8){ // trick for now
-                        return 15;
-                    }else{
-                        return 20;
-                    }
-                })
+                .attr("x",xText)
+                .attr("y",0)
                 .style("alignment-baseline","middle")
-                .attr("fill",function(){
-
-                    if(d3.select(this).attr("fill") == "white"){
-                        return "black";
-                    }else {
-                        if(d3.select(this).attr("font-size") == 8){ // trick for now
-                            return "black";
-                        } else
-                            return d3.select(this).attr("fill");
-                    }
-                })
+                .attr("fill",c)
                 .attr("opacity","0.0")
-                .attr("font-size",function(){
-                    if(d3.select(this).attr("font-size") == 8){ // trick for now
-                        return 10;
-                    }else{
-                        return 12;
-                    }
-                });
+                .attr("font-size",fontSize)
+               // .call(wrap,textLength,lineHeight)
                 ;
     });
 
-    d3.select("#svg").append("circle").transition().duration(1000).on("end",function(d){startingSTARTOBJ = false;});
+    d3.select("#svg").append("circle").attr("id","TODELETE").transition().duration(1000)
+                     .on("end",function(d){
+                         startingSTARTOBJ = false;
+                         d3.select(this).remove();
+                    });
  
     console.log("deleting viz");
-    deleteVizNodes();
+    if(previousState == State.VIZ_VIEW){
+        deleteVizNodes();
+    }
 
     // show ui elements
     loadObjMenu(id,revueConnectedToObj);
@@ -393,6 +503,7 @@ function startDetail(revueId){
     if(previousState == State.VIZ_VIEW){
         morphPolyToPolyDetail(revueId,500,trans);
         d3.select("#detail-obj-nodes").attr("transform","translate("+ trans[0] + "," + trans[1] + ")");
+        d3.select("#text-detail-nodes").attr("transform","translate("+ trans[0] + "," + trans[1] + ")");
         //d3.select("#morph" + revueId).attr("fill","black");
         updatePolyPos = false;
         popupObjectLinked(500,300);
@@ -401,15 +512,17 @@ function startDetail(revueId){
     } else if(previousState == State.GEO_VIEW){
         morphTriGeoToPolyDetail(revueId,500,trans);
         d3.select("#detail-obj-nodes").attr("transform","translate("+ trans[0] + "," + trans[1] + ")");
+        d3.select("#text-detail-nodes").attr("transform","translate("+ trans[0] + "," + trans[1] + ")");
         popupObjectLinked(500,300);
-        //hideAndDeleteMap(800);
-        hideMap(800);
+        hideAndDeleteMap(800);
+        //hideMap(800);
         fadeAndDeleteTriangles(800);
     } else if(previousState == State.TIMELINE_VIEW){
         morphRectToPolyDetail(revueId,500,trans);
         d3.select("#detail-obj-nodes").attr("transform","translate("+ trans[0] + "," + trans[1] + ")");
+        d3.select("#text-detail-nodes").attr("transform","translate("+ trans[0] + "," + trans[1] + ")");
         popupObjectLinked(500,300);
-        hideTimeline();
+        makeTimelineDisappear(0);
     } else if(previousState == State.OBJ_VIEW){
         // TODO
         morphObjToDetail(currentRevueId,trans);
@@ -435,8 +548,13 @@ function cloneObjectLinkedToDetail(revueId,trans){
         circle.attr("id",d);
         circle.attr("cx",bb.x+bb.width*0.5);
         circle.attr("cy",bb.y+bb.height*0.5);
+        var text = node.select("text");
+        text.attr("opacity",1.0);
+        //var g = d3.select("#detail-obj-nodes").append("g").attr("id","detail-obj-" + d);
+        //var parent = document.getElementById("detail-obj-"+d);
         var parent = document.getElementById("detail-obj-nodes");
         parent.appendChild(circle.node());
+        //parent.appendChild(text.node());
     })
 
     for(var i=0; i<revue.links.length; i++){
@@ -526,29 +644,56 @@ function createMasterNode(id,coord,label,color){
 
 // TO CHECK: ALEX.. tu peux changer les radius et etc.. directement ici
 function createSubNode(id,coord,label,color){
-    d3.select("#detail-nodes").select("#detail-obj-nodes").append("circle")
-            .attr("id",id)
-            .attr("cx",coord[0])
-            .attr("cy",coord[1])
-            // .attr("opacity",0.3) // ME DEMDANDER SI TU VEUX Y TOUCHER
-            .attr("opacity",0.0)
-            .attr("fill","none")  
-            .style("stroke",color)
-            .style("stroke-width",7)
-            .attr("r",10)
-            ;
+    var g = d3.select("#detail-nodes").select("#detail-obj-nodes").append("g").attr("id",id);
+    g.attr("transform",'translate('+ coord[0] + ',' + coord[1] + ')');
+    g.append("circle")
+        .attr("opacity",0.0)
+        .attr("fill","none")  
+        .style("stroke",color)
+        .style("stroke-width",7)
+        .attr("r",10)
+        ;
+    
+    d3.select("#text-detail-nodes")
+        .append("text")
+        .text(label)
+        .attr("id","detail-obj-text"+id)
+        .attr("font-family","latohairline")
+        .style("fill",color)
+        .attr("text-anchor","middle")
+        .attr("x",coord[0])
+        .attr("y",coord[1]-20)
+        ;
 }
 
 // TO CHECK: ALEX.. tu peux changer les radius et etc.. directement ici
 function createKeyNode(id,coord,label,color){
-    d3.select("#detail-nodes").select("#detail-obj-nodes").append("circle")
+    var g = d3.select("#detail-nodes").select("#detail-obj-nodes").append("g").attr("id",id);
+    g.attr("transform",'translate('+ coord[0] + ',' + coord[1] + ')');
+    g.append("circle")
             .attr("id",id)
-            .attr("cx",coord[0])
-            .attr("cy",coord[1])
-            // .attr("opacity",0.6) // ME DEMDANDER SI TU VEUX Y TOUCHER
             .attr("opacity",0.0)
             .attr("fill",color)  
             .attr("r",9)
+            ;
+    /*
+    g.append("text")
+            .text(label)
+            .attr("font-family","latohairline")
+            .style("color","gray")
+            .attr("text-anchor","middle")
+            .attr("x",0)
+            .attr("y",-18)
+            ;*/
+    d3.select("#text-detail-nodes")
+            .append("text")
+            .text(label)
+            .attr("id","detail-obj-text"+id)
+            .attr("font-family","latohairline")
+            .style("fill","white")
+            .attr("text-anchor","middle")
+            .attr("x",coord[0])
+            .attr("y",coord[1]-18)
             ;
 }
 
@@ -600,22 +745,22 @@ function showLabelOnHover(show,obj){
 
 function showLabel(show,id){
     if(show){
-        if(id.startsWith("sub"))
+        if(id.startsWith("key"))
         {
+            d3.select("#"+id).select("text").attr("fill","black");
             d3.select("#"+id).select("text").attr("opacity","1.0");
         } else {
-            d3.select("#"+id).select("text").attr("fill","black");
             d3.select("#"+id).select("text").attr("opacity","1.0");
         }
     }else{
-        if(id.startsWith("sub"))
+        if(id.startsWith("key"))
         {
-            d3.select("#"+id).select("text").attr("opacity","0.0");
-        }else{
             d3.select("#"+id).select("text").attr("fill","none");
             d3.select("#"+id).select("text").attr("opacity","0.0");
-        }
-        
+            
+        }else{
+            d3.select("#"+id).select("text").attr("opacity","0.0");
+        } 
     }
 }
 

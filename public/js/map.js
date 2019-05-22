@@ -9,6 +9,7 @@ var rotated = 90;
 
 //need to store this because on zoom end, using mousewheel, mouse position is NAN
 var mouse;
+var zoomGeo;
 
 var g;
 var gRevues;
@@ -25,12 +26,17 @@ function createProjection(){
     s = 1;
     initX = 0;
 
-    var zoom = d3.zoom()
+    zoomGeo = d3.zoom()
       .scaleExtent([1, 10])
       .on("zoom", zoomed)
       .on("end", zoomended);
 
+    g = d3.select("#map").append("g");
+    //g = d3.select("#map").append("svg");
+
     svg.on("wheel", function() {
+    //g.on("wheel", function() {
+    //d3.select("#map").on("wheel", function() {
         //zoomend needs mouse coords
         initX = d3.mouse(this)[0];
     })
@@ -40,9 +46,9 @@ function createProjection(){
         initX = d3.mouse(this)[0];
         mouseClicked = true;
     })
-    .call(zoom);
+    .call(zoomGeo);
 
-    g = d3.select("#map").append("g");
+    
     //gRevues = svg.append("g");
 
     rotateMap(1040);
@@ -69,19 +75,6 @@ function loadMap(){
     
     showMap(800);
 
-      
-    // TO CHECK: ALEX - .... les labels des pays?? oui/non.. 
-    /*
-    g.selectAll(".country-label")
-        .data(topojson.feature(world, world.objects.countries).features)
-        .enter().append("text")
-        .attr("class", function(d) { return "country-label " + d.id; })
-        .attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })
-        .attr("dy", ".35em")
-        .style("font-size","2px")
-        .text(function(d) { return d.properties.name.toUpperCase();});
-    */
-
   });
 }
 
@@ -92,15 +85,24 @@ function showMap(d) {
     ;
 }
 
-function hideAndDeleteMap(d) {
+function hideAndDeleteMap(d,reload) {
   d3.selectAll(".map-path").transition()
-    .duration(d)
-    .attr("opacity",0.0)
-    .on("end",function(){
-      d3.select("#map").select("g").remove();
-      d3.selectAll(".boundary").remove();
-    })
+      .duration(d)
+      .attr("opacity",0.0)
   ;
+  svg.append("circle")
+      .attr("id","TODELETEMAP")
+      .transition()
+      .duration(d)
+      .on("end",function(){
+        deleteMap();
+        if(reload){
+          state = State.LOAD;
+          startGeo();
+        }
+        d3.select(this).remove();
+      })
+      ;
 }
 
 function hideMap(d){
@@ -120,10 +122,23 @@ function fadeAndDeleteTriangles(d){
     .duration(d)
     .attr("opacity",0.0)
     .on("end",function(){
-      d3.selectAll(".morphopoly").remove();
-      deleteMap();
+      d3.select(this).remove();
     })
   ;
+}
+
+function transformMap() {
+  return d3.zoomIdentity
+      .translate(width / 2, height / 2)
+      .scale(2)
+      .translate(-100, -100);
+}
+
+function recenter(){
+  // innerSpace.call(zoom.transform, d3.zoomIdentity);
+  //innerSpace.transition().duration(1000).call(zoom.transform, d3.zoomIdentity);
+  //innerSpace.transition().duration(1000).call(zoom.transform, d3.zoomIdentity);
+  svg.transition().duration(1000).call(zoomGeo.transform, transformTimeline);
 }
 
 function dezoomMap(){

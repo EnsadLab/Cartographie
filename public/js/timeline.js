@@ -12,6 +12,7 @@ var w,h;
 var svgViewport;
 var innerSpace;
 var xAxisScale;
+var zoom;
 var gX;
 
 var timelineRevues;
@@ -37,16 +38,11 @@ function initTimeline(){
       .attr('width', svgWidth)
       .attr('height', svgHeight)
       ;
-     // .style("background", "red");
-    
-
     
     // create scale objects
     xAxisScale =d3.scaleLinear()
-      //.domain([-200,-100])
       .domain([new Date(startYear), new Date(endYear)])
       .range([0,w]);
-
     
     var yAxisScale = d3.scaleLinear()
       .domain([-10,-20])
@@ -59,8 +55,10 @@ function initTimeline(){
     xAxis.tickFormat(d3.format(""));
 
     // Zoom Function
-    var zoom = d3.zoom()
+    zoom = d3.zoom()
         .on("zoom", zoomFunction);
+
+    console.log("zoom",zoom);
     
     // Inner Drawing Space
     innerSpace = svgViewport.append("g")
@@ -68,41 +66,16 @@ function initTimeline(){
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
         .call(zoom);
     
-    // append some dummy data
-    /*
-    var circles = innerSpace.append('circle')
-        .attr("id","circles")
-        .attr("cx", xAxisScale(1980))
-        .attr("cy", yAxisScale(originalCircle.cy))
-        .attr('r', originalCircle.r)
-    */
-
     loadRevues();
-
-    svgViewport.append("rect")
-            .attr("x",0)
-            .attr("y",margin.top)
-            .attr("width",margin.left)
-            .attr("height",h)
-            .attr("fill","white")
-            .attr("opacity",0.0)
-            ;
-
-    svgViewport.append("rect")
-            .attr("x",w + margin.left)
-            .attr("y",margin.top)
-            .attr("width",margin.left)
-            .attr("height",h)
-            .attr("fill","white")
-            .attr("opacity",0.0)
-            ;
     
     // Draw Axis
     gX = innerSpace.append("g")
+        .attr("id","xaxis")
         .attr("class", "axis axis--x")
         .style("font-size",20)
         .style("font-family","latolight")
         .attr("transform", "translate(0," + h + ")")
+        .attr("opacity",0.0)
         .call(xAxis);
     
     /*
@@ -135,11 +108,22 @@ function initTimeline(){
       gX.call(xAxis.scale(new_xScale));
       //gY.call(yAxis.scale(new_yScale));
     
-      // update circle
-      //circles.attr("transform", d3.event.transform)
-    
     };
     
+}
+
+function transformTimeline() {
+    return d3.zoomIdentity
+        .translate(width / 2, height / 2)
+        .scale(8)
+        .translate(-100, -100);
+  }
+
+function dezoomTimeline(){
+    // innerSpace.call(zoom.transform, d3.zoomIdentity);
+    //innerSpace.transition().duration(1000).call(zoom.transform, d3.zoomIdentity);
+    //innerSpace.transition().duration(1000).call(zoom.transform, d3.zoomIdentity);
+    innerSpace.transition().duration(1000).call(zoom.transform, transformTimeline);
 }
 
 function loadRevues(){
@@ -183,24 +167,37 @@ function showRevueRectangles(){
             ;
 }
 
-function hideTimeline(){
+function makeTimelineDisappear(delay,reload){
     console.log("delete Timeline");
     //d3.select('#timeline').select("svg").remove();
     timelineRevues.transition()
             .duration(10)
             .delay(function(d,i){
                 //var d = i*10;
-                var d = getRandomInt(0,30)*10;
+                var d = delay + getRandomInt(0,30)*10;
                 return d;
             })
             .on("end",function(d){
                 d3.select(this).attr("opacity",0.0);
             })
             ;
-    gX.transition().duration(1000).attr("opacity",0.0)
+    gX.transition().duration(500).attr("opacity",0.0)
         .on("end",function(d){
+            console.log("NO ANIMATION???");
             d3.select('#timeline').select("svg").remove();
+            if(reload){
+                state = State.LOAD;
+                startTimeline();
+            }
         });
+}
+
+function makeAxisDisappear(duration){
+    gX.transition().duration(duration).attr("opacity",0.0);
+}
+
+function makeAxisAppear(duration,delay){
+    gX.transition().duration(duration).delay(delay).attr("opacity",1.0);
 }
 
 function sortRevueAccordingToStartTime(a,b){
