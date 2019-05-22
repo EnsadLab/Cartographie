@@ -5,8 +5,6 @@ var startYear = 1950;
 var endYear = 2019;
 var middleYear = 1980;
 
-var timelineWidth = 1200;
-var timelineHeight = 700;
 var w,h;
 
 var svgViewport;
@@ -17,21 +15,18 @@ var gX;
 
 var timelineRevues;
 
-var g;
 
 function initTimeline(){
 
-    var svgWidth = timelineWidth;
-    var svgHeight = timelineHeight;
+    // TODO: ALEX: rechanger svgWidth à windowWidth ou mettre widht à windowWidth au cas ou j'ai oublié.
+    // c'est pour bosser sur mon ordi.
+    var svgWidth = width; 
+    var svgHeight = windowHeight;
     
-    var margin = {top: 30, right: 100, bottom: 50, left: 200};
+    var margin = {top: 30, right: 0, bottom: 80, left: 0};
     
     w = svgWidth - margin.left - margin.right;
     h = svgHeight - margin.top - margin.bottom;
-    
-    var originalCircle = {"cx" : -150 ,
-                          "cy" : -15 ,
-                          "r"  : 20};
     
     svgViewport = d3.select("#timeline")//d3.select("body")
       .append('svg')
@@ -58,7 +53,7 @@ function initTimeline(){
     zoom = d3.zoom()
         .on("zoom", zoomFunction);
 
-    console.log("zoom",zoom);
+    //console.log("zoom",zoom);
     
     // Inner Drawing Space
     innerSpace = svgViewport.append("g")

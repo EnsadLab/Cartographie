@@ -117,11 +117,13 @@ function createSubNodes(node,masterNodeId){
   var div_g = subnode.append("g")
             .on("mouseenter",function(d){
               /*console.log("### mouseenter",d.id);*/
+              //if(d.id == "sub10") console.log("### mouseenter",d.id);
               d3.select(this).style("cursor", "pointer");
               showLabel(true,d.id);
             })    
             .on("mouseleave",function(d){
               /*console.log("### mouseleave",d.id);*/
+              //if(d.id == "sub10") console.log("### mouseout",d.id);
               d3.select(this).style("cursor", "default");
               showLabel(false,d.id);
             })
@@ -130,7 +132,10 @@ function createSubNodes(node,masterNodeId){
               startObj(d.id);
             });
 
+
   div_g.append("circle")
+      .attr("opacity",0.0)
+      .attr("fill","none")
       .attr("r",function(d){
         var r = mapValue(d.w,sweight_min, sweight_max,rsub_min,rsub_max);
         d.r = r;
@@ -145,24 +150,23 @@ function createSubNodes(node,masterNodeId){
       .attr("opacity",function(d){
         var t = mapValue(d.r,rsub_min,rsub_max,sub_maxTrans,sub_minTrans);
         return t;
-      })
-      .attr("fill","none")        
+      })      
       ;
-
+     
   div_g.append("text")
       .text(d => d.name)
       .attr("font-family","latohairline")
       .attr("x",0)
-      .attr("y",0)
+      .attr("y",d => -d.r)
       .attr("fill",function(){
         d.color = c;
         return c;
       })
       .attr("opacity",0.0)
       .attr("font-size",subFontSize)
-      .call(wrap,subTextLength,subLineHeight)
+      //.call(wrapSub,subTextLength,subLineHeight)
       .attr("text-anchor","middle")
-      .style("alignment-baseline","middle")
+      .style("alignment-baseline","ideographic")
       ; 
   
   // KEYWORDS nodes 
@@ -198,12 +202,12 @@ function createKeywordNodes(subnode, masterNodeId, subNodeId){
       .on("mouseenter",function(d){
         /*console.log("### mouseenter",d.id);*/
         d3.select(this).style("cursor", "pointer");
-        showLabel(true,d.id);
+        showLabel(true,d.id,true);
       })    
       .on("mouseleave",function(d){
         /*console.log("### mouseleave",d.id);*/
         d3.select(this).style("cursor", "default");
-        showLabel(false,d.id);
+        showLabel(false,d.id,true);
       })
       .on("click",function(d){
         console.log("### mouseclick",d.id);

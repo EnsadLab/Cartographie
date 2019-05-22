@@ -5,7 +5,8 @@ var path;
 var initX;
 var mouseClicked = false;
 var s = 1;
-var rotated = 90;
+var t;
+var rotated = -10;
 
 //need to store this because on zoom end, using mousewheel, mouse position is NAN
 var mouse;
@@ -14,12 +15,19 @@ var zoomGeo;
 var g;
 var gRevues;
 
+var mapwidth = 1010; // a ne surtout pas changer (valeur interne)
+var mapheight = 798; // a ne surtout pas changer (valeur interne)
+
 function createProjection(){
 
+    var initScale = 150*width/942;  
+
     projection = d3.geoMercator()
-      .scale(153)
-      .translate([width/2,height/1.5])
-      .rotate([rotated,0,0]); //center on USA
+      .scale(initScale) // 150: default scale
+      //.scale(150)
+      .translate([width/2,height/1.4])
+      .rotate([rotated,0,0]) //center on USA
+      ;
 
     path = d3.geoPath().projection(projection);
 
@@ -48,10 +56,7 @@ function createProjection(){
     })
     .call(zoomGeo);
 
-    
-    //gRevues = svg.append("g");
-
-    rotateMap(1040);
+    //rotateMap(1040);
 
 }
 
@@ -129,23 +134,46 @@ function fadeAndDeleteTriangles(d){
 
 function transformMap() {
   return d3.zoomIdentity
-      .translate(width / 2, height / 2)
-      .scale(2)
-      .translate(-100, -100);
+     // .translate(width / 2, height / 1.4)
+     // .scale(1.5)
+      .translate(500, 0)
+      ;
 }
 
-function recenter(){
-  // innerSpace.call(zoom.transform, d3.zoomIdentity);
-  //innerSpace.transition().duration(1000).call(zoom.transform, d3.zoomIdentity);
-  //innerSpace.transition().duration(1000).call(zoom.transform, d3.zoomIdentity);
-  svg.transition().duration(1000).call(zoomGeo.transform, transformTimeline);
+function recenterRevue(revueId){
+  if(s<=1.0) return;
+  var coord = dataRevue.find(data => data.id == revueId).locationCoords;
+  //var name = dataRevue.find(data => data.id == revueId).name;
+  var offset = projection(coord);
+  var translateDiffX = -offset[0]*s + (mapwidth*0.5);
+  var translateDiffY = -offset[1]*s + (mapheight*0.5);
+  //console.log("DIFF",translateDiffX,translateDiffY);
+
+  /*
+  // TO CHECK: ALEX - solution A fait des zoom/dezoom trop violent je pense
+  // *** solution A ***
+  var duration = 1000;
+  svg.transition().duration(duration).call(zoomGeo.transform,
+      d3.zoomIdentity.translate(translateDiffX,translateDiffY).scale(s))
+  ;
+  // *****************
+  */
+
+  // *** solution B ***
+  t = [translateDiffX,translateDiffY];
+  var duration = 1200;
+  g.transition().duration(duration).attr("transform", "translate(" + t + ")scale(" + s + ")");
+  d3.selectAll(".boundary").selectAll("path").transition().duration(duration).style("stroke-width", mapStrokeWidth / s);
+  d3.select("#map").selectAll(".morphopoly").transition().duration(duration).attr("transform", "translate(" + t + ")scale(" + s + ")");
+  // *****************
 }
+
 
 function dezoomMap(){
     s = 1.0;
     var t =[0,0];
     g.transition()
-      .duration(500)
+      .duration(2000)
       .attr("transform", "translate(" + t + ")scale(" + s + ")")
       ;
     d3.select("#map").selectAll(".morphopoly")
@@ -153,6 +181,14 @@ function dezoomMap(){
       .duration(500)
       .attr("transform", "translate(" + t + ")scale(" + s + ")")
       ;
+}
+
+// to be tested
+function reset(){
+  svg.transition()
+    .duration(1000)
+    .call(zoomGeo.transform,d3.zoomIdentity)
+    ;
 }
 
 function rotateMap(endX) {
@@ -170,16 +206,14 @@ function zoomended(){
 
 function zoomed() {
 
-    var t = [d3.event.transform.x,d3.event.transform.y];
-    // s = Math.pow(d3.event.transform.k,0.1);
+    t = [d3.event.transform.x,d3.event.transform.y];
     s = d3.event.transform.k;
-    var scale = d3.scaleLinear().domain([1.0,10.0]).range([1.0,30.0]);
-    //s = scale(d3.event.transform.k);
-    //console.log("s",d3.event.transform.k,s);
+    var scale = d3.scaleLinear().domain([1.0,10.0]).range([1.0,30.0]); 
+    //s = 2.0; // pour fixer le scale à double
 
     var h = 0;
     t[0] = Math.min(
-        (width/height)  * (s - 1), 
+        (width/height)  * (s - 1),
         Math.max( width * (1 - s), t[0] )
     );
 
@@ -188,6 +222,7 @@ function zoomed() {
         Math.max(height  * (1 - s) - h * s, t[1])
     );
 
+    //console.log("current scale and translate",s,t);
     g.attr("transform", "translate(" + t + ")scale(" + s + ")");
 
     //adjust the stroke width based on zoom level
@@ -195,23 +230,6 @@ function zoomed() {
 
     //adjust the triangle sizes
     d3.select("#map").selectAll(".morphopoly").attr("transform", "translate(" + t + ")scale(" + s + ")");
-    //d3.select("#map").selectAll(".morphopoly").attr("transform", "translate(" + t + ")");
-
-    /* hmmmmm....
-    d3.select("#map").selectAll(".morphopoly")
-                .attr("d",function(d){
-                  var id_string = d3.select(this).attr("id");
-                  var id = id_string.substr(5,id_string.length);
-                  //console.log("id",id);
-                  var coords = dataRevue.find(data => data.id == id).locationCoords;
-                  var nb = allRevuePoly.find(data => data.id == "poly" + id).nb;
-                  // get triangle
-                  var offset = projection(coords);
-                  if(id == "revue0") console.log("coords",coords,offset);
-                  var dTri = getTrianglePath(nb,triangleEdgeLength,offset);
-                  return dTri;
-                })
-                ;*/
 
     mouse = d3.mouse(this); 
 

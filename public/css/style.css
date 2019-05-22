@@ -6,6 +6,11 @@
     pointer-events: all;
     }
 
+    
+g {
+    pointer-events: all;
+}
+
 
 @font-face {
     font-family: 'latobold';

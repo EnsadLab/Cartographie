@@ -46,7 +46,7 @@ function genDatas(){
     nbKeyNodes = kcount;
 }
 
-var fakeLocations = [[2, 48],[-73, 40],[6,46],[-47,-15],[151,-33],[-123,42],[121,31],[37,55]];
+var fakeLocations = [[2, 48],[-73, 40],[6,46],[-47,-15],[151,-33],[-123,42],[121,31],[37,55],[90,30]];
 
 var rcount = 0;
 var mweight_min = Number.MAX_SAFE_INTEGER;
@@ -75,6 +75,7 @@ function getWeight(){
 
         // FAKING LOCATIONS
         var fakeIndex = getRandomInt(0,8);
+        //fakeIndex = 8; // 2:italie, 3:am du sud 8 asie
         //d.locationCoords = [fakeLocations[fakeIndex][0] + getRandomInt(0,40)-20,fakeLocations[fakeIndex][1] + getRandomInt(0,20)-10 ];
         d.locationCoords = fakeLocations[fakeIndex];
 
@@ -84,7 +85,7 @@ function getWeight(){
         xEnd = 2019;
         d.time = [xStart,xEnd];
     });
-    console.log("data",dataRevue);
+    //console.log("data",dataRevue);
     allLinks.sort();
     //console.log("allLinks",allLinks);
 

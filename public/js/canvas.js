@@ -119,11 +119,11 @@ function initDivStructure(){
     
     svg.append("g").attr("id","obj-nodes");
     svg.append("g").attr("id","nodes");
-    svg.append("g").attr("id","detail-nodes");
     svg.append("g").attr("id","map");
     svg.append("g").attr("id","map-nodes");
     svg.append("g").attr("id","timeline");
-    svg.append("g").attr("id","text-detail-nodes");
+    svg.append("g").attr("id","poly");
+    svg.append("g").attr("id","detail-nodes");
     
 }
 

@@ -9,12 +9,19 @@ var Science_Color = "#F8405E";
 //var debug_mode = false;
 
 // SIZES
-var scale = 1;
-// var width = 1440 * scale;//950;
-// var height = 900 * scale;
+var scale = 1.0;
+var width = 1440 * scale;
+var height = 900 * scale;
 
-var width = window.innerWidth;//950;
-var height = window.innerHeight * scale;
+var windowWidth = window.innerWidth;
+var windowHeight = window.innerHeight;
+
+width = windowWidth;
+height = windowHeight;
+
+//var width = window.innerWidth;
+//var height = window.innerHeight * scale;
+console.log("WINDOW SIZES",window.innerWidth,window.innerHeight);
 
 // RADIUS min and max values
 var rmaster_min = 100 * scale;//80
@@ -94,6 +101,15 @@ var stepBetweenBars = 2; // TO ASK ALEX: depending on scale as well?
 // DETAIL VIEW
 var xCenterDetailView = width/3.0;
 var yCenterDetailView = height/2.0;
+var masterRadiusDetail = 30;
+var subRadiusDetail = 10;
+var keywordRadiusDetail = 9;
+var offsetYMasterDetail = -25;
+var offsetYSubDetail = -20;
+var offsetYKeywordDetail = -18;
+var fontTypeDetail = "latohairline";
+var fontSizeDetail = 15;
+var strokeWidthSubNode = 7;
 
 
 // useful general functions
@@ -267,6 +283,58 @@ function wrap(text, width, lineHeight) {
             .selectAll("tspan")
             .attr("y",yCentered)
         ;
+    });
+    
+}
+
+
+function wrapSub(text, width, lineHeight) {
+    var debug = false;
+    console.log("coucou");
+    console.log("t",text.text());
+    if(text.text().startsWith("Religion")) debug = true;
+    text.each(function () {
+        var text = d3.select(this),
+            words = text.text().split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0, 
+            x = text.attr("x"),
+            y = text.attr("y"),
+            dy = 0;
+
+            d3.select(this).selectAll("tspan").remove();
+            
+            tspan = text.text(null)
+                        .append("tspan")
+                        .attr("x", x)
+                        .attr("y", y)
+                        .attr("dy", dy);
+                        
+        while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = text.append("tspan")
+                            .attr("x", x)
+                            .attr("y", y)
+                            .attr("dy", ++lineNumber * lineHeight + dy)
+                            .text(word);
+            }
+        }
+        if(debug)console.log("ladjlfsjfl",lineNumber,lineHeight,lineNumber*lineHeight,y);
+        d3.select(this).attr("y",y - (lineNumber*lineHeight) );
+        console.log("test");
+        /*
+        var yCentered = +y - ((lineNumber) * lineHeight) * 0.5;
+        d3.select(this).attr("y",yCentered)
+            //.style("alignment-baseline","ideographic")
+            .selectAll("tspan")
+            .attr("y",yCentered)
+        ;*/
     });
     
 }
