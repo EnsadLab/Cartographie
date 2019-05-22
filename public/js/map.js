@@ -147,8 +147,8 @@ function recenterRevue(revueId){
   var offset = projection(coord);
   var translateDiffX = -offset[0]*s + (mapwidth*0.5);
   var translateDiffY = -offset[1]*s + (mapheight*0.5);
-  //console.log("DIFF",translateDiffX,translateDiffY);
-
+  //console.log("NEW TRANS:",translateDiffX,translateDiffY);
+  
   /*
   // TO CHECK: ALEX - solution A fait des zoom/dezoom trop violent je pense
   // *** solution A ***
@@ -173,7 +173,7 @@ function dezoomMap(){
     s = 1.0;
     var t =[0,0];
     g.transition()
-      .duration(2000)
+      .duration(500)
       .attr("transform", "translate(" + t + ")scale(" + s + ")")
       ;
     d3.select("#map").selectAll(".morphopoly")
@@ -205,8 +205,9 @@ function zoomended(){
 }  
 
 function zoomed() {
-
+    //console.log("BEFORE t",t);
     t = [d3.event.transform.x,d3.event.transform.y];
+    //console.log("AFTER t",t);
     s = d3.event.transform.k;
     var scale = d3.scaleLinear().domain([1.0,10.0]).range([1.0,30.0]); 
     //s = 2.0; // pour fixer le scale à double

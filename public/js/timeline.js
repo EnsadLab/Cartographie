@@ -18,9 +18,7 @@ var timelineRevues;
 
 function initTimeline(){
 
-    // TODO: ALEX: rechanger svgWidth à windowWidth ou mettre widht à windowWidth au cas ou j'ai oublié.
-    // c'est pour bosser sur mon ordi.
-    var svgWidth = width; 
+    var svgWidth = windowWidth; 
     var svgHeight = windowHeight;
     
     var margin = {top: 30, right: 0, bottom: 80, left: 0};
@@ -178,7 +176,6 @@ function makeTimelineDisappear(delay,reload){
             ;
     gX.transition().duration(500).attr("opacity",0.0)
         .on("end",function(d){
-            console.log("NO ANIMATION???");
             d3.select('#timeline').select("svg").remove();
             if(reload){
                 state = State.LOAD;

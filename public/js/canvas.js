@@ -1,13 +1,3 @@
-/*
-
-// TO CHECK: ALEX... a remettre dans l'index.ejs
-<!-- <% include ./partials/menu %> -->
-<!-- <% include ./partials/journal %> -->
-<!-- <% include ./partials/objects %> -->
-<% include ./partials/form %>
-
-*/
-
 
 var svg;
 var context;
@@ -104,7 +94,6 @@ function initCanvas(){
 
 
 function initSVG(){
-    // TO CHECK: ALEX - si ça t'ennuies trop, mets le border du svg à 0.
     svg = d3.select("#svg")
     .attr("width",width)
     .attr("height",height)

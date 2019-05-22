@@ -1,45 +1,45 @@
 
 // COLORS
-/* pas utilisé, car dans DB. Je les laisse encore là car c'est pratique d'avoir les couleurs vite sous la main pour tester
+/* Pratique d'avoir les couleurs vite sous la main pour tester
 var ArtDesign_Color = "#00A3F5";
 var SS_Color = "#674890";
 var Science_Color = "#F8405E";
 */
 
-//var debug_mode = false;
 
 // SIZES
-var scale = 1.0;
-var width = 1440 * scale;
-var height = 900 * scale;
+var sf = 1.0; // a changer a notre guise...
+var width = 1440; // TO CHECK: ALEX valeurs utilsées pour les settings de base, juste??
+var height = 900; // TO CHECK: ALEX valeurs utilsées pour les settings de base, juste??
 
 var windowWidth = window.innerWidth;
 var windowHeight = window.innerHeight;
 
+var scale = windowWidth/width;
+
 width = windowWidth;
 height = windowHeight;
 
-//var width = window.innerWidth;
-//var height = window.innerHeight * scale;
+
 console.log("WINDOW SIZES",window.innerWidth,window.innerHeight);
 
 // RADIUS min and max values
-var rmaster_min = 100 * scale;//80
-var rmaster_max = 400 * scale;//300
-var rsub_min = 5 * scale;//4
-var rsub_max = 40 * scale;//30
-var rkey_min = 2 * scale;//3
-var rkey_max = 20 * scale;//10
+var rmaster_min = 100 * scale * sf;//80
+var rmaster_max = 400 * scale * sf;//300
+var rsub_min = 5 * scale * sf;//4
+var rsub_max = 40 * scale * sf;//30
+var rkey_min = 2 * scale * sf;//3
+var rkey_max = 20 * scale * sf;//10
 
 // Radius distance where sub categories are drawn respect to their master node
-var rmaster_sub = 160 * scale;//120
+var rmaster_sub = 160 * scale * sf;//120
 // Radius distance where keywords are drawn respect to their sub category
-var rsub_keyword = 30 * scale;//20
+var rsub_keyword = 30 * scale * sf;//20
 
 // BUBBLES look
 // subcategories
-var sub_strokeWidthMin = 4 * scale;
-var sub_strokeWidthMax = 15 * scale;
+var sub_strokeWidthMin = 4 * scale * sf;
+var sub_strokeWidthMax = 15 * scale * sf;
 var sub_minTrans = 0.1;
 var sub_maxTrans = 0.6;//0.4
 // keywords
@@ -48,15 +48,15 @@ var key_maxTrans = 1.0;
 
 
 // TEXT SIZES
-var masterFontSize = 17*scale;
-var subFontSize = 15*scale;
-var keyFontSize = 8*scale;
+var masterFontSize = 17*scale * sf;
+var subFontSize = 15*scale * sf;
+var keyFontSize = 8*scale * sf;
 
 // TEXT LENGTH and LINE HEIGHT - keywords and sub labels
-var keywordsTextLength = 70*scale;
-var keywordsLineHeight = 7*scale; 
-var subTextLength = 50*scale;
-var subLineHeight = 15*scale;
+var keywordsTextLength = 70*scale * sf;
+var keywordsLineHeight = 7*scale * sf; 
+var subTextLength = 50*scale * sf;
+var subLineHeight = 15*scale * sf;
 
 // OBJ VIEW
 var defaultObjectOpacity = 0.7;
@@ -65,30 +65,33 @@ var maxObjectOpacity = 1.0;
 var xCenterObjView = width/3.0;
 var yCenterObjView = height/2.0;
 // OBJ DASH CIRCLES
-var firstRadius = 100*scale;
-var secondRadius = 200*scale;
-var thirdRadius = 300*scale;
+var firstRadius = 100*scale * sf;
+var secondRadius = 200*scale * sf;
+var thirdRadius = 300*scale * sf;
 var radiusOpacity = 0.2;
 var dasharrayNB = 6;
-var radiusObject = 12*scale; 
+var radiusObject = 12*scale * sf; 
 var rMinObject = firstRadius;
 var rMaxObject = thirdRadius;
 
 // OBJ FONT SIZES
-var keywordFontSizeOBJ = 11*scale; // label on ob view
-var subFontSizeOBJ = 12*scale;
-var masterFontSizeOBJ = 16*scale;
-var keywordsTextLengthOBJ = 100*scale; // length of label on obj view
-var keywordsLineHeightOBJ = 12*scale; 
-var subTextLengthOBJ = 100*scale;
-var subLineHeightOBJ = 15*scale;
-var masterTextLengthOBJ = 100*scale;
-var masterLineHeightOBJ = 15*scale;
+var keywordFontSizeOBJ = 11*scale * sf; // label on ob view
+var subFontSizeOBJ = 12*scale * sf;
+var masterFontSizeOBJ = 16*scale * sf;
+var keywordsTextLengthOBJ = 100*scale * sf; // length of label on obj view
+var keywordsLineHeightOBJ = 12*scale * sf; 
+var subTextLengthOBJ = 100*scale * sf;
+var subLineHeightOBJ = 15*scale * sf;
+var masterTextLengthOBJ = 100*scale * sf;
+var masterLineHeightOBJ = 15*scale * sf;
+
+// OBJ SUB stroke width
+var strokeWidthSubNodeOBJ = 6 * scale * sf;
 
 // MAP
 var triangleDefaultOpacity = 0.1;
-var triangleEdgeLength = 20; // edge lenth du triangle
-var triangleHightlighted = 30;
+var triangleEdgeLength = 20*scale*sf; // edge lenth du triangle
+var triangleHightlighted = 30*scale*sf;
 var mapBackground = "#E5F6FE";
 var mapStrokeWidth = 0;
 var strokeColor = "white";
@@ -101,15 +104,15 @@ var stepBetweenBars = 2; // TO ASK ALEX: depending on scale as well?
 // DETAIL VIEW
 var xCenterDetailView = width/3.0;
 var yCenterDetailView = height/2.0;
-var masterRadiusDetail = 30;
-var subRadiusDetail = 10;
-var keywordRadiusDetail = 9;
-var offsetYMasterDetail = -25;
-var offsetYSubDetail = -20;
-var offsetYKeywordDetail = -18;
+var masterRadiusDetail = 30 * scale * sf;
+var subRadiusDetail = 10 * scale * sf;
+var keywordRadiusDetail = 9 * scale * sf;
+var offsetYMasterDetail = -25 * scale * sf;
+var offsetYSubDetail = -20 * scale * sf;
+var offsetYKeywordDetail = -18 * scale * sf;
 var fontTypeDetail = "latohairline";
-var fontSizeDetail = 15;
-var strokeWidthSubNode = 7;
+var fontSizeDetail = 15 * scale * sf;
+var strokeWidthSubNode = 7 * scale * sf;
 
 
 // useful general functions
@@ -139,6 +142,7 @@ function getArrayWithUniqueElemAndKey(a){
     var nb_second_max = 0;
     a.forEach(function(item) {
         var d = result.filter(function(d){ return d.id == item});
+        // if the item with the id is not already in our result array yet
         if(d.length == 0){
             var r = a.filter(function(d){return d == item}).length;
             var parent = dataLinks.find( data => data.id == item).parent;
@@ -148,6 +152,9 @@ function getArrayWithUniqueElemAndKey(a){
             if(r < nb_min) nb_min = r;
         }
     });
+
+    if(nb_max == 1) nb_max = 2;
+
     result.push({id:"DATA_MIN",nb:nb_min});
     result.push({id:"DATA_MAX",nb:nb_max});
     result.push({id:"DATA_SECOND_MAX",nb:nb_second_max});

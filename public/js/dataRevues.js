@@ -396,3 +396,38 @@ var dataRevue = [
 		keywords :[ "Design" , "Social Sciences & Humanities", "Science and Technology Studies"],
 	}
 ]
+
+/* TO TEST with smaller datas
+var dataRevue = [
+
+	{
+		name : "Alliage " ,
+		keywords :[ "Fine Arts", "Literature", "Filmmaking", "Science and Technology Studies"],
+	},
+
+	{
+		name : "Archée " ,
+		keywords :[ "New Media and Technological", "Aesthetics", "Science and Technology Studies"],
+	},
+
+	{
+		name : "ArteCienciaBrasil " ,
+		keywords :[ "Visual (fine Arts)", "Performance", "Science"],
+	},
+
+	{
+		name : "ArtLaboratory Berlin " ,
+		keywords :[ "Fine Arts", "Social Sciences & Humanities", "Art History", "Law", "Science", "Biology"],
+	},
+
+	{
+		name : "Art & Perception " ,
+		keywords :[ "Fine Arts", "Philosophy", "Computer Sciences", "Biology", "Cognitive Sciences"],
+	},
+
+	{
+		name : "Arts & Health " ,
+		keywords :[ "Fine Arts & Design", "Education", "social and behavioral", "Health", "Cognitive Sciences"],
+	},
+
+]*/

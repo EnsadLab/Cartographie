@@ -205,7 +205,6 @@ function startViz(){
 
 
 function startTimeline(){
-    //if(state == State.TIMELINE_VIEW) return; // TODO: TO ASK ALEX
 
     previousState = state;
     state = State.TIMELINE_VIEW;
@@ -226,6 +225,7 @@ function startTimeline(){
     } else if(previousState == State.VIZ_VIEW){
         startTransitionVizTimeline();
     } else if(previousState == State.GEO_VIEW){
+        dezoomMap();
         startTransitionGeoTimeline();
     } else if(previousState == State.DETAIL_VIEW){
         showRevueDetail(false);
@@ -253,7 +253,7 @@ function startObj(id){
 
     var objParent = dataLinks.find(data => data.id == id).parent;
     var objColor = masterNodes.find(data => data.id == objParent).color;
-    console.log("objParent-objcolor",objParent,objColor);
+    //console.log("objParent-objcolor",objParent,objColor);
 
     // we know we come from VIZ_VIEW
     // hide ui elements
@@ -269,7 +269,9 @@ function startObj(id){
     var revueConnectedToObj = [];
     var result = [];
     for(var i=0; i<dataRevue.length; i++){
+        //console.log("---> checking",id,"on revue",dataRevue[i].name);
         if(dataRevue[i].links.includes(id)) {
+            //console.log("yes.. link is there",dataRevue[i].links);
             result = result.concat(dataRevue[i].links);
             revueConnectedToObj.push(dataRevue[i]);
         }
@@ -277,14 +279,14 @@ function startObj(id){
   
     
     //console.log("result",result);
-    //console.log("uniqueLinks",uniqueLinks);
+    //console.log("revueConnectedToObj",revueConnectedToObj);
     if(previousState == State.VIZ_VIEW){
         createDashBackgroundCircles();
     }
 
 
     var uniqueLinks = getArrayWithUniqueElemAndKey(result);
-    console.log("uniqueLinks",uniqueLinks);
+    //console.log("uniqueLinks",uniqueLinks);
     var nbLinks = uniqueLinks.length;
     var min = uniqueLinks.find( d => d.id == "DATA_MIN").nb;
     var max = uniqueLinks.find( d => d.id == "DATA_MAX").nb;
@@ -293,30 +295,21 @@ function startObj(id){
     var nbMaster1 = uniqueLinks.filter( d => d.parent == "master1").length;
     var nbMaster2 = uniqueLinks.filter( d => d.parent == "master2").length;
     var countMaster0 = 0; var countMaster1 = 0; var countMaster2 = 0;
-    console.log("nbmasters",d.parent,nbMaster0,nbMaster1,nbMaster2);
+    //console.log("nbmasters",nbMaster0,nbMaster1,nbMaster2);
 
     
     if(previousState == State.OBJ_VIEW){
-        d3.select("#obj-nodes").selectAll(".g-objects").each(function(d,i){
+        //console.log("---> for all present nodes... check...");
+        d3.select("#obj-nodes").selectAll(".g-objects").each(function(d,i){   
             var node = d3.select(this);
             var id = node.attr("id");
             var r = uniqueLinks.find( data => data.id == id);
-            //console.log("r",r);
             if(r == undefined){
-                var n = dataLinks.find(data => data.id == id).name;
-                //console.log("removing obj",id,n);
-                //console.log("?",d3.select(this).node());
-                //d3.select(this).select("circle").attr("r",25);
-                //d3.select(this).remove();
-                //d3.select(this).attr("class","toberemoved");
-                
+                //var n = dataLinks.find(data => data.id == id).name;
                 node.select("circle").transition()
-                        .duration(1000)
+                        .duration(800)
                         .attr("opacity",0.0)
-                        .attr("stroke-opacity",0.0)
-                        .attr("stroke-opacity",0.0)
                         .on("end",function(d){
-                            //console.log("should remove");
                             node.remove();
                         })
             }
@@ -333,27 +326,23 @@ function startObj(id){
         var r = mapValue(d.nb,max,min,rMinObject,rMaxObject);
         //var r = mapValue(d.nb,max2,min,rMinObject,rMaxObject);
         //r = rMaxObject - Math.floor((d.nb-min)/4) * rMinObject;
-        console.log("!!!",d.nb,max,min,rMinObject,rMaxObject);
+        //console.log("!!!",d.nb,max,min,rMinObject,rMaxObject);
         var angle;
         if(d.parent == "master0"){
-            /*if(nbMaster0 == 0) angle = 0;
-            else*/ angle = (countMaster0/nbMaster0)*Math.PI*2.0/3.0 + 7.0*Math.PI/6.0;
+            angle = (countMaster0/nbMaster0)*Math.PI*2.0/3.0 + 7.0*Math.PI/6.0;
             countMaster0++;
         }else if(d.parent == "master1"){
-            /*if(nbMaster1 == 0) angle = 0;
-            else*/ angle = (countMaster1/nbMaster1)*Math.PI*2.0/3.0 + Math.PI/2.0;
+            angle = (countMaster1/nbMaster1)*Math.PI*2.0/3.0 + Math.PI/2.0;
             countMaster1++;
         }else if(d.parent == "master2"){
-            /*if(nbMaster2 == 0) angle = 0;
-            else*/ angle = (countMaster2/nbMaster2)*Math.PI*2.0/3.0 - Math.PI/6.0;
+            angle = (countMaster2/nbMaster2)*Math.PI*2.0/3.0 - Math.PI/6.0;
             countMaster2++;
         }
         // position
         var x = (r) * Math.cos(angle);
         var y = (r) * Math.sin(angle);
         if(d.id == id){ x=0; y=0;}
-        console.log("x,y",x,y,r,angle);
-
+        //console.log("--> parsing object",d.id)
         var node;
         if(previousState == State.VIZ_VIEW){
             var bb = d3.select("#"+d.id).node().getBoundingClientRect();
@@ -364,20 +353,22 @@ function startObj(id){
             node.attr("id",d.id);
             node.attr("class","g-objects")
         } else if(previousState == State.OBJ_VIEW){
-            // if node is already here.. do nothing..
+            // if node is already here.. do nothing...
             node = d3.select("#obj-nodes").select("#"+d.id);
+            // otherwise create it...
             if(node.node() == null){ 
-                console.log("not found")
-                node = d3.select("#obj-nodes").append("g").attr("id",d.id);
-                var circle = node.append("circle").attr("r",radiusObject).attr("fill",master.color).attr("opacity",defaultObjectOpacity);
+                //console.log("Create NEW NODE")
+                node = d3.select("#obj-nodes").append("g").attr("id",d.id).attr("class","g-objects");
+                var circle = node.append("circle").attr("r",radiusObject).attr("fill",master.color).attr("opacity",0);
                 if(d.id.startsWith("key")) {
-
+                    // need nothing for now..
                 }else if(d.id.startsWith("sub")) {
                     circle.attr("fill","none")  
                     .style("stroke",master.color)
-                    .style("stroke-width",7);
+                    .style("stroke-width",strokeWidthSubNodeOBJ);
                 }else{
-                    circle.attr("fill", function(d, i) { return "url(#grad" + i + ")"; });
+                    var gradIndex = d.id.substring(d.id.length-1);
+                    circle.attr("fill", function(d, i) { return "url(#grad" + gradIndex + ")"; });
                 }
                 
                 node.append("text");
@@ -399,7 +390,6 @@ function startObj(id){
           })
           .on("click",function(d){
              startingSTARTOBJ = true;
-             console.log("### mouseclick: reorganise objects... of id ",d3.select(this).attr("id"));
              startObj(d3.select(this).attr("id"));
           });
 
@@ -432,12 +422,23 @@ function startObj(id){
                 .duration(1000)     
                 .attr("transform",'translate('+ (xCenterObjView+x) + ',' + (yCenterObjView+y) + ')');
                 ;
-        node.select("circle")
+        if(d.id.startsWith("sub")){
+            node.select("circle")
+                .transition()
+                .duration(1000)
+                .attr("opacity",defaultObjectOpacity)
+                .style("stroke-width",strokeWidthSubNodeOBJ)
+                .attr("r",radiusObject)
+                ;
+        } else{
+            node.select("circle")
                 .transition()
                 .duration(1000)
                 .attr("opacity",defaultObjectOpacity)
                 .attr("r",radiusObject)
                 ;
+        }
+        
         node.select("text")
                 .text(t)
                 .attr("font-family","latoregular")
@@ -702,17 +703,15 @@ function hideObjectLinked(duration){
 }
 
 // ********** OBJ that are drawned on the detail revue view *******************
-// TO CHECK: ALEX.. tu peux changer les radius et etc.. directement ici
 function createMasterNode(id,coord,label,color){
-    var gradIndex = id.substring(id.length-1,id.length);
+    
+    var gradIndex = id.substring(id.length-1);
     var g = d3.select("#detail-nodes").select("#detail-obj-nodes").append("g").attr("id",id);
     g.attr("transform",'translate('+ coord[0] + ',' + coord[1] + ')');
-    //d3.select("#detail-nodes").select("#detail-obj-nodes").append("circle")
     g.append("circle")
             .attr("id",id)
             .attr("cx",0)
             .attr("cy",1)
-            // .attr("opacity",1.0) // ME DEMDANDER SI TU VEUX Y TOUCHER
             .attr("opacity",0.0)
             .attr("fill", function(d, i) { return "url(#grad" + gradIndex + ")"; })
             .attr("r",masterRadiusDetail)
@@ -730,13 +729,13 @@ function createMasterNode(id,coord,label,color){
             ;
 }
 
-// TO CHECK: ALEX.. tu peux changer les radius et etc.. directement ici
+
 function createSubNode(id,coord,label,color){
     var g = d3.select("#detail-nodes").select("#detail-obj-nodes").append("g").attr("id",id);
     g.attr("transform",'translate('+ coord[0] + ',' + coord[1] + ')');
     g.append("circle")
         .attr("opacity",0.0)
-        .attr("fill","white")  // TO CHECK ALEX: ou tu veux voir les coins du polygones? => "white"/"none"
+        .attr("fill","white")  // TO CHECK: ALEX ou tu veux voir les coins du polygones? => "white"/"none"
         .style("stroke",color)
         .style("stroke-width",strokeWidthSubNode)
         .attr("r",subRadiusDetail)
@@ -754,7 +753,7 @@ function createSubNode(id,coord,label,color){
         ;
 }
 
-// TO CHECK: ALEX.. tu peux changer les radius et etc.. directement ici
+
 function createKeyNode(id,coord,label,color){
     var g = d3.select("#detail-nodes").select("#detail-obj-nodes").append("g").attr("id",id);
     g.attr("transform",'translate('+ coord[0] + ',' + coord[1] + ')');
@@ -1084,8 +1083,8 @@ function createMenu(){
 */
 function loadObjMenu(id,revueConnectedToObj,color){
 
-   // console.log("--> loadObjMenu",revueConnectedToObj);
-
+    console.log("--> loadObjMenu");
+    //console.log("connected revues",revueConnectedToObj);
     var div = d3.select("#objview");
     var idName = dataLinks.filter(function(d){return d.id == id})[0].name;
     div.select("#objname").html(idName).style("color",color);
@@ -1296,8 +1295,8 @@ function changeRadius(enter){
 
 }
 function changeColor(enter){
-    if(enter) svg.select("#blup").attr("stroke-width","4px");
-    else svg.select("#blup").attr("stroke-width","1px");
+    if(enter) svg.select("#blup").style("stroke-width","4px");
+    else svg.select("#blup").style("stroke-width","1px");
 }
 // Display Form
 

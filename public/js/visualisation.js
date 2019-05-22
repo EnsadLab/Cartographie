@@ -45,8 +45,7 @@ function createMasterNodes(){
       .attr("fill", function(d, i) { return "url(#grad" + i + ")"; })
       .attr("filter","url(#blur)")
       ;
-  // TO CHECK: ALEX typo des master nodes... ptêt utilisé le css.. je sais pas encore ce qui est le plus pratique.
-  // donc, pas encore fini.. mais tu peux déjà changer les valeurs si tu veux...
+  // TO CHECK: ALEX typo des master nodes
   div_g.append("text")
       .text(d => d.name.toUpperCase())
       .attr("font-family","latohairline")
@@ -61,7 +60,7 @@ function createMasterNodes(){
         d3.select(this).style("cursor", "default");
       })
       .on("click",function(d){
-        console.log("### mouseclick !!!!!!",d.id);
+        //console.log("### mouseclick !!!!!!",d.id);
         startObj(d.id);
       })
       ; 
@@ -153,6 +152,7 @@ function createSubNodes(node,masterNodeId){
       })      
       ;
      
+  // TO CHECK: ALEX typo des sub nodes
   div_g.append("text")
       .text(d => d.name)
       .attr("font-family","latohairline")
@@ -231,6 +231,7 @@ function createKeywordNodes(subnode, masterNodeId, subNodeId){
       //.attr("fill", "none")
       ;
 
+  // TO CHECK: ALEX typo des keyword nodes
   div_g.append("text")
       .text(d => d.name)
       .attr("font-family","latoregular")
@@ -335,7 +336,46 @@ function initVisualisation(){
     animVizRunning = false;
     createMasterNodes();
     loadAllRevuePoly();
+
+    zoomViz = d3.zoom()
+      //.scaleExtent([1, 10])
+      .scaleExtent([1, 5]) // TO CHECK: ALEX le max est réglable...
+      .on("zoom", zoomedViz)
+      .on("end", zoomendedViz);
+
+    svg.call(zoomViz);
     console.log("finished init visualisation");
   }
 
 }
+
+var zoomViz;
+
+function zoomedViz() {
+  //console.log("BEFORE t",t);
+  t = [d3.event.transform.x,d3.event.transform.y];
+  //console.log("AFTER t",t);
+  s = d3.event.transform.k;
+  //s = 2.0; // pour fixer le scale à double
+
+  var h = 0;
+  t[0] = Math.min(
+      (width/height)  * (s - 1),
+      Math.max( width * (1 - s), t[0] )
+  );
+
+  t[1] = Math.min(
+      h * (s - 1) + h * s, 
+      Math.max(height  * (1 - s) - h * s, t[1])
+  );
+
+  //console.log("current scale and translate",s,t);
+  //d3.selectAll("#nodes").selectAll("g").attr("transform", "translate(" + t + ")scale(" + s + ")");
+  d3.selectAll("#nodes").attr("transform", "translate(" + t + ")scale(" + s + ")");
+
+}
+
+function zoomendedViz(){
+  if(s !== 1) return;
+  // ...
+} 
