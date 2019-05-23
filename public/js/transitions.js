@@ -572,6 +572,7 @@ function makeNodeDisappear(d,reload){
                 .duration(d)
                 .on("end",function(){
                     console.log("DELETE OBJECTS END");
+                    dezoomViz();
                     d3.select("#master0").remove();
                     d3.select("#master1").remove();
                     d3.select("#master2").remove();

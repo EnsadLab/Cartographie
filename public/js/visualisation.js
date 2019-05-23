@@ -342,7 +342,8 @@ function initVisualisation(){
       .scaleExtent([1, 5]) // TO CHECK: ALEX le max est réglable...
       .on("zoom", zoomedViz)
       .on("end", zoomendedViz);
-
+    t = [0,0];
+    s = 1.0;
     svg.call(zoomViz);
     console.log("finished init visualisation");
   }
@@ -350,6 +351,12 @@ function initVisualisation(){
 }
 
 var zoomViz;
+
+function dezoomViz(){
+  t = [0,0];
+  s = 1.0;
+  d3.selectAll("#nodes").attr("transform", "translate(" + t + ")scale(" + s + ")");
+}
 
 function zoomedViz() {
   //console.log("BEFORE t",t);

@@ -20,7 +20,6 @@ var scale = windowWidth/width;
 width = windowWidth;
 height = windowHeight;
 
-
 console.log("WINDOW SIZES",window.innerWidth,window.innerHeight);
 
 // RADIUS min and max values
