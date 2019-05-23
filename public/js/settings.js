@@ -9,8 +9,8 @@ var Science_Color = "#F8405E";
 
 // SIZES
 var sf = 1.0; // a changer a notre guise...
-var width = 1440; // TO CHECK: ALEX valeurs utilsées pour les settings de base, juste??
-var height = 900; // TO CHECK: ALEX valeurs utilsées pour les settings de base, juste??
+var width = 1440; 
+var height = 900; 
 
 var windowWidth = window.innerWidth;
 var windowHeight = window.innerHeight;
@@ -97,8 +97,8 @@ var strokeColor = "white";
 
 // TIMELINE
 var barColor = "#DADADA";
-var barHeight = 5; // TO ASK ALEX: depending on scale as well?
-var stepBetweenBars = 2; // TO ASK ALEX: depending on scale as well?
+var barHeight = 5; // TO CHECK ASK ALEX: depending on scale as well?
+var stepBetweenBars = 2; // TO CHECK ASK ALEX: depending on scale as well?
 
 // DETAIL VIEW
 var xCenterDetailView = width/3.0;

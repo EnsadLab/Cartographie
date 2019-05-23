@@ -149,7 +149,7 @@ function recenterRevue(revueId){
   var translateDiffY = -offset[1]*s + (mapheight*0.5);
   //console.log("NEW TRANS:",translateDiffX,translateDiffY);
   
-  /*
+  
   // TO CHECK: ALEX - solution A fait des zoom/dezoom trop violent je pense
   // *** solution A ***
   var duration = 1000;
@@ -157,8 +157,8 @@ function recenterRevue(revueId){
       d3.zoomIdentity.translate(translateDiffX,translateDiffY).scale(s))
   ;
   // *****************
-  */
-
+  
+    /*
   // *** solution B ***
   t = [translateDiffX,translateDiffY];
   var duration = 1200;
@@ -166,6 +166,7 @@ function recenterRevue(revueId){
   d3.selectAll(".boundary").selectAll("path").transition().duration(duration).style("stroke-width", mapStrokeWidth / s);
   d3.select("#map").selectAll(".morphopoly").transition().duration(duration).attr("transform", "translate(" + t + ")scale(" + s + ")");
   // *****************
+  */
 }
 
 

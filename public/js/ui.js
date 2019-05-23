@@ -441,7 +441,7 @@ function startObj(id){
         
         node.select("text")
                 .text(t)
-                .attr("font-family","latoregular")
+                .attr("font-family","latoregular") // TO CHECK: ALEX changer typo objets label
                 .attr("text-anchor","start")
                 .attr("x",xText)
                 .attr("y",0)
@@ -449,7 +449,7 @@ function startObj(id){
                 .attr("fill",c)
                 .attr("opacity","0.0")
                 .attr("font-size",fontSize)
-               // .call(wrap,textLength,lineHeight)
+               // .call(wrap,textLength,lineHeight) // TO CHECK: ALEX labels sur plusieurs lignes
                 ;
     });
 
@@ -735,7 +735,7 @@ function createSubNode(id,coord,label,color){
     g.attr("transform",'translate('+ coord[0] + ',' + coord[1] + ')');
     g.append("circle")
         .attr("opacity",0.0)
-        .attr("fill","white")  // TO CHECK: ALEX ou tu veux voir les coins du polygones? => "white"/"none"
+        .attr("fill","none") 
         .style("stroke",color)
         .style("stroke-width",strokeWidthSubNode)
         .attr("r",subRadiusDetail)
@@ -1245,9 +1245,11 @@ function loadDetailRevue(id){
                     .append("a")//.remove();
                     .on("mouseover",function(d){ showLabelOnHoverWithId(true,d);})
                     .on("mouseout",function(d){ showLabelOnHoverWithId(false,d);})
-                    .html(function(d){
+                    .html(function(d,i){
                         var name = dataLinks.find(data => data.id == d).name;
-                        return name + "&nbsp;";
+                        //if()
+                        return name + ",&nbsp;";
+                        //return name;
                     })
                     ;
 
