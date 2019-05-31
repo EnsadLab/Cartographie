@@ -19,16 +19,20 @@ var dataRevue = [
 	{
 		name : "Alliage " ,
 		keywords :[ "Fine Arts", "Literature", "Filmmaking", "Science and Technology Studies"],
+		time: [1989, 2019],
 	},
 
 	{
 		name : "Archée " ,
 		keywords :[ "New Media and Technological", "Aesthetics", "Science and Technology Studies"],
+		time: [1997, 2019],
 	},
 
 	{
 		name : "Architecture and Culture " ,
 		keywords :[ "Architecture", "Literature", "Filmmaking", "Art History", "Anthropology", "Geography", "Social Sciences & Humanities"],
+
+
 	},
 
 	{
@@ -44,11 +48,14 @@ var dataRevue = [
 	{
 		name : "Art Nodes " ,
 		keywords :[ "Fine Arts", "New Media and Technological", "Social Sciences & Humanities", "Science and Technology Studies"],
+		time: [2002, 2019],
 	},
 
 	{
 		name : "Art & Perception " ,
 		keywords :[ "Fine Arts", "Philosophy", "Computer Sciences", "Biology", "Cognitive Sciences"],
+		time: [2013, 2019],
+
 	},
 
 	{
@@ -84,6 +91,7 @@ var dataRevue = [
 	{
 		name : "Computer Music Journal" ,
 		keywords :[ "Sound (fine arts)", "Sound (design)", "New Media and Technological", "Engineering Mechanics and Electronics"],
+		time: [1977, 2019],
 	},
 
 
@@ -114,10 +122,11 @@ var dataRevue = [
 	{
 		name : "Design and culture " ,
 		keywords :[ "Design", "Anthropology", "Geography", "Business, Admin & Management", "Retailing, marketing, sales, public relations", "Science"],
+		time: [2009, 2019],
 	},
 
 	{
-		name : "Design and Health " ,
+		name : "Design for Health " ,
 		keywords :[ "Design", "Education", "Psychology", "Health"],
 	},
 
@@ -184,12 +193,15 @@ var dataRevue = [
 	{
 		name : "Harvard design magazine " ,
 		keywords :[ "Fine Arts & Design", "Architecture", "Literature", "Science", "Urban planning"],
+		time: [2014, 2019],
 	},
 
 
 	{
 		name : "Hybrid: Revue des arts et mediations humaines " ,
 		keywords :[ "Fine Arts", "Literature", "Digital humanities"],
+		time: [2014, 2019],
+
 	},
 
 
@@ -219,6 +231,7 @@ var dataRevue = [
 	{
 		name : "International Journal of Robots ,Education and Art ",
 		keywords :[ "Fine Arts & Design", "Education", "Political Sciences", "Anthropology", "Science and Technology Studies"],
+		time: [2010, 2019],
 	},
 
 
@@ -268,17 +281,21 @@ var dataRevue = [
 	{
 		name : "Journal of Design and Science " ,
 		keywords :[ "Design" , "Social Sciences & Humanities", "Science"],
+		time: [2016, 2019],
 	},
 
 	{
 		name : "The journal of Information visualization " ,
 		keywords :[ "Design", "Media Studies", "Cognitive Sciences", "Computer Sciences"],
+		time: [2016, 2019],	
 	},
 
 
 	{
-		name : "The Journal of Science and Technology of the Arts (CITARJ)Â " ,
+		name : "The Journal of Science and Technology of the Arts (CITARJ)" ,
 		keywords :[ "Fine Arts", "Computer Sciences", "Engineering, Mechanics and Electronics"],
+		time: [2009, 2019],
+
 	},
 
 
@@ -306,6 +323,7 @@ var dataRevue = [
 	{
 		name : "Leonardo " ,
 		keywords :[ "Fine Arts & Design", "Social Sciences & Humanities" , "Science"],
+		time: [1968, 2019],
 	},
 
 	{
@@ -317,16 +335,19 @@ var dataRevue = [
 	{
 		name : "Media-N " ,
 		keywords :[ "New Media and Technological" , "Art History" , "Media Studies"],
+		time: [2005, 2019],
 	},
 
 	{
 		name : "Nautilus " ,
 		keywords :[ "Fine Arts", "Literature", "Education", "Languages", "Archeology", "Philosophy", "Economics", "Anthropology", "Sociology", "Psychology", "Life Sciences", "Physical Sciences", "Mathematics and statistics", "Computer Sciences", "Health"],
+		time: [2013, 2019],
 	},
 
 	{
 		name : "Neural " ,
 		keywords :[ "Sound (fine arts)" , "New Media and Technological" , "Sound (design)" , "Media Studies" , "Computer Sciences"],
+		time: [1993, 2019],
 	},
 
 
@@ -382,6 +403,8 @@ var dataRevue = [
 	{
 		name : "Technoetic Arts: A Journal of Speculative Research " ,
 		keywords :[ "Fine Arts & Design", "New Media and Technological", "Aesthetics", "Philosophy", "Science and Technology Studies", "Cognitive Sciences", "Life Sciences"],
+		time: [2003, 2019],
+
 	},
 
 
@@ -394,6 +417,7 @@ var dataRevue = [
 	{
 		name : "Works That Work " ,
 		keywords :[ "Design" , "Social Sciences & Humanities", "Science and Technology Studies"],
+		time: [2013, 2019],
 	}
 ]
 

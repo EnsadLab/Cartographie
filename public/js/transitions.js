@@ -183,9 +183,9 @@ function createGeoTriPath(expectRevueId){
                     return "morphopoly";
                 }
             })
-            .attr("fill","black")
+            .attr("fill","#31373F")
             .attr("opacity",0.0)
-            .attr("stroke","black")
+            .attr("stroke","#31373F")
             .attr("stroke-opacity",0.0)
             .attr("d",dTri)
             ;
@@ -260,7 +260,7 @@ function morphVizToGeo(){
             .attr("stroke","black")
             .attr("opacity",1.0)
             .on("end",function(){
-                d3.select(this).attr("fill","black");
+                d3.select(this).attr("fill","#31373F");
                 d3.select(this).attr("opacity",triangleDefaultOpacity);
             })
             ;
@@ -417,7 +417,7 @@ function morphTimelineToGeo(delay_axis){
             .attr("stroke","black")
             .attr("opacity",1.0)
             .on("end",function(){
-                d3.select(this).attr("fill","black");
+                d3.select(this).attr("fill","#31373F");
                 d3.select(this).attr("opacity",triangleDefaultOpacity);
             })
             ;

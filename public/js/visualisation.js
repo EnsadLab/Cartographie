@@ -49,10 +49,13 @@ function createMasterNodes(){
   // TO CHECK: ALEX typo des master nodes
   div_g.append("text")
       .text(d => d.name.toUpperCase())
-      .attr("font-family","latohairline")
+      // .text(d => d.name)
+      .attr("font-family","latoheavy")
       .attr("text-anchor","middle")
       .style("alignment-baseline","middle")
-      .attr("fill","white")
+      // .attr("fill","white")
+      .attr("fill", d => d.color)
+      .attr("y",0.0)
       .attr("font-size",masterFontSize)
       .on("mouseenter",function(d){
         d3.select(this).style("cursor", "pointer");
@@ -64,6 +67,7 @@ function createMasterNodes(){
         //console.log("### mouseclick !!!!!!",d.id);
         startObj(d.id);
       })
+      // .call(wrap,subTextLength,subLineHeight) //TO CHECK
       ; 
 
   // SUB nodes
@@ -160,7 +164,7 @@ function createSubNodes(node,masterNodeId){
   // TO CHECK: ALEX typo des sub nodes
   div_g.append("text")
       .text(d => d.name)
-      .attr("font-family","latohairline")
+      .attr("font-family","latoregular")
       .attr("x",0)
       .attr("y",d => -d.r)
       .attr("fill",function(){

@@ -528,9 +528,10 @@
 
 		.keywords{
 			a{
-				font-family:@text_light;
+				cursor:default;
+				font-family:@text_reg;
 				font-size: 14px;
-				color:rgba(black, 0.8);
+				color:rgba(black, 0.5);
 				text-decoration: none;
 				display:inline-block;
 
@@ -538,10 +539,10 @@
 					color:rgba(black, 1);
 				}
 
-				&:active{
-					transform: scale(0.98);
-					transition: all 200ms ease-in;
-				}
+				// &:active{
+				// 	transform: scale(0.98);
+				// 	transition: all 200ms ease-in;
+				// }
 			}
 		}
 	}
@@ -596,6 +597,13 @@
 			font-size: 32px;
 			display:block;
 		}
+	}
+
+	.no-result{
+		border: rgba(0,0,0,0.3) 1px dashed;
+    	padding: 15px;
+    	color: rgba(0,0,0,0.3);
+    	width:90%;
 	}
 
 	ul{
