@@ -47,8 +47,8 @@ var key_maxTrans = 1.0;
 
 
 // TEXT SIZES
-var masterFontSize = 17*scale * sf;
-var subFontSize = 15*scale * sf;
+var masterFontSize = 20*scale * sf;
+var subFontSize = 14*scale * sf;
 var keyFontSize = 8*scale * sf;
 
 // TEXT LENGTH and LINE HEIGHT - keywords and sub labels
@@ -74,9 +74,9 @@ var rMinObject = firstRadius;
 var rMaxObject = thirdRadius;
 
 // OBJ FONT SIZES
-var keywordFontSizeOBJ = 11*scale * sf; // label on ob view
-var subFontSizeOBJ = 12*scale * sf;
-var masterFontSizeOBJ = 16*scale * sf;
+var keywordFontSizeOBJ = 10*scale * sf; // label on ob view
+var subFontSizeOBJ = 14*scale * sf;
+var masterFontSizeOBJ = 20*scale * sf;
 var keywordsTextLengthOBJ = 100*scale * sf; // length of label on obj view
 var keywordsLineHeightOBJ = 12*scale * sf; 
 var subTextLengthOBJ = 100*scale * sf;
@@ -89,8 +89,8 @@ var strokeWidthSubNodeOBJ = 6 * scale * sf;
 
 // MAP
 var triangleDefaultOpacity = 0.1;
-var triangleEdgeLength = 20*scale*sf; // edge lenth du triangle
-var triangleHightlighted = 30*scale*sf;
+var triangleEdgeLength = 5*scale*sf; // edge lenth du triangle
+var triangleHightlighted = 10*scale*sf;
 var mapBackground = "#E5F6FE";
 var mapStrokeWidth = 0;
 var strokeColor = "white";
@@ -103,14 +103,14 @@ var stepBetweenBars = 2; // TO CHECK ASK ALEX: depending on scale as well?
 // DETAIL VIEW
 var xCenterDetailView = width/3.0;
 var yCenterDetailView = height/2.0;
-var masterRadiusDetail = 30 * scale * sf;
+var masterRadiusDetail = 60 * scale * sf;
 var subRadiusDetail = 10 * scale * sf;
-var keywordRadiusDetail = 9 * scale * sf;
+var keywordRadiusDetail = 6 * scale * sf;
 var offsetYMasterDetail = -25 * scale * sf;
 var offsetYSubDetail = -20 * scale * sf;
 var offsetYKeywordDetail = -18 * scale * sf;
-var fontTypeDetail = "latohairline";
-var fontSizeDetail = 15 * scale * sf;
+var fontTypeDetail = "latoregular";
+var fontSizeDetail = 14 * scale * sf;
 var strokeWidthSubNode = 7 * scale * sf;
 
 
@@ -251,6 +251,7 @@ function testWrap(){
 
 }
 
+// TO CHECK
 function wrap(text, width, lineHeight) {
     text.each(function () {
         var text = d3.select(this),

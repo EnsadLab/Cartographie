@@ -99,7 +99,7 @@ function toggleControllerDetails(show){
     if(show){
          d3.select("#svg").on("mouseover", function() {
             d3.selectAll(".back-btn").style("opacity",1);
-            d3.select(this).style("cursor", "pointer");
+            d3.select(this).style("cursor", "w-resize");
         });
 
         d3.select("#svg").on("mouseout", function() {
@@ -369,6 +369,7 @@ function startObj(id){
                 }else{
                     var gradIndex = d.id.substring(d.id.length-1);
                     circle.attr("fill", function(d, i) { return "url(#grad" + gradIndex + ")"; });
+
                 }
                 
                 node.append("text");
@@ -438,7 +439,9 @@ function startObj(id){
                 .attr("r",radiusObject)
                 ;
         }
-        
+
+
+        if(d.id.startsWith("key") || d.id.startsWith("sub")) {
         node.select("text")
                 .text(t)
                 .attr("font-family","latoregular") // TO CHECK: ALEX changer typo objets label
@@ -451,6 +454,20 @@ function startObj(id){
                 .attr("font-size",fontSize)
                // .call(wrap,textLength,lineHeight) // TO CHECK: ALEX labels sur plusieurs lignes
                 ;
+        }else{
+            node.select("text")
+                .text(t.toUpperCase())
+                .attr("font-family","latoheavy") // TO CHECK: ALEX changer typo objets label
+                .attr("text-anchor","start")
+                .attr("x",xText)
+                .attr("y",0)
+                .style("alignment-baseline","middle")
+                .attr("fill",c)
+                .attr("opacity","0.0")
+                .attr("font-size",fontSize)
+               // .call(wrap,textLength,lineHeight) // TO CHECK: ALEX labels sur plusieurs lignes
+                ;
+        }
     });
 
     d3.select("#svg").append("circle").attr("id","TODELETE").transition().duration(1000)
@@ -614,7 +631,7 @@ function cloneObjectLinkedToDetail(revueId,trans){
             .attr("transform",'translate('+ (coord[0]+trans[0]) + ',' + (coord[1]+trans[1]) + ')')
             .on("end",function(d){
                 var poly = d3.select("#morph"+revueId);
-                poly.attr("fill","black");
+                poly.attr("fill","#31373F");
                 poly.attr("opacity",1.0);
                 // on va trouver la couleur.. TODO: faudrait faire plus simple
                 var nodeId = d3.select(this).attr("id");
@@ -894,7 +911,7 @@ function morphPolyToPolyDetail(revueId,duration,trans){
                   .attr("class","morphopolyDETAIL");
     mPath.transition()
         .duration(duration)
-        .attr("fill","black")
+        .attr("fill","#31373F")
         .attr("opacity",1.0)
         .attr("transform","translate("+ trans[0] + "," + trans[1] + ")");
         ;
@@ -907,7 +924,7 @@ function morphTriGeoToPolyDetail(revueId,duration,trans){
     //console.log("id","morph"+id);
     mPath.transition()
         .duration(duration)
-        .attr("fill","black")
+        .attr("fill","#31373F")
         .attr("opacity",1.0)
         .attr("d",revue.data)
         .attr("transform","translate("+ trans[0] + "," + trans[1] + ")");
@@ -938,7 +955,7 @@ function morphRectToPolyDetail(revueId,duration,trans){
         .attr("id","morph"+revueId)
         .attr("class","morphopolyDETAIL")
         .attr("fill","none")
-        .attr("stroke","black")
+        .attr("stroke","#31373F")
         .attr("stroke-opacity",0.4) //0.03
         .attr("d",dRect)
         .attr('pointer-events', 'visibleStroke')
@@ -948,7 +965,7 @@ function morphRectToPolyDetail(revueId,duration,trans){
     // start MORPHING
     mPath.transition()
         .duration(duration)
-        .attr("fill","black")
+        .attr("fill","#31373F")
         .attr("opacity",1.0)
         .attr("d",revue.data)
         .attr("transform","translate("+ trans[0] + "," + trans[1] + ")");
@@ -1021,7 +1038,7 @@ function morphPolyDetailToTriGeo(revueId){
     mPath.attr("d",p.attr("d"))
         .attr("transform",p.attr("transform"))
         .attr("opacity",1.0)
-        .attr("fill","black")
+        .attr("fill","#31373F")
         ;
 
         
@@ -1123,7 +1140,7 @@ function loadObjMenu(id,revueConnectedToObj,color){
             ;
         svgPoly.append("path")
                 .attr("d",data)
-                .attr("fill","black")
+                .attr("fill","#31373F")
                 ;
      }
     
@@ -1196,7 +1213,7 @@ function showRevueOnMap(show,id){
             recenterRevue(id);
         } else if(state == State.TIMELINE_VIEW){
             var node = d3.select("#timeline" + id)
-                        .attr("fill","black")
+                        .attr("fill","#31373F")
                         ;
         }
     } else {
@@ -1210,7 +1227,7 @@ function showRevueOnMap(show,id){
             var revuePoly = allRevuePoly.find(data => data.id == "poly" + revue.id);
             var dTri = getTrianglePath(revuePoly.nb,triangleEdgeLength,offset);
             triPath.attr("d",dTri)
-                    .attr("fill","black")
+                    .attr("fill","#31373F")
                     .attr("opacity",triangleDefaultOpacity)
                     ;
         } else if(state == State.TIMELINE_VIEW){
@@ -1273,8 +1290,10 @@ function updateUI(){
             .attr("id","showPoly"+currentRevueId)   
             .attr("class","showPoly")
             .attr("fill","none")
-            .attr("stroke","black")
-            .attr("fill","black")
+            // .attr("stroke","black")//##
+            // .attr("fill","black")//###
+            .attr("stroke","#31373F")
+            .attr("fill","#31373F")
             .attr("opacity",1.0)
             .attr("d",dPoly)
             ;

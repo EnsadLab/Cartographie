@@ -4,7 +4,8 @@ var masterNodes = [
       name : "Fine Arts & Design",
       x: 0.5, 
       y: 0.28, 
-      color : "#00A3F5FF",
+      // color : "#00A3F5FF",
+      color : "#565CC4",
       angle: Math.PI/2.0,
 
       subCategory : [ 
@@ -63,7 +64,7 @@ var masterNodes = [
       name : "Social Sciences & Humanities",
       x: 0.3, 
       y: 0.7, 
-      color : "#674890FF", 
+      color : "#E8606C", 
       angle: -Math.PI/6.0,
 
       subCategory : [ 
@@ -145,7 +146,7 @@ var masterNodes = [
       name : "Science",
       x: 0.75, 
       y: 0.6, 
-      color : "#F8405EFF", 
+      color : "#1B6C47", 
       angle: 7.0*Math.PI/6.0,
 
       subCategory : [ 
