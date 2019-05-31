@@ -1325,8 +1325,8 @@ function loadDetailRevue(id){
                     .data(revue.links)
                     .enter()
                     .append("a")//.remove();
-                    .on("mouseover",function(d){ d3.select(this).style("cursor", "pointer"); showLabelOnHoverWithId(true,d);})
-                    .on("mouseout",function(d){ d3.select(this).style("cursor", "default"); showLabelOnHoverWithId(false,d);})
+                    //.on("mouseover",function(d){ d3.select(this).style("cursor", "pointer"); showLabelOnHoverWithId(true,d);})
+                    //.on("mouseout",function(d){ d3.select(this).style("cursor", "default"); showLabelOnHoverWithId(false,d);})
                     .style("color",function(d){
                         var r = dataLinks.find(data => data.id == d);
                         var c = masterNodes.find(data => data.id == r.parent).color;
