@@ -1,7 +1,7 @@
 // script showing all revues in a timeline view
 
 
-var startYear = 1950;
+var startYear = 1920;
 var endYear = 2019;
 var middleYear = 1980;
 
@@ -22,6 +22,7 @@ function initTimeline(){
     var svgHeight = windowHeight;
     
     var margin = {top: 30, right: 0, bottom: 80, left: 0};
+    //var margin = {top: 0, right: 0, bottom: 0, left: 0};
     
     w = svgWidth - margin.left - margin.right;
     h = svgHeight - margin.top - margin.bottom;
@@ -35,20 +36,25 @@ function initTimeline(){
     // create scale objects
     xAxisScale =d3.scaleLinear()
       .domain([new Date(startYear), new Date(endYear)])
+      //.domain(d3.extent([startYear,endYear]))
       .range([0,w]);
     
+    /*
     var yAxisScale = d3.scaleLinear()
       .domain([-10,-20])
       .range([h,0]);
+    */
     
     // create axis objects
     var xAxis = d3.axisBottom(xAxisScale);
-    var yAxis = d3.axisLeft(yAxisScale);
+    //var yAxis = d3.axisLeft(yAxisScale);
 
     xAxis.tickFormat(d3.format(""));
 
     // Zoom Function
     zoom = d3.zoom()
+        .scaleExtent([1,6])
+        .translateExtent([[margin.left,0],[w,0]])
         .on("zoom", zoomFunction);
 
     //console.log("zoom",zoom);
@@ -85,15 +91,14 @@ function initTimeline(){
       .call(zoom)
     
     function zoomFunction(){
-      // create new scale ojects based on event
-      var new_xScale = d3.event.transform.rescaleX(xAxisScale)
-      var new_yScale = d3.event.transform.rescaleY(yAxisScale)
-      //console.log(d3.event.transform)
+        // create new scale ojects based on event
+        var new_xScale = d3.event.transform.rescaleX(xAxisScale)
+        //var new_yScale = d3.event.transform.rescaleY(yAxisScale)
 
-      // update rectangle revues
-      var transform = d3.event.transform;
-      var xNewScale = transform.rescaleX(xAxisScale);
-      timelineRevues.attr("x", d => xNewScale(d.time[0]))
+        // update rectangle revues
+        var transform = d3.event.transform;
+        var xNewScale = transform.rescaleX(xAxisScale);
+        timelineRevues.attr("x", d => xNewScale(d.time[0]))
         .attr("width", d => xNewScale(d.time[1]) - xNewScale(d.time[0]))
         ;
 
@@ -107,16 +112,20 @@ function initTimeline(){
 
 function transformTimeline() {
     return d3.zoomIdentity
-        .translate(width / 2, height / 2)
-        .scale(8)
-        .translate(-100, -100);
+        //.translate(width / 2, height / 2)
+        .scale(1)
+        //.translate(0, 0)
+        ;
   }
 
 function dezoomTimeline(){
     // innerSpace.call(zoom.transform, d3.zoomIdentity);
     //innerSpace.transition().duration(1000).call(zoom.transform, d3.zoomIdentity);
     //innerSpace.transition().duration(1000).call(zoom.transform, d3.zoomIdentity);
-    innerSpace.transition().duration(1000).call(zoom.transform, transformTimeline);
+    //innerSpace.transition().duration(1000).call(zoom.transform, transformTimeline);
+    //s = 1.0;
+    //var t =[0,0];
+    //innerSpace.transition().duration(1000).attr("transform", "translate(" + [0,0] + ")scale(" + 1.0 + ")");
 }
 
 function loadRevues(){

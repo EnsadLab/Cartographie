@@ -210,7 +210,7 @@ function zoomed() {
     t = [d3.event.transform.x,d3.event.transform.y];
     //console.log("AFTER t",t);
     s = d3.event.transform.k;
-    var scale = d3.scaleLinear().domain([1.0,10.0]).range([1.0,30.0]); 
+    //var scale = d3.scaleLinear().domain([1.0,10.0]).range([1.0,30.0]); 
     //s = 2.0; // pour fixer le scale à double
 
     var h = 0;

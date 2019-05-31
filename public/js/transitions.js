@@ -285,6 +285,7 @@ function morphAllVizToTimeline(){
             .attr("fill","none")
             .attr("stroke","black")
             .attr("opacity",0.05)
+            //.attr("opacity",1.0)
             .attr("d",revuePoly.data)
             .attr('pointer-events', 'visibleStroke')
             .style("z-index",10)
@@ -309,9 +310,11 @@ function morphAllVizToTimeline(){
             .ease(d3.easeQuad)
             .delay(getRandomInt(0,600))
             .on("start",function(){
-                d3.select(this).attr("opacity","0.05");
+                d3.select(this).attr("opacity","0.08");
+                //d3.select(this).attr("opacity","1.0");
             })
             .attr("stroke","black")
+            .attr("opacity","0.2")
             .on("end",function(){
                 d3.select(this).attr("fill",barColor);
                 d3.select(this).attr("opacity",1.0);
@@ -538,10 +541,18 @@ function loadAllRevuePoly(){
 
 function makeNodeDisappear(d,reload){
     console.log("--> make node disappear",reload);
+    tViz = [0,0];
+    sViz = 1.0;
+    d3.selectAll("#nodes").transition().duration(d).attr("transform", "translate(" + tViz + ")scale(" + sViz + ")");
     // MASTER NODES
     for(var i=0; i<3; i++){
-        var selg = d3.select("#master"+i);
+        var selg = d3.select("#nodes").select("#master"+i);
         selg.select("g").select("circle")
+            .transition()
+            .attr("opacity",0.0)
+            .duration(d)
+            ;
+        selg.select("g").select("text")
             .transition()
             .attr("opacity",0.0)
             .duration(d)
@@ -549,8 +560,13 @@ function makeNodeDisappear(d,reload){
     }
     // SUB NODES
     for(var i=0; i<nbSubNodes;i++){
-        var selg = d3.select("#sub"+i);
+        var selg = d3.select("#nodes").select("#sub"+i);
         selg.select("g").select("circle")
+            .transition()
+            .attr("opacity",0.0)
+            .duration(d)
+            ;
+        selg.select("g").select("text")
             .transition()
             .attr("opacity",0.0)
             .duration(d)
@@ -558,8 +574,13 @@ function makeNodeDisappear(d,reload){
     }
     // KEY NODES
     for(var i=0; i<nbKeyNodes;i++){
-        var selg = d3.select("#key"+i);
+        var selg = d3.select("#nodes").select("#key"+i);
         selg.select("g").select("circle")
+            .transition()
+            .attr("opacity",0.0)
+            .duration(d)
+            ;
+        selg.select("g").select("text")
             .transition()
             .attr("opacity",0.0)
             .duration(d)
@@ -573,10 +594,12 @@ function makeNodeDisappear(d,reload){
                 .on("end",function(){
                     console.log("DELETE OBJECTS END");
                     dezoomViz();
-                    d3.select("#master0").remove();
-                    d3.select("#master1").remove();
-                    d3.select("#master2").remove();
+                    loadAllRevuePoly();
+                    d3.select("#nodes").select("#master0").remove();
+                    d3.select("#nodes").select("#master1").remove();
+                    d3.select("#nodes").select("#master2").remove();
                     d3.select(this).remove();
+                    animVizRunning = false;
                     if(reload){
                         state = State.LOAD;
                         startViz();

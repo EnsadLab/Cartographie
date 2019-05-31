@@ -16,15 +16,15 @@ class Anim {
       this.tmin = tmin;
       this.tmax = tmax;
       this.fps = 60;
-      this.node = d3.select(id).select("g");
+      this.node = d3.select("#nodes").select(id).select("g"); // TO DO: to check bug!!!
     }
 
-    update(){
+    update(debug){
       if(this.t < 1.0){
         this.t += this.dt;
         this.x += this.dx;
         this.y += this.dy;
-        //console.log("update",this.id,this.x, this.y);
+        if(debug) console.log("update",this.id,this.x, this.y);
         this.node.attr("transform",'translate('+ this.x + ',' + this.y + ')');
         this.t += this.dt;
       }else {

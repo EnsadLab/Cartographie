@@ -16,6 +16,7 @@ function createMasterNodes(){
       .enter()
       .append("g") // check diff with join!!
       .attr("id", d => d.id )
+      .attr("class","masternodes")
       .attr("transform", d => `translate(${d.x * width},${d.y * height})`)
       ;
   var div_g = node.append("g")
@@ -70,6 +71,9 @@ function createMasterNodes(){
     createSubNodes(d3.select(this), d3.select(this.parentNode).attr("id"));
   });
 
+  // change order of master nodes
+  d3.select("#master2").moveToBack();
+  d3.select("#master1").moveToBack();
 
 }
 
@@ -97,6 +101,7 @@ function createSubNodes(node,masterNodeId){
       .enter()
       .append("g")
       .attr("id",d => d.id)
+      .attr("class","subnodes")
       .attr("transform", (d,i) => {
         //var angle = (i / nbSubnode) * Math.PI * 2.0;
         //console.log("weight",d.w);
@@ -118,13 +123,13 @@ function createSubNodes(node,masterNodeId){
               /*console.log("### mouseenter",d.id);*/
               //if(d.id == "sub10") console.log("### mouseenter",d.id);
               d3.select(this).style("cursor", "pointer");
-              showLabel(true,d.id);
+              if(!subnodeTextShow) showLabel(true,d.id);
             })    
             .on("mouseleave",function(d){
               /*console.log("### mouseleave",d.id);*/
               //if(d.id == "sub10") console.log("### mouseout",d.id);
               d3.select(this).style("cursor", "default");
-              showLabel(false,d.id);
+              if(!subnodeTextShow) showLabel(false,d.id);
             })
             .on("click",function(d){
               console.log("### mouseclick",d.id);
@@ -188,6 +193,7 @@ function createKeywordNodes(subnode, masterNodeId, subNodeId){
       .enter()
       .append("g")
       .attr("id",d => d.id)
+      .attr("class","keywordnodes")
       .attr("transform", (d,i) => {
         var index = Math.ceil(i/2.0);
         if(i % 2 == 0 && i != 0) index = nbKeyNodes - index;
@@ -329,7 +335,9 @@ function createDefs(){
 
 }
 
-
+var zoomViz;
+var sViz = 1.0;
+var tViz = [0,0];
 function initVisualisation(){
 
   if(!vizdataLoaded){
@@ -342,47 +350,61 @@ function initVisualisation(){
       .scaleExtent([1, 5]) // TO CHECK: ALEX le max est réglable...
       .on("zoom", zoomedViz)
       .on("end", zoomendedViz);
-    t = [0,0];
-    s = 1.0;
+    tViz = [0,0];
+    sViz = 1.0;
     svg.call(zoomViz);
     console.log("finished init visualisation");
   }
 
 }
 
-var zoomViz;
+
 
 function dezoomViz(){
-  t = [0,0];
-  s = 1.0;
-  d3.selectAll("#nodes").attr("transform", "translate(" + t + ")scale(" + s + ")");
+  tViz = [0,0];
+  sViz = 1.0;
+  d3.selectAll("#nodes").attr("transform", "translate(" + tViz + ")scale(" + sViz + ")");
+  //d3.selectAll("#nodes").transition().duration(1000).attr("transform", "translate(" + t + ")scale(" + s + ")");
 }
 
+var subnodeTextShow = false;
 function zoomedViz() {
   //console.log("BEFORE t",t);
-  t = [d3.event.transform.x,d3.event.transform.y];
+  tViz = [d3.event.transform.x,d3.event.transform.y];
   //console.log("AFTER t",t);
-  s = d3.event.transform.k;
+  sViz = d3.event.transform.k;
   //s = 2.0; // pour fixer le scale à double
 
   var h = 0;
-  t[0] = Math.min(
-      (width/height)  * (s - 1),
-      Math.max( width * (1 - s), t[0] )
+  tViz[0] = Math.min(
+      (width/height)  * (sViz - 1),
+      Math.max( width * (1 - sViz), tViz[0] )
   );
 
-  t[1] = Math.min(
-      h * (s - 1) + h * s, 
-      Math.max(height  * (1 - s) - h * s, t[1])
+  tViz[1] = Math.min(
+      h * (sViz - 1) + h * sViz, 
+      Math.max(height  * (1 - sViz) - h * sViz, tViz[1])
   );
+
+  // TO CHECK: ALEX ici tu peux changer la valeur de zoom pour l'affichage des labels des subnodes
+  if(sViz > 2){
+    //console.log("showlabels");
+    subnodeTextShow = true;
+    d3.select("#nodes").selectAll(".subnodes").select("text").attr("opacity",1.0);
+  }else{
+    if(subnodeTextShow){
+      subnodeTextShow = false;
+      d3.select("#nodes").selectAll(".subnodes").select("text").attr("opacity",0.0);
+    }
+  }
 
   //console.log("current scale and translate",s,t);
   //d3.selectAll("#nodes").selectAll("g").attr("transform", "translate(" + t + ")scale(" + s + ")");
-  d3.selectAll("#nodes").attr("transform", "translate(" + t + ")scale(" + s + ")");
+  d3.selectAll("#nodes").attr("transform", "translate(" + tViz + ")scale(" + sViz + ")");
 
 }
 
 function zoomendedViz(){
-  if(s !== 1) return;
+  if(sViz !== 1) return;
   // ...
 } 

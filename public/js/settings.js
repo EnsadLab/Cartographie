@@ -160,6 +160,21 @@ function getArrayWithUniqueElemAndKey(a){
     return result;
 }
 
+function scaleCoordsOnCenter(coords,scale){
+
+    var box = getBox(coords);
+    coords.forEach(function(d,i){
+        var coord = d.coord;
+        var diffX = coord[0]-box.cx;
+        var diffY = coord[1]-box.cy;
+        var newX = box.cx + diffX*scale;
+        var newY = box.cy + diffY*scale;
+        d.coord = [newX,newY];
+        
+    });
+    return coords;
+}
+
 function getBox(coords){
     var x=Number.MAX_SAFE_INTEGER;y=Number.MAX_SAFE_INTEGER;xMax=0;yMax=0; w=0,h=0;
     coords.forEach(function(d,i){
@@ -473,3 +488,18 @@ function testTriangle(){
         ;
     
 }
+
+d3.selection.prototype.moveToFront = function() {  
+    return this.each(function(){
+      this.parentNode.appendChild(this);
+    });
+  };
+
+d3.selection.prototype.moveToBack = function() {  
+    return this.each(function() { 
+        var firstChild = this.parentNode.firstChild; 
+        if (firstChild) { 
+            this.parentNode.insertBefore(this, firstChild); 
+        } 
+    });
+};
