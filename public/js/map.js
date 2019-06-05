@@ -60,7 +60,7 @@ function createProjection(){
 
 }
 
-function loadMap(){
+function loadMap(duration){
   d3.json("maps/countries.topo.json", function(error, world) {
     if(error) return console.error(error);
 
@@ -72,13 +72,13 @@ function loadMap(){
         .enter().append("path")
         .attr("d", path)
         .attr("class","map-path")
-        .attr("stroke-width",mapStrokeWidth)
-        .attr("stroke",strokeColor)
+        //.attr("stroke-width",mapStrokeWidth)
+        //.attr("stroke",mapStrokeColor)
         .attr("fill",mapBackground)
         .attr("opacity","0.0")
         ;
     
-    showMap(800);
+    showMap(duration);
 
   });
 }
@@ -103,7 +103,7 @@ function hideAndDeleteMap(d,reload) {
         deleteMap();
         if(reload){
           state = State.LOAD;
-          startGeo();
+          startGeo(true);
         }
         d3.select(this).remove();
       })
@@ -170,18 +170,56 @@ function recenterRevue(revueId){
 }
 
 
-function dezoomMap(){
+function dezoomMap(duration){
+    sMap_saved = s;
     s = 1.0;
     var t =[0,0];
+    d3.selectAll(".map-path").transition()
+      .duration(duration)
+      .attr("opacity",0.0)
+      ;
     g.transition()
-      .duration(500)
+      .duration(duration)
       .attr("transform", "translate(" + t + ")scale(" + s + ")")
+      .on("end",function(){
+        svg.call(zoomGeo.transform,d3.zoomIdentity.translate(0,0).scale(s));
+        deleteMap();
+      })
       ;
-    d3.select("#map").selectAll(".morphopoly")
-      .transition()
-      .duration(500)
-      .attr("transform", "translate(" + t + ")scale(" + s + ")")
-      ;
+}
+
+// dezoom/fade everything and delete all objects at end
+// when reload is true, will restart the map -> see startGeo()
+var sMap_saved = s;
+function dezoomMapAndTriangles(duration,reload){
+  sMap_saved = s;
+  s = 1.0;
+  var t =[0,0];
+  d3.selectAll(".map-path").transition()
+    .duration(duration)
+    .attr("opacity",0.0)
+    ;
+  g.transition()
+    .duration(duration)
+    .attr("transform", "translate(" + t + ")scale(" + s + ")")
+    .on("end",function(){
+      svg.call(zoomGeo.transform,d3.zoomIdentity.translate(0,0).scale(s));
+      deleteMap();
+      if(reload){
+        state = State.LOAD;
+        startGeo(true);
+      }    
+    })
+    ;
+  d3.select("#map").selectAll(".morphopoly")
+    .transition()
+    .duration(duration)
+    .attr("opacity",0.0)
+    .attr("transform", "translate(" + t + ")scale(" + s + ")")
+    .on("end",function(){
+      d3.select(this).remove();
+    })
+    ;
 }
 
 // to be tested
@@ -231,8 +269,8 @@ function zoomed() {
     d3.selectAll(".boundary").selectAll("path").style("stroke-width", mapStrokeWidth / s);
 
     //adjust the triangle sizes
-    d3.select("#map").selectAll(".morphopoly").attr("transform", "translate(" + t + ")scale(" + s + ")");
-
+    d3.select("#map").selectAll(".morphopoly").attr("stroke-width",triangleStrokeWidth / s).attr("transform", "translate(" + t + ")scale(" + s + ")");
+    
     mouse = d3.mouse(this); 
 
     // in case we want to rotate the map when zoomed out
@@ -245,10 +283,10 @@ function zoomed() {
 
 }
 
-function initGeoMap(){
+function initGeoMap(duration){
 
   createProjection();
-  loadMap();
+  loadMap(duration);
 
 }
 

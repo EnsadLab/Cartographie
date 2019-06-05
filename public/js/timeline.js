@@ -10,13 +10,14 @@ var w,h;
 var svgViewport;
 var innerSpace;
 var xAxisScale;
+var xAxis;
 var zoom;
 var gX;
 
 var timelineRevues;
 
 
-function initTimeline(){
+function initTimeline(){    
 
     var svgWidth = windowWidth; 
     var svgHeight = windowHeight;
@@ -32,6 +33,9 @@ function initTimeline(){
       .attr('width', svgWidth)
       .attr('height', svgHeight)
       ;
+
+    startYear = minYear - 40;//minYear%50;
+    endYear = 2060;
     
     // create scale objects
     xAxisScale =d3.scaleLinear()
@@ -46,7 +50,7 @@ function initTimeline(){
     */
     
     // create axis objects
-    var xAxis = d3.axisBottom(xAxisScale);
+    xAxis = d3.axisBottom(xAxisScale);
     //var yAxis = d3.axisLeft(yAxisScale);
 
     xAxis.tickFormat(d3.format(""));
@@ -92,20 +96,17 @@ function initTimeline(){
     
     function zoomFunction(){
         // create new scale ojects based on event
-        var new_xScale = d3.event.transform.rescaleX(xAxisScale)
-        //var new_yScale = d3.event.transform.rescaleY(yAxisScale)
-
-        // update rectangle revues
         var transform = d3.event.transform;
         var xNewScale = transform.rescaleX(xAxisScale);
-        timelineRevues.attr("x", d => xNewScale(d.time[0]))
-        .attr("width", d => xNewScale(d.time[1]) - xNewScale(d.time[0]))
-        ;
 
-      // update axes
-      gX.call(xAxis.scale(new_xScale));
-      //gY.call(yAxis.scale(new_yScale));
-    
+        // update rectangle revues
+        timelineRevues.attr("x", d => xNewScale(d.time[0]))
+            .attr("width", d => xNewScale(d.time[1]) - xNewScale(d.time[0]))
+            ;
+
+        // update axes
+        gX.call(xAxis.scale(xNewScale));
+        //gY.call(yAxis.scale(new_yScale));
     };
     
 }
@@ -118,14 +119,65 @@ function transformTimeline() {
         ;
   }
 
-function dezoomTimeline(){
-    // innerSpace.call(zoom.transform, d3.zoomIdentity);
-    //innerSpace.transition().duration(1000).call(zoom.transform, d3.zoomIdentity);
-    //innerSpace.transition().duration(1000).call(zoom.transform, d3.zoomIdentity);
-    //innerSpace.transition().duration(1000).call(zoom.transform, transformTimeline);
+function dezoomTimeline(duration){
     //s = 1.0;
     //var t =[0,0];
-    //innerSpace.transition().duration(1000).attr("transform", "translate(" + [0,0] + ")scale(" + 1.0 + ")");
+    // update rectangle revues and x axis
+    var transform = d3.zoomIdentity;
+    var xNewScale = transform.rescaleX(xAxisScale);
+    timelineRevues.transition().duration(duration).attr("x", d => xNewScale(d.time[0]))
+        .attr("width", d => xNewScale(d.time[1]) - xNewScale(d.time[0]))
+        ;
+    gX.transition().duration(duration).call(xAxis.scale(xNewScale));
+}
+
+function dezoomAndDeleteTimeline(duration){
+    //s = 1.0;
+    //var t =[0,0];
+    // update rectangle revues and x axis
+    //console.log("dezoom timeline")
+    var transform = d3.zoomIdentity;
+    var xNewScale = transform.rescaleX(xAxisScale);
+    timelineRevues.transition().duration(duration).attr("x", d => xNewScale(d.time[0]))
+        .attr("width", d => xNewScale(d.time[1]) - xNewScale(d.time[0]))
+        ;
+    gX.transition().duration(duration).attr("opacity",0.0).call(xAxis.scale(xNewScale))
+        .on("end",function(d){
+            d3.select('#timeline').select("svg").remove();
+        });
+}
+
+// will also hide the rectangles
+function dezoomAndDeleteTimeline2(duration,reload){
+    //console.log("dezoom timeline 2");
+    //s = 1.0;
+    //var t =[0,0];
+    // update rectangle revues and x axis
+    var transform = d3.zoomIdentity;
+    var xNewScale = transform.rescaleX(xAxisScale);
+    timelineRevues.transition().duration(duration).attr("x", d => xNewScale(d.time[0]))
+        .attr("width", d => xNewScale(d.time[1]) - xNewScale(d.time[0]))
+        ;
+    
+    timelineRevues.transition()
+        .duration(10)
+        .delay(function(d,i){
+            //var d = i*10;
+            var d = 100 + getRandomInt(0,30)*10;
+            return d;   
+        })
+        .on("end",function(d){
+            d3.select(this).attr("opacity",0.0);
+        })
+        ;
+    gX.transition().duration(duration).attr("opacity",0.0).call(xAxis.scale(xNewScale))
+        .on("end",function(d){
+            d3.select('#timeline').select("svg").remove();
+            if(reload){
+                state = State.LOAD;
+                startTimeline();
+            }
+        });
 }
 
 function loadRevues(){
@@ -177,7 +229,7 @@ function makeTimelineDisappear(delay,reload){
             .delay(function(d,i){
                 //var d = i*10;
                 var d = delay + getRandomInt(0,30)*10;
-                return d;
+                return d;   
             })
             .on("end",function(d){
                 d3.select(this).attr("opacity",0.0);

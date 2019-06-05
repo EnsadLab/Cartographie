@@ -55,6 +55,7 @@ function createMasterNodes(){
       .style("alignment-baseline","middle")
       // .attr("fill","white")
       .attr("fill", d => d.color)
+      .attr("opacity",0.0)
       .attr("y",0.0)
       .attr("font-size",masterFontSize)
       .on("mouseenter",function(d){
@@ -67,6 +68,9 @@ function createMasterNodes(){
         //console.log("### mouseclick !!!!!!",d.id);
         startObj(d.id);
       })
+      .transition()
+      .duration(durationFadeAnim)
+      .attr("opacity",1.0)
       // .call(wrap,subTextLength,subLineHeight) //TO CHECK
       ; 
 
@@ -362,21 +366,39 @@ function initVisualisation(){
 
 }
 
-
+function recenterRevueOnViz(revueId){
+  var duration = 3000;
+  //var offset = projection(coord);
+  //var revueId = "revue7";
+  var poly = d3.select("#showPoly"+revueId);
+  var bb = poly.node().getBoundingClientRect();
+  var x = bb.x + bb.width*0.5;
+  var y = bb.y + bb.height*0.5;
+  //console.log("center",x,y);
+  var offset = [x,y];
+  var translateDiffX = -offset[0]*s + (mapwidth*0.5);
+  var translateDiffY = -offset[1]*s + (mapheight*0.5);
+  svg.transition().duration(duration).call(zoomViz.transform,
+      d3.zoomIdentity.translate(translateDiffX,translateDiffY).scale(s))
+  ;
+}
 
 function dezoomViz(){
   tViz = [0,0];
   sViz = 1.0;
   d3.selectAll("#nodes").attr("transform", "translate(" + tViz + ")scale(" + sViz + ")");
+  svg.call(zoomViz.transform,d3.zoomIdentity.translate(0,0).scale(sViz));
   //d3.selectAll("#nodes").transition().duration(1000).attr("transform", "translate(" + t + ")scale(" + s + ")");
 }
 
 var subnodeTextShow = false;
 function zoomedViz() {
-  //console.log("BEFORE t",t);
+  //console.log("BEFORE t",tViz);
+  //console.log("BEFORE s",sViz);
   tViz = [d3.event.transform.x,d3.event.transform.y];
-  //console.log("AFTER t",t);
   sViz = d3.event.transform.k;
+  //console.log("AFTER t",tViz);
+  //console.log("AFTER s",sViz);
   //s = 2.0; // pour fixer le scale à double
 
   var h = 0;
@@ -389,6 +411,14 @@ function zoomedViz() {
       h * (sViz - 1) + h * sViz, 
       Math.max(height  * (1 - sViz) - h * sViz, tViz[1])
   );
+  //console.log("tViz",tViz);
+  /*
+  var revueId = "revue7";
+  var poly = d3.select("#showPoly"+revueId);
+  var bb = poly.node().getBoundingClientRect();
+  var x = bb.x + bb.width*0.5;
+  var y = bb.y + bb.height*0.5;
+  console.log("center",x,y);*/
 
   // TO CHECK: ALEX ici tu peux changer la valeur de zoom pour l'affichage des labels des subnodes
   if(sViz > 2){
