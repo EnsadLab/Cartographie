@@ -1,5 +1,5 @@
 var testRevue = {
-	//id: "revue0",
+	//id: "revue0", // généré par Cécile, ne rien faire
 	keywords: [ 
 		"Fine Arts",
 		"Literature",
@@ -7,10 +7,15 @@ var testRevue = {
 		"Science and Technology Studies"
 	],
 
-	//links: ["sub1", "sub6", "sub5", "key26"], // généré par cécile
-	locationCoords: [121, 31], // A RAJOUTER
+	//links: ["sub1", "sub6", "sub5", "key26"], // généré par cécile, ne rien faire
+	locationCoords: [121, 31], // Latitude-longitude. Si rien, laisser la ligne totalement vide (=> enlever le paramètre)
 	name: "Alliage ",
-	time: [1977, 2019] // A RAJOUTER
+	time: [1977, 2019], // Si rien, laisser la ligne totalement vide (=> enlever le paramètre)
+	city: "Paris",
+	country: "France",
+	about: "lorem ipsum...",
+	publisher: "publisher",
+	link: "www.lorem.com"
 }
 
 
