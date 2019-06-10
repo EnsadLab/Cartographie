@@ -15,9 +15,9 @@ function startTransitionVizGeo(){
 function startTransitionGeoViz(){
 
     console.log("----> START TransitionGeoViz");
-    //hideAndDeleteMap(800);
-    hideMap(800);
-    morphGeoToViz();
+    var duration = 800;
+    var delayRandom = 500;
+    morphGeoToViz(duration,delayRandom);
 
     svg.append("circle")
             .attr("id","TODELETELINES")
@@ -27,8 +27,6 @@ function startTransitionGeoViz(){
                 console.log("DELETE OBJECTS END StartTransitionGeoViz");
                 startAnimNodes();
                 vizdataLoaded = true;
-                d3.selectAll(".morphopoly").remove();
-                deleteMap();
                 d3.select(this).remove();
             })
             ;
@@ -39,7 +37,6 @@ function startTransitionGeoViz(){
 function startTransitionVizTimeline(){
     console.log("----> START TransitionVizTimeline");
     morphAllVizToTimeline();
-    makeAxisAppear(1000,800);
     makeNodeDisappear(1000);
     svg.append("circle")
             .attr("id","TODELETELINES")
@@ -58,44 +55,53 @@ function startTransitionVizTimeline(){
 function startTransitionTimelineViz(){
     console.log("----> START TransitionTimelineViz");
 
-    var delay_axis = 300; // delay because axis disappears first
+    var delay_axis = 200; // delay because axis disappears first.. we do not use it for now..
+
+    morphTimelineToViz(delay_axis); // do not morph anymore.. just create the path.. change name later
 
     d3.selectAll(".timelineRect")
                 .transition()
-                .duration(800)
+                .duration(100)
                 .delay(function(d){
-                    var delay = delay_axis + getRandomInt(0,600);
+                    //var delay = delay_axis + getRandomInt(0,500);
+                    var delay = getRandomInt(0,600);
                     return delay;
                 })
                 .on("start",function(d){
                     d3.select(this).attr("opacity",0.0);
+                    var idTimeline = d3.select(this).attr("id");
+                    var id = idTimeline.substring("timeline".length);
+                    //console.log("id??",id);
+                    // get poly
+                    var revuePoly = allRevuePoly.find(data => data.id == "poly" + id);
+                    
+                    var p = d3.select("#morph"+id);
+                    p.transition()
+                        //.delay(delay_axis + getRandomInt(0,500))
+                        .duration(getRandomInt(300,600))
+                        .attr("fill","none")
+                        .on("start",function(){
+                            d3.select(this).attr("opacity",1.0);
+                            d3.select(this).attr("stroke-opacity",0.2);
+                        })
+                        //.attr("opacity",0.03)//0.03
+                        .attr("stroke-opacity",0.05) // 0.08
+                        .attr("d",revuePoly.data)
+                        .on("end",function(){
+                            d3.select(this).remove();
+                        })
+                        ;
                 })
                 ;
-    morphTimelineToViz(delay_axis);
-
-    //makeTimelineDisappear(1000); // TODO: to rethink...
-    makeAxisDisappear(500);
 
     svg.append("circle")
             .attr("id","dummy")
             .transition()
-            .duration(400)
+            .duration(500)
             .on("end",function(d){
                 animAlpha.start(0,1.0,0.5,0.0);
                 vizdataLoaded = true;
-                d3.select(this).remove();
-            })
-            ;
-
-    svg.append("circle")
-            .attr("id","TODELETELINES")
-            .transition()
-            .duration(800)
-            .on("end",function(){
-                console.log("DELETE OBJECTS END StartTransitionGeoViz");
                 startAnimNodes();
-                d3.selectAll(".morphopoly").remove();
-                makeTimelineDisappear(0);
                 d3.select(this).remove();
             })
             ;
@@ -105,10 +111,8 @@ function startTransitionTimelineViz(){
 
 function startTransitionGeoTimeline(){
     console.log("----> START TransitionGeoTimeline");
-    //hideAndDeleteMap(800);
-    hideMap(800);
+
     morphGeoToTimeline();
-    makeNodeDisappear(1000);
     svg.append("circle")
             .attr("id","TODELETELINES")
             .transition()
@@ -129,38 +133,51 @@ function startTransitionTimelineGeo(){
     console.log("----> START TransitionTimelineGeo");
 
     var delay_axis = 300; // delay because axis disappears first
-    
+
+    morphTimelineToGeo(delay_axis); // change name.. morphing not done there
+    console.log(dataRevue);
     d3.selectAll(".timelineRect")
                 .transition()
                 .duration(800)
                 .delay(function(d){
-                    var delay = delay_axis + getRandomInt(0,600);
+                    //var delay = delay_axis + getRandomInt(0,600);
+                    var delay = getRandomInt(0,600);
                     return delay;
                 })
                 .on("start",function(d){
                     d3.select(this).attr("opacity",0.0);
+                    var idTimeline = d3.select(this).attr("id");
+                    var id = idTimeline.substring("timeline".length);
+                    // get poly
+                    var revuePoly = allRevuePoly.find(data => data.id == "poly" + id);
+                    var d = dataRevue.find(data => data.id == id);
+                    // get triangle
+                    var offset = projection(d.locationCoords);
+                    var dTri = getTrianglePath(revuePoly.nb,triangleEdgeLength,offset);
+                    
+                    var p = d3.select("#morph"+id);
+                    p.transition()
+                        .duration(getRandomInt(300,600))
+                        .attr("d",dTri)
+                        .ease(d3.easeQuad)
+                        .on("start",function(){
+                            d3.select(this).attr("opacity","0.05");
+                            //d3.select(this).attr("opacity","1.0");
+                            d3.select(this).attr("stroke-opacity",0.4);
+                        })
+                        .attr("stroke","black")
+                        .attr("opacity",1.0)
+                        .on("end",function(){
+                            d3.select(this).attr("fill","#31373F");
+                            d3.select(this).attr("opacity",triangleDefaultOpacity);
+                        })
+                        ;
                 })
                 ;
 
-    morphTimelineToGeo(delay_axis);
-
-    makeAxisDisappear(500);
-
-    svg.append("circle").attr("id","TODELETELINES").transition().duration(2000)
-        .on("end",function(){
-            console.log("DELETE OBJECTS END startTransitionTimelineGeo");
-            //d3.selectAll(".morphopoly").remove();
-            //d3.selectAll(".timelineRect").remove();
-            makeTimelineDisappear(0);
-            d3.select(this).remove();
-        })
-        ;
     console.log("----> END TransitionTimelineGeo");
 }
 
-function makeTriGeoDisappear(){
-
-}
 
 function createGeoTriPath(expectRevueId){
 
@@ -206,15 +223,11 @@ function createGeoTriPath(expectRevueId){
 
 }
 
-function createTimelineRectPath(){
-
-    
-}
 
 function morphVizToGeo(){
 
 
-    loadAllRevuePoly();
+    loadAllCurrentRevuePoly();
     dataRevue.forEach(function(d,i){
 
         // get poly
@@ -226,6 +239,7 @@ function morphVizToGeo(){
             .attr("class","morphopoly")
             .attr("fill","none")
             .attr("stroke","black")
+            .attr("stroke-width",triangleStrokeWidth)
             .attr("opacity",0.05)
             .attr("d",revuePoly.data)
             .attr('pointer-events', 'visibleStroke')
@@ -234,7 +248,7 @@ function morphVizToGeo(){
 
         // get triangle
         var offset = projection(d.locationCoords);
-        if(d.id == "revue0") console.log("coords",d.locationCoords,offset);
+        //if(d.id == "revue0") console.log("coords",d.locationCoords,offset);
         var dTri = getTrianglePath(revuePoly.nb,triangleEdgeLength,offset);
 
         /* DEBUG - to show the coordinates
@@ -271,7 +285,7 @@ function morphVizToGeo(){
 function morphAllVizToTimeline(){
     
     // get all polygons
-    loadAllRevuePoly();
+    loadAllCurrentRevuePoly();
 
     dataRevue.forEach(function(d,i){
         // get poly
@@ -348,9 +362,10 @@ function morphGeoToTimeline(){
 
         // Start MORPHING from triangle TO rect 
         mPath.transition()
-            .duration(getRandomInt(200,500))
+            .duration(getRandomInt(400,700))
             .attr("d",dRect)
             .ease(d3.easeQuad)
+            .attr("transform","translate(" + [0,0] + ")scale(" + 1.0 + ")")
             .delay(getRandomInt(0,600))
             .on("start",function(){
                 d3.select(this).attr("fill","none");
@@ -396,57 +411,41 @@ function morphTimelineToGeo(delay_axis){
             .attr('pointer-events', 'visibleStroke')
             .style("z-index",10)
             ;
-
-        // get triangle
-        var offset = projection(d.locationCoords);
-        var dTri = getTrianglePath(revuePoly.nb,triangleEdgeLength,offset);
-
-        // RECT TO TRIANGLE MORPHING
-        p.transition()
-            .duration(getRandomInt(200,500))
-            //.duration(800)
-            .attr("d",dTri)
-            .ease(d3.easeQuad)
-            .delay(delay_axis + getRandomInt(0,600))
-            //.delay(getRandomInt(0,600))
-            .on("start",function(){
-                d3.select(this).attr("opacity","0.05");
-                //d3.select(this).attr("opacity","1.0");
-                d3.select(this).attr("stroke-opacity",0.4);
-            })
-            .attr("stroke","black")
-            .attr("opacity",1.0)
-            .on("end",function(){
-                d3.select(this).attr("fill","#31373F");
-                d3.select(this).attr("opacity",triangleDefaultOpacity);
-            })
-            ;
-
     });
 }
 
-function morphGeoToViz(){
+function morphGeoToViz(duration,delayRandom){
 
     // get all polygons
-    loadAllRevuePoly();
-
+    loadAllCurrentRevuePoly();
+    console.log("---> morphGeoToViz()");
     dataRevue.forEach(function(d,i){
         // get poly
         var revuePoly = allRevuePoly.find(data => data.id == "poly" + d.id);
 
         // get exisiting poly TRIANGLE path
+        //var mPath = d3.select("#morph" + d.id);
         var mPath = d3.select("#morph" + d.id);
 
         // start MORPHING triangle to poly
+        var strokeWidthMorphing = 0.2;
+        var endOpacity = 0.04+(0.01*sMap_saved);
         mPath.transition()
-            .delay(getRandomInt(0,500))
-            .duration(800)
+        //poly.transition()
+            //.delay(getRandomInt(0,delayRandom)) // 500
+            .duration(getRandomInt(200,1000)) // 800
             .attr("fill","none")
             .on("start",function(){
                 d3.select(this).attr("opacity",0.5);
+                d3.select(this).attr("stroke-width",strokeWidthMorphing/sMap_saved);
             })
-            .attr("opacity",0.0)//0.03
+            .attr("transform","translate(" + [0,0] + ")scale(" + 1.0 + ")")
+            .attr("opacity",endOpacity)//0.0
+            .attr("stroke-width",strokeWidthMorphing)
             .attr("d",revuePoly.data)
+            .on("end",function(d){
+                d3.select(this).remove();
+            })
             ;
     });
 
@@ -454,7 +453,7 @@ function morphGeoToViz(){
 
 function morphTimelineToViz(delay_axis){
     // get all polygons
-    loadAllRevuePoly();
+    loadAllCurrentRevuePoly();
 
     dataRevue.forEach(function(d,i){
         // get poly
@@ -483,26 +482,69 @@ function morphTimelineToViz(delay_axis){
             .attr('pointer-events', 'visibleStroke')
             .style("z-index",10)
             ;
-
-        //console.log("revuePoly",revuePoly.data);
-        // start MORPHING Rectangle to poly
-        p.transition()
-            .delay(delay_axis + getRandomInt(0,500))
-            .duration(800)
-            .attr("fill","none")
-            .on("start",function(){
-                d3.select(this).attr("opacity",0.5);
-                d3.select(this).attr("stroke-opacity",0.4);
-            })
-            .attr("opacity",0.03)//0.03
-            .attr("d",revuePoly.data)
-            ;
     });
 }
 
 function loadAllRevuePoly(){
-
     allRevuePoly = [];
+    dataRevue.forEach(function(d,i){
+
+        //console.log("ID???",d.id);
+        var id = d.id;
+
+        // get polygon
+        var s_coords = "";
+        var coords = [];
+        var coordsDetail = [];
+        var coordsData = [];
+        var coordsDataDetail = [];
+        d.links.forEach( function(l,i){
+            //console.log("link",l);
+            var bb = d3.select("#nodes").select("#" + l).select("g").select("circle").node().getBoundingClientRect();
+            var x = bb.x + bb.width*0.5;
+            var y = bb.y + bb.height*0.5;
+            coords.push([x,y]);
+            coordsData.push({coord:[x,y],link:l});
+            coordsDataDetail.push({coord:[x,y],link:l});
+            //s_coords += x + "," + y + " ";
+        });
+
+
+        // TODO: BUG... aussi changer coordsData!!!
+        if(coords.length < 4){
+            var nbMin = 4;
+            var index = coords.length;
+            if(coords.length >= 1){
+                while(index < nbMin){
+                    coords.push(coords[0]);
+                    index++;
+                }
+            }else {
+                console.log("DEBUG:---- coords == 0 ???")
+            }   
+        }
+
+        var box = getBoxFromArray(coords);
+        var trans = [xCenterDetailView-box.cx,yCenterDetailView-box.cy];
+        coordsDataDetail.forEach(function(d,i){
+            var coord = d.coord;
+            var newX = coord[0]+trans[0];
+            var newY = coord[1]+trans[1];
+            coordsDetail.push([newX,newY]);
+            d.coord = [newX,newY];
+        });
+
+        var dPoly = "M" + coords.join("L") + "Z";
+        var dPolyDetail = "M" + coordsDetail.join("L") + "Z";
+        allRevuePoly.push({id:"poly" + id, data: dPoly, nb: coords.length, coords: coordsData,
+                                            dataDetail: dPolyDetail,coordsDetail: coordsDataDetail,transDetail: trans
+                                            });
+    });
+}
+
+function loadAllCurrentRevuePoly(){
+
+    //allRevuePoly = [];
     dataRevue.forEach(function(d,i){
 
         //console.log("ID???",d.id);
@@ -535,7 +577,14 @@ function loadAllRevuePoly(){
             
         }
         var dPoly = "M" + coords.join("L") + "Z";
-        allRevuePoly.push({id:"poly" + id, data: dPoly, nb: coords.length, coords: coordsData});
+        var r = allRevuePoly.find(data => data.id == "poly"+id);
+       // console.log("r before",r);
+        r.data = dPoly;
+        r.nb = coords.length;
+        r.coords = coordsData;
+        r = allRevuePoly.find(data => data.id == "poly"+id);
+     //   console.log("r after",r);
+        //allRevuePoly.push({id:"poly" + id, data: dPoly, nb: coords.length, coords: coordsData});
     });
 }
 
@@ -594,7 +643,7 @@ function makeNodeDisappear(d,reload){
                 .on("end",function(){
                     console.log("DELETE OBJECTS END");
                     dezoomViz();
-                    loadAllRevuePoly();
+                    loadAllCurrentRevuePoly();
                     d3.select("#nodes").select("#master0").remove();
                     d3.select("#nodes").select("#master1").remove();
                     d3.select("#nodes").select("#master2").remove();

@@ -92,8 +92,9 @@ var triangleDefaultOpacity = 0.1;
 var triangleEdgeLength = 5*scale*sf; // edge lenth du triangle
 var triangleHightlighted = 10*scale*sf;
 var mapBackground = "#E5F6FE";
-var mapStrokeWidth = 0;
-var strokeColor = "white";
+var mapStrokeWidth = 0; // be sure stroke is uncommented in loadMap()
+var mapStrokeColor = "white"; // be sure stroke is uncommented in loadMap()
+var triangleStrokeWidth = 1.0;
 
 // TIMELINE
 var barColor = "#DADADA";
@@ -175,6 +176,20 @@ function scaleCoordsOnCenter(coords,scale){
     return coords;
 }
 
+// not tested.. no use anymore. leave it in case
+function moveCoordsOnCenter(coords,trans){
+    var box = getBox(coords);
+    var transX = trans[0]-box.cx;
+    var transY = trans[1]-box.cy;
+    coords.forEach(function(d,i){
+        var coord = d.coord;
+        var newX = coord[0]+transX;
+        var newY = coord[1]+transY;
+        d.coord = [newX,newY];
+    });
+    return coords;
+}
+
 function getBox(coords){
     var x=Number.MAX_SAFE_INTEGER;y=Number.MAX_SAFE_INTEGER;xMax=0;yMax=0; w=0,h=0;
     coords.forEach(function(d,i){
@@ -183,6 +198,19 @@ function getBox(coords){
         if(coord[1] < y) y = coord[1];
         if(coord[0] > xMax) xMax = coord[0];
         if(coord[1] > yMax) yMax = coord[1];
+    })
+    w = xMax-x;
+    h = yMax-y;
+    return {x:x,y:y,xMax:xMax,yMax:yMax,w:w,h:h,cx:x+w*0.5,cy:y+h*0.5};
+}
+
+function getBoxFromArray(coords){
+    var x=Number.MAX_SAFE_INTEGER;y=Number.MAX_SAFE_INTEGER;xMax=0;yMax=0; w=0,h=0;
+    coords.forEach(function(d,i){
+        if(d[0] < x) x = d[0];
+        if(d[1] < y) y = d[1];
+        if(d[0] > xMax) xMax = d[0];
+        if(d[1] > yMax) yMax = d[1];
     })
     w = xMax-x;
     h = yMax-y;
@@ -403,6 +431,7 @@ function getRectangleArray(nb,w,h){
 // useful when interpolating between an arbitrary shape of nb coordinates to a triangle
 function getTrianglePath(nb,d,offset){
     var datas = getTriangleArray(nb,d);
+    //console.log("datas",datas,offset);
     datas = datas.map(function(pt) {pt[0] += offset[0]-d*0.5; pt[1] += offset[1] - d*0.5; return pt; });
     var d = "M" + datas.join("L") + "Z";
     return d;
@@ -423,14 +452,17 @@ function getTriangleArray(nb,d){
     for(var i=p0_index+1; i<p1_index; i++){
       var p = (i-p0_index) * (1.0 / (p1_index-p0_index));
       data[i] = getCoordP0P1(p,d,y);
+      //console.log("data i",data[i]);
     }
     for(var i=p1_index+1; i<p2_index; i++){
       var p = (i-p1_index) * (1.0 / (p2_index-p1_index));
       data[i] = getCoordP1P2(p,d,y);
+      //console.log("data i",data[i]);
     }
     for(var i=p2_index+1; i<nb; i++){
       var p = (i-p2_index) * (1.0 / (nb-p2_index));
       data[i] = getCoordP2P3(p,d,y);
+      //console.log("data i",data[i]);
     }
     return data;
 }

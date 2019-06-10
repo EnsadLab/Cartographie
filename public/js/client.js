@@ -17,6 +17,7 @@ var subNodesMaster0;
 var subNodesMaster1;
 var subNodesMaster2;
 
+var minYear = Number.MAX_SAFE_INTEGER;
 
 var mcount = 0;
 var scount = 0;
@@ -42,8 +43,19 @@ function genDatas(){
     //console.log("masterNodes",masterNodes);
     getWeight();
 
+    getMinYear();
+
     nbSubNodes = scount;
     nbKeyNodes = kcount;
+}
+
+function getMinYear(){
+    dataRevue.forEach(function(d,i){
+        if(d.time[0] < minYear){
+            minYear = d.time[0];
+        }
+    });
+    console.log("minyear is",minYear);
 }
 
 var fakeLocations = [[2, 48],[-73, 40],[6,46],[-47,-15],[151,-33],[-123,42],[121,31],[37,55],[90,30]];
@@ -77,13 +89,18 @@ function getWeight(){
         var fakeIndex = getRandomInt(0,8);
         //fakeIndex = 8; // 2:italie, 3:am du sud 8 asie
         //d.locationCoords = [fakeLocations[fakeIndex][0] + getRandomInt(0,40)-20,fakeLocations[fakeIndex][1] + getRandomInt(0,20)-10 ];
-        d.locationCoords = fakeLocations[fakeIndex];
+        //d.locationCoords = fakeLocations[fakeIndex];
+        if(d.locationCoords == undefined) {
+            d.locationCoords = fakeLocations[fakeIndex];
+        }
 
         // FAKING STARTING AND END DATE
-        var xStart = getRandomInt(1950,2000);
-        var xEnd = getRandomInt(30,50) + xStart;
-        xEnd = 2019;
-        d.time = [xStart,xEnd];
+        if(d.time == undefined){
+            var xStart = getRandomInt(1950,2000);
+            var xEnd = getRandomInt(30,50) + xStart;
+            xEnd = 2019;
+            d.time = [xStart,xEnd];
+        }
     });
     //console.log("data",dataRevue);
     allLinks.sort();
