@@ -55,7 +55,7 @@ function getMinYear(){
             minYear = d.time[0];
         }
     });
-    console.log("minyear is",minYear);
+    console.log("--> minyear is",minYear);
 }
 
 var fakeLocations = [[2, 48],[-73, 40],[6,46],[-47,-15],[151,-33],[-123,42],[121,31],[37,55],[90,30]];
@@ -69,16 +69,24 @@ var kweight_min = Number.MAX_SAFE_INTEGER;
 var kweight_max = 0;
 function getWeight(){
     var allLinks = [];
+    //console.log("dataLinks",dataLinks);
+    var nbFakeLocations = 0;
+    var nbFakeTimes = 0;
     dataRevue.forEach(function(d,i){
         d.id = "revue"+rcount;
         d.links = [];
         d.keywords.forEach(function(k,i){
-            var r = dataLinks.filter( function(key) { /*console.log("test",key.name,k);*/return key.name == k; })[0];
+            var r = dataLinks.find( function(key) { 
+                //if(d.id == "revue20"){ console.log("testing",key.name,"/",k);}
+                return key.name == k; 
+            });
             if(r != undefined){
                 d.links.push(r.id);
-            }else {console.log("-----> undefined",k);}
+                //if(d.id == "revue20") console.log("FOUND!!");
+            }else {console.log("-----> undefined",k,"for revue",d.name,"with id",d.id);}
         });
         if(d.links.length < 3){
+            console.log("--> revue",d.name,"has less than 3 links");
             console.log("TODO: consider revues when links are less than 3!",d.links.length);
             d.links.push(d.links[d.links.length-1]);
         }
@@ -92,6 +100,8 @@ function getWeight(){
         //d.locationCoords = fakeLocations[fakeIndex];
         if(d.locationCoords == undefined) {
             d.locationCoords = fakeLocations[fakeIndex];
+            nbFakeLocations++;
+            console.log("--> faking location for revue",d.name,"with id",d.id);
         }
 
         // FAKING STARTING AND END DATE
@@ -100,12 +110,15 @@ function getWeight(){
             var xEnd = getRandomInt(30,50) + xStart;
             xEnd = 2019;
             d.time = [xStart,xEnd];
+            console.log("--> faking time datas for revue",d.name,"with id",d.id);
+            nbFakeTimes++;
         }
     });
     //console.log("data",dataRevue);
     allLinks.sort();
     //console.log("allLinks",allLinks);
-
+    console.log("-->",nbFakeLocations,"revues have no locations");
+    console.log("-->",nbFakeTimes,"revues have no time datas");
     
     masterNodes.forEach(function(d,i){
         var nbCountMaster = 0;

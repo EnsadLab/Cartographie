@@ -589,7 +589,7 @@ function loadAllCurrentRevuePoly(){
 }
 
 function makeNodeDisappear(d,reload){
-    console.log("--> make node disappear",reload);
+    console.log("--> make node disappear: variable reload is",reload);
     tViz = [0,0];
     sViz = 1.0;
     d3.selectAll("#nodes").transition().duration(d).attr("transform", "translate(" + tViz + ")scale(" + sViz + ")");

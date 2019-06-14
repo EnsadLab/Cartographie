@@ -1023,7 +1023,7 @@ function morphTriGeoToPolyDetail(revueId,duration,trans){
 function morphRectToPolyDetail(revueId,duration,trans){
 
     var revue = allRevuePoly.filter( function(d) { return d.id == ("poly" + revueId); })[0];
-    console.log("revue",revue);
+    //console.log("revue",revue);
 
     // get Rectangle
     var revueRect = d3.select("#timeline" + revueId); 
@@ -1166,7 +1166,7 @@ function createMenu(){
                 .on("mouseenter",function(){/*console.log("### mouseenter",d.id);*/showRevueOnMap(true,d.id);})
                 //.on("mouseout",function(){console.log("mouseout",d.id);showRevue(false,d.id);})
                 .on("mouseleave",function(){/*console.log("### mouseleave",d.id);*/showRevueOnMap(false,d.id);})
-                .on("click",function(){console.log("### mouseclick",d.id);startDetail(d.id);})
+                .on("click",function(){/*console.log("### mouseclick",d.id);*/startDetail(d.id);})
                 .append("h3")
                 .attr("class","revue-title")
                 .html(d.name);
@@ -1312,7 +1312,7 @@ function showRevueOnMap(show,id){
             var node = d3.select("#timeline" + id)
                         .attr("fill","#31373F")
                         ;
-            //dezoomTimeline(3000);
+            dezoomTimeline(1000);
         }
     } else {
         //console.log("--> hideRevueOnMap",id);
@@ -1346,10 +1346,31 @@ function loadDetailRevue(id){
     var revue = dataRevue.filter( function(d) { return d.id == id; })[0];
     var sel = d3.select("#menudetail");
     sel.style("visibility", "visible");
+    
     sel.select("#menudetail-title").html(revue.name);
-    sel.select("#menudetail-location").html("nouveau location");
-    sel.select("#menudetail-date").html("nouveau date");
-    sel.select("#menudetail-texte").html(fakeText);
+
+    if(revue.city != undefined){
+        sel.select("#menudetail-location").html(revue.city);
+    } else if(revue.country != undefined){
+        sel.select("#menudetail-location").html(revue.country);
+    } else{
+        sel.select("#menudetail-location").html("Location unknown");
+    }
+    if(revue.time != undefined && revue.time.length == 2){ // comme généré automatiquement si c'est vide, cela ne devrait pas arriver.
+        sel.select("#menudetail-date").html(revue.time[0] + "-" + revue.time[1]);
+    }else{
+        sel.select("#menudetail-date").html("nouveau date");
+        console.log("-------> datas time are empty!!");
+    }
+    sel.select("#menudetail-publisher").html(revue.publisher);
+    sel.select("#menudetail-texte").html(revue.about);
+    sel.select("#menudetail-weblink").remove();
+    sel.select("#menudetail-weblink-div").append("a")
+            .attr("id","menudetail-weblink")
+            .on("mouseover",function(d){ d3.select(this).style("cursor", "pointer")})
+            .attr("xlink:href", revue.link).html(revue.link)
+            //.attr("xlink:href","www.google.com").html(revue.link)
+            ;
     
     var keys = sel.select("#menudetail-keywords").selectAll("a").remove();
     //console.log("keys",keys);

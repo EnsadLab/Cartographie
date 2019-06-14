@@ -96,6 +96,7 @@ function initTimeline(){
     
     function zoomFunction(){
         // create new scale ojects based on event
+        console.log("scale",d3.event.transform.k);
         var transform = d3.event.transform;
         var xNewScale = transform.rescaleX(xAxisScale);
 
@@ -123,12 +124,18 @@ function dezoomTimeline(duration){
     //s = 1.0;
     //var t =[0,0];
     // update rectangle revues and x axis
+    console.log("dezoom timeline");
+    //d3.event.transform = d3.zoomIdentity;
     var transform = d3.zoomIdentity;
     var xNewScale = transform.rescaleX(xAxisScale);
     timelineRevues.transition().duration(duration).attr("x", d => xNewScale(d.time[0]))
         .attr("width", d => xNewScale(d.time[1]) - xNewScale(d.time[0]))
         ;
-    gX.transition().duration(duration).call(xAxis.scale(xNewScale));
+    gX.transition().duration(duration).call(xAxis.scale(xNewScale))
+        /*.on("end",function(){
+            svg.transition().duration(duration).call(zoom.transform,d3.zoomIdentity.translate(0,0).scale(1.0));
+        });*/
+    
 }
 
 function dezoomAndDeleteTimeline(duration){

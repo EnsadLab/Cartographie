@@ -183,7 +183,7 @@ var masterNodes = [
                   name:"Engineering, Manufacturing and Construction",
                   keywords : [
                         {name : "Engineering drawing"},
-                        {name : "Engineering Mechanics and Electronics"},
+                        {name : "Engineering, Mechanics and Electronics"},
                         {name : "Civil Engineering, building, construction"},
                         {name : "Urban planning"},
                   ]
