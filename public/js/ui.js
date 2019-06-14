@@ -1127,6 +1127,7 @@ function morphPolyDetailToTriGeo(revueId){
     mPath.attr("d",p.attr("d"))
         .attr("transform",p.attr("transform"))
         .attr("opacity",1.0)
+        .attr("stroke-opacity",1.0)
         .attr("fill","#31373F")
         ;
 
