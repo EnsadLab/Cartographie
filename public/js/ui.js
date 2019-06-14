@@ -1048,7 +1048,7 @@ function morphRectToPolyDetail(revueId,duration,trans){
         .attr("stroke-opacity",0.4) //0.03
         .attr("d",dRect)
         .attr('pointer-events', 'visibleStroke')
-        .style("z-index",10)
+       // .style("z-index",10) // est inutile
         ;
 
     // start MORPHING

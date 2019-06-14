@@ -431,7 +431,8 @@ function getRectangleArray(nb,w,h){
 // useful when interpolating between an arbitrary shape of nb coordinates to a triangle
 function getTrianglePath(nb,d,offset){
     var datas = getTriangleArray(nb,d);
-    //console.log("datas",datas,offset);
+    //console.log("datas",datas);
+    //console.log("OFFSET",offset);
     datas = datas.map(function(pt) {pt[0] += offset[0]-d*0.5; pt[1] += offset[1] - d*0.5; return pt; });
     var d = "M" + datas.join("L") + "Z";
     return d;

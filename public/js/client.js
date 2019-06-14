@@ -104,6 +104,13 @@ function getWeight(){
             console.log("--> faking location for revue",d.name,"with id",d.id);
         }
 
+        if(!(d.locationCoords[0] >= -180 && d.locationCoords[0] <= 180)){
+            console.log("[BUG]: longitude should be between -180 and 180",d.name);
+        }
+        if(!(d.locationCoords[1] >= -90 && d.locationCoords[1] <= 90)){
+            console.log("[BUG]: latitude should be between -90 and 90",d.name);
+        }
+
         // FAKING STARTING AND END DATE
         if(d.time == undefined){
             var xStart = getRandomInt(1950,2000);

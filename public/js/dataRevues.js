@@ -8,7 +8,7 @@ var testRevue = {
 	],
 
 	//links: ["sub1", "sub6", "sub5", "key26"], // généré par cécile, ne rien faire
-	locationCoords: [121, 31], // Latitude-longitude. Si rien, laisser la ligne totalement vide (=> enlever le paramètre)
+	locationCoords: [121, 31], // Longitude-latitude. Si rien, laisser la ligne totalement vide (=> enlever le paramètre)
 	name: "Alliage ",
 	time: [1977, 2019], // Si rien, laisser la ligne totalement vide (=> enlever le paramètre)
 	city: "Paris", // Si rien, laisser la ligne totalement vide (=> enlever le paramètre)
@@ -491,7 +491,7 @@ var dataRevue = [
 		name : "International Journal of Education through Art " ,
 		publisher: "Intellect",
 		time:[2005, 2019],
-		locationCoords: [53.726669,-127.647621],
+		locationCoords: [-127.647621,53.726669], // BUG? j'ai changé l'ordre
 		city:"BC Canada",
 		country: "Canada",
 		keywords :[ "Fine Arts & Design", "Craft", "Languages", "Education", "Sociology", "Art History"],
@@ -604,7 +604,7 @@ var dataRevue = [
 		name : "Journal of Design and Science " ,
 		publisher: "MIT Press / MIT Media Lab",
 		keywords :[ "Design" , "Social Sciences & Humanities", "Science"],
-		locationCoords: [26.164440,-97.692993],//Massachussetts
+		locationCoords: [-97.692993,26.164440],//Massachussetts // bug? j'ai changé l'ordre
 		city:"Massachussetts",
 		country: "United States",
 		time: [2016, 2019],
@@ -638,7 +638,7 @@ var dataRevue = [
 	{
 		name : "The Journal of the Society for Arts and Science " ,
 		publisher: "The Society for Art and Science",
-		locationCoords: [35.689487,139.691711],//Tokyo
+		locationCoords: [139.691711,35.689487],//Tokyo // bug? => j'ai changé l'ordre
 		city:"Tokyo",
 		country: "Japan",
 		time: [2002, 2019],
@@ -649,7 +649,7 @@ var dataRevue = [
 	{
 		name : "Journal of Visual Art Practice " ,
 		publisher: "Taylor & Francis online",
-		locationCoords: [50.819520, -0.136420],//Brighton
+		locationCoords: [-0.136420,50.819520],//Brighton //BUG => c'était inversé
 		city:"Birghton",
 		country: "United Kingdom",
 		time: [2001, 2019],
@@ -661,7 +661,7 @@ var dataRevue = [
 
 	{
 		name : "Laboratory for Aesthetics and Ecology " ,
-		locationCoords: [55.676098, 12.568337],//Copenhagen
+		locationCoords: [12.568337,55.676098],//Copenhagen //BUG => c'était inversé
 		city:"Copenhagen",
 		country: "Denmark",
 		time: [2014, 2019],
@@ -674,7 +674,7 @@ var dataRevue = [
 		name : "Leonardo " ,
 		publisher: "MIT Press",
 		keywords :[ "Fine Arts & Design", "Social Sciences & Humanities" , "Science"],
-		locationCoords: [26.164440,-97.692993],//Massachussetts
+		locationCoords: [-97.692993,26.164440],//Massachussetts // bug? => j'ai changé l'ordre
 		city:"Massachussetts",
 		country: "United States",
 		time: [1968, 2019],
@@ -751,7 +751,7 @@ var dataRevue = [
 		publisher: "College of Arts & Sciences at Southern Illinois university Edwardsville",
 		keywords :[ "Fine Arts", "Visual (fine arts)", "Sound (fine arts)", "Performance", "Literature", "Social Sciences & Humanities", "Philosophy", "Languages", "History", "Political Sciences", "Sociology", "Psychology", "Biology", "Science", "Physics", "Chemistry", "Mathematics and statistics"],
 		city:"Illinois ",
-		locationCoords: [40.633125,-89.398529],//Illinois
+		locationCoords: [-89.398529,40.633125],//Illinois //BUG? j'ai inversé
 		country: "United States",
 		time: [2011, 2019],
 		about:"Polymath is a peer-reviewed journal dedicated to interdisciplinarity, published biannually in an electronic format at no charge to its readers. The journal celebrates the oft-neglected connections between humanities (language, literature, philosophy, speech and communication), social sciences (history, sociology, political science, psychology, social work), physical sciences (biology, chemistry, mathematics, physics), and the arts (dance, theatre, music, visual arts) where the disciplines can unite, collaborate, and engage with each other towards shared research-oriented and educational goals. ",
@@ -772,7 +772,7 @@ var dataRevue = [
 	{
 		name : "SoundEffects " ,
 		keywords :[ "Sound (design)", "Architecture", "Linguistic, translation, comparative literature", "Aesthetics", "Media Studies", "Sociology", "Psychology", "Health"],
-		locationCoords: [55.676098, 12.568337],//Copenhagen
+		locationCoords: [12.568337,55.676098],//Copenhagen // bug? j'ai inversé
 		city:"Copenhagen",
 		country: "Denmark",
 		time: [2011, 2019],
@@ -793,7 +793,7 @@ var dataRevue = [
 		name : "Technoetic Arts: A Journal of Speculative Research " ,
 		publisher: "Intellect",
 		keywords :[ "Fine Arts & Design", "New Media and Technological", "Aesthetics", "Philosophy", "Science and Technology Studies", "Cognitive Sciences", "Life Sciences"],
-		locationCoords: [38.170150, -85.622410],//Plymouth U
+		locationCoords: [-4.138512,50.374121],//[-85.622410,38.170150],//Plymouth U // bug? 
 		city:"University of Plymouth",
 		country: "United Kingdom",
 		time: [2003, 2019],

@@ -243,13 +243,19 @@ function morphVizToGeo(){
             .attr("opacity",0.05)
             .attr("d",revuePoly.data)
             .attr('pointer-events', 'visibleStroke')
-            .style("z-index",10)
+           // .style("z-index",10) // est inutile
             ;
 
         // get triangle
+        //console.log("revue",d.name);
+        //console.log("LOCATION",d.locationCoords);
         var offset = projection(d.locationCoords);
+        //console.log("OFFSET",offset);
+        if(isNaN(offset[0])) console.log("[BUG]: offset[0] is NAN!!!",d.name,d.locationCoords,offset);
+        if(isNaN(offset[1])) console.log("[BUG]: offset[1] is NAN!!!",d.name,d.locationCoords,offset);
         //if(d.id == "revue0") console.log("coords",d.locationCoords,offset);
         var dTri = getTrianglePath(revuePoly.nb,triangleEdgeLength,offset);
+        //console.log("path",dTri);
 
         /* DEBUG - to show the coordinates
         d3.select("#map").append("circle")
@@ -302,7 +308,7 @@ function morphAllVizToTimeline(){
             //.attr("opacity",1.0)
             .attr("d",revuePoly.data)
             .attr('pointer-events', 'visibleStroke')
-            .style("z-index",10)
+           // .style("z-index",10) // est inutile
             ;
 
         // get Rectangle
@@ -409,7 +415,7 @@ function morphTimelineToGeo(delay_axis){
             .attr("stroke-opacity",0.0) //0.03
             .attr("d",dRect)
             .attr('pointer-events', 'visibleStroke')
-            .style("z-index",10)
+           // .style("z-index",10) // est inutile
             ;
     });
 }
@@ -480,7 +486,7 @@ function morphTimelineToViz(delay_axis){
             .attr("stroke-opacity",0.03)
             .attr("d",dRect)
             .attr('pointer-events', 'visibleStroke')
-            .style("z-index",10)
+            //.style("z-index",10) // est inutile
             ;
     });
 }
@@ -641,7 +647,7 @@ function makeNodeDisappear(d,reload){
                 .transition()
                 .duration(d)
                 .on("end",function(){
-                    console.log("DELETE OBJECTS END");
+                    console.log("DELETING NODE OBJECTS");
                     dezoomViz();
                     loadAllCurrentRevuePoly();
                     d3.select("#nodes").select("#master0").remove();
@@ -650,6 +656,7 @@ function makeNodeDisappear(d,reload){
                     d3.select(this).remove();
                     animVizRunning = false;
                     if(reload){
+                        console.log("RELOADING NODE OBJECTS");
                         state = State.LOAD;
                         startViz();
                     }
