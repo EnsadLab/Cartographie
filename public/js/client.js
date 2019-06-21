@@ -55,7 +55,7 @@ function getMinYear(){
             minYear = d.time[0];
         }
     });
-    console.log("--> minyear is",minYear);
+    console.log("[DATAS]: minyear is",minYear);
 }
 
 var fakeLocations = [[2, 48],[-73, 40],[6,46],[-47,-15],[151,-33],[-123,42],[121,31],[37,55],[90,30]];
@@ -83,11 +83,11 @@ function getWeight(){
             if(r != undefined){
                 d.links.push(r.id);
                 //if(d.id == "revue20") console.log("FOUND!!");
-            }else {console.log("-----> undefined",k,"for revue",d.name,"with id",d.id);}
+            }else {console.log("[BUG]: undefined",k,"for revue",d.name,"with id",d.id);}
         });
         if(d.links.length < 3){
-            console.log("--> revue",d.name,"has less than 3 links");
-            console.log("TODO: consider revues when links are less than 3!",d.links.length);
+            console.log("[DATAS]: revue",d.name,"has less than 3 links");
+            console.log("[TODO]: consider revues when links are less than 3!",d.links.length);
             d.links.push(d.links[d.links.length-1]);
         }
         allLinks = allLinks.concat(d.links);
@@ -101,7 +101,7 @@ function getWeight(){
         if(d.locationCoords == undefined) {
             d.locationCoords = fakeLocations[fakeIndex];
             nbFakeLocations++;
-            console.log("--> faking location for revue",d.name,"with id",d.id);
+            console.log("[DATAS]: faking location for revue",d.name,"with id",d.id);
         }
 
         if(!(d.locationCoords[0] >= -180 && d.locationCoords[0] <= 180)){
@@ -117,15 +117,15 @@ function getWeight(){
             var xEnd = getRandomInt(30,50) + xStart;
             xEnd = 2019;
             d.time = [xStart,xEnd];
-            console.log("--> faking time datas for revue",d.name,"with id",d.id);
+            console.log("[DATAS]: faking time datas for revue",d.name,"with id",d.id);
             nbFakeTimes++;
         }
     });
     //console.log("data",dataRevue);
     allLinks.sort();
     //console.log("allLinks",allLinks);
-    console.log("-->",nbFakeLocations,"revues have no locations");
-    console.log("-->",nbFakeTimes,"revues have no time datas");
+    console.log("[DATAS]:",nbFakeLocations,"revues have no locations");
+    console.log("[DATAS]:",nbFakeTimes,"revues have no time datas");
     
     masterNodes.forEach(function(d,i){
         var nbCountMaster = 0;

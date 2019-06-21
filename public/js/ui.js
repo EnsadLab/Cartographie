@@ -127,7 +127,8 @@ function startGeo(comingFromReload){
     previousState = state;
     state = State.GEO_VIEW;
 
-    
+    console.log("current state:",getName(state),"/ previous state:",getName(previousState));
+
     if(previousState == State.GEO_VIEW){
         showMenu(false);
         dezoomMapAndTriangles(500,true); // will delete all map objects at the end and reload
@@ -164,7 +165,7 @@ function startViz(){
 
     previousState = state;
     state = State.VIZ_VIEW;
-    console.log("state",getName(state),getName(previousState));
+    console.log("current state:",getName(state),"/ previous state:",getName(previousState));
 
     if(previousState == State.VIZ_VIEW){
         showMenu(false);
@@ -219,6 +220,8 @@ function startTimeline(){
     previousState = state;
     state = State.TIMELINE_VIEW;
 
+    console.log("current state:",getName(state),"/ previous state:",getName(previousState));
+
     if(previousState == State.TIMELINE_VIEW){
         //dezoomTimeline(1000);
         //return;
@@ -255,11 +258,13 @@ function startTimeline(){
 
 function startObj(id){
 
-    console.log("--> startObj",id);
+    console.log("--> startObj with node ID",id);
 
     startingSTARTOBJ = true;
     previousState = state;
     state = State.OBJ_VIEW;
+
+    console.log("current state:",getName(state),"/ previous state:",getName(previousState));
 
     var objParent = dataLinks.find(data => data.id == id).parent;
     var objColor = masterNodes.find(data => data.id == objParent).color;
@@ -566,13 +571,15 @@ function createDashBackgroundCircles(){
 
 var sViz_saved = sViz;
 function startDetail(revueId){
-    console.log("--> startDetail",revueId);
+    console.log("--> startDetail with revue ID",revueId);
     if(state == State.DETAIL_VIEW) return;
 
     currentRevueId = revueId;
 
     previousState = state;
     state = State.DETAIL_VIEW;
+
+    console.log("current state:",getName(state),"/ previous state:",getName(previousState));
 
     if(previousState == State.VIZ_VIEW ){
         sViz_saved = sViz;
@@ -944,7 +951,6 @@ function morphDetailToViz(revueId){
     
     mPath.transition()
         .duration(600)
-        //.attr("transform","translate("+ 0 + "," + 0 + ")scale("+1.0+")") // on ne fait plus de transform à l'aller!
         .attr("d",revuePoly.data)
         .attr("stroke-opacity",0.1) // 0.1
         .on("start",function(d){
@@ -966,57 +972,36 @@ function morphPolyToPolyDetail(revueId,duration,center,trans){
                   .attr("id","morph" + revueId)
                   .attr("class","morphopolyDETAIL");
 
-    var bb = mPath.node().getBoundingClientRect();
 
     var scale = 1.0/sViz_saved;
-    var changedX = bb.x*scale;
-    var changedY = bb.y*scale;
-    var newX = center[0] - bb.width*scale*0.5;
-    var newY = center[1] - bb.height*scale*0.5;
-    var transX = (newX-changedX)*1.0/scale;
-    var transY = (newY-changedY)*1.0/scale;
-
     sDetail_saved = scale;
-
     var revue = allRevuePoly.find( data => data.id == ("poly" + revueId));
-    var transX = trans[0];
-    var transY = trans[1];
      
     mPath.transition()
         .duration(duration)
         .attr("fill","#31373F")
         .attr("opacity",1.0)
         .attr("d",revue.dataDetail)
-       // .attr("transform","translate("+transX + "," + transY+")")
-       // .attr("transform","scale("+scale+")translate("+transX + "," + transY+")")
         ;
 }
 
 function morphTriGeoToPolyDetail(revueId,duration,trans){
     var revue = allRevuePoly.filter( function(d) { return d.id == ("poly" + revueId); })[0];
     //console.log("revue",revue);
-    //var mPath = d3.select("#morph" + revueId).attr("class","morphopolyDETAIL");
     var bb = d3.select("#morph" + revueId).node().getBoundingClientRect();
-    // ici
     var poly = clone("#morph" + revueId);
     d3.select("#morph" + revueId).remove();
-    //console.log("bb",bb.width,revue.nb,bb.x);
     var scaledCoords = getTrianglePath(revue.nb,bb.width,[bb.x+bb.width*0.5,bb.y+bb.height*0.5]);
-    //console.log("scaledCoords",scaledCoords);
     poly.attr("transform","translate("+ 0 + "," + 0 + ")scale(1.0)");
     poly.attr("d",scaledCoords);
     document.getElementById("poly").appendChild(poly.node());
 
-    //console.log("id","morph"+id);
-    //mPath.transition()
     poly.attr("class","morphopolyDETAIL");
     poly.transition()
         .duration(duration)//duration
         .attr("fill","#31373F")
         .attr("opacity",1.0)
         .attr("d",revue.dataDetail)
-        //.attr("transform","translate("+ 0 + "," + 0 + ")scale(1.0)")
-        //.attr("transform","translate(" + trans + ")scale(" + 1.0 + ")")
         ;
 }
 
@@ -1048,7 +1033,6 @@ function morphRectToPolyDetail(revueId,duration,trans){
         .attr("stroke-opacity",0.4) //0.03
         .attr("d",dRect)
         .attr('pointer-events', 'visibleStroke')
-       // .style("z-index",10) // est inutile
         ;
 
     // start MORPHING
@@ -1057,7 +1041,6 @@ function morphRectToPolyDetail(revueId,duration,trans){
         .attr("fill","#31373F")
         .attr("opacity",1.0)
         .attr("d",revue.dataDetail)
-        //.attr("transform","translate("+ trans[0] + "," + trans[1] + ")");
         ;
 
 }
@@ -1130,8 +1113,7 @@ function morphPolyDetailToTriGeo(revueId){
         .attr("stroke-opacity",1.0)
         .attr("fill","#31373F")
         ;
-
-        
+     
     mPath.transition()
         .duration(500)
         .attr("transform","translate("+ 0 + "," + 0 + ")")
@@ -1212,7 +1194,6 @@ function loadObjMenu(id,revueConnectedToObj,color){
                 .on("click",function(d){/*console.log("### mouseclick",d);*/startDetail(d.id);})
                 ;
 
-        //console.log("COUCOU rrevueConnectedToObjec",revueConnectedToObj);
         for(var i=0; i<revueConnectedToObj.length;i++){
             var revueId = revueConnectedToObj[i].id;
             //console.log("revue",revueConnectedToObj[i]);
@@ -1363,14 +1344,16 @@ function loadDetailRevue(id){
         sel.select("#menudetail-date").html("nouveau date");
         console.log("-------> datas time are empty!!");
     }
-    sel.select("#menudetail-publisher").html(revue.publisher);
+    if(revue.publisher != undefined){
+        sel.select("#menudetail-publisher").html(revue.publisher);
+    }else{
+        sel.select("#menudetail-publisher").html("Publisher unknown");
+    }
     sel.select("#menudetail-texte").html(revue.about);
     sel.select("#menudetail-weblink").remove();
     sel.select("#menudetail-weblink-div").append("a")
             .attr("id","menudetail-weblink")
-            .on("mouseover",function(d){ d3.select(this).style("cursor", "pointer")})
-            .attr("xlink:href", revue.link).html(revue.link)
-            //.attr("xlink:href","www.google.com").html(revue.link)
+            .attr("href", revue.link).html(revue.link)
             ;
     
     var keys = sel.select("#menudetail-keywords").selectAll("a").remove();

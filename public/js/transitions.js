@@ -243,7 +243,6 @@ function morphVizToGeo(){
             .attr("opacity",0.05)
             .attr("d",revuePoly.data)
             .attr('pointer-events', 'visibleStroke')
-           // .style("z-index",10) // est inutile
             ;
 
         // get triangle
@@ -308,7 +307,6 @@ function morphAllVizToTimeline(){
             //.attr("opacity",1.0)
             .attr("d",revuePoly.data)
             .attr('pointer-events', 'visibleStroke')
-           // .style("z-index",10) // est inutile
             ;
 
         // get Rectangle
@@ -415,7 +413,6 @@ function morphTimelineToGeo(delay_axis){
             .attr("stroke-opacity",0.0) //0.03
             .attr("d",dRect)
             .attr('pointer-events', 'visibleStroke')
-           // .style("z-index",10) // est inutile
             ;
     });
 }
@@ -486,7 +483,6 @@ function morphTimelineToViz(delay_axis){
             .attr("stroke-opacity",0.03)
             .attr("d",dRect)
             .attr('pointer-events', 'visibleStroke')
-            //.style("z-index",10) // est inutile
             ;
     });
 }
@@ -509,36 +505,64 @@ function loadAllRevuePoly(){
             var bb = d3.select("#nodes").select("#" + l).select("g").select("circle").node().getBoundingClientRect();
             var x = bb.x + bb.width*0.5;
             var y = bb.y + bb.height*0.5;
+            //if(d.id == "revue3"){ console.log("x",x,"y",y);}
             coords.push([x,y]);
             coordsData.push({coord:[x,y],link:l});
+            coordsDetail.push([x,y]);
             coordsDataDetail.push({coord:[x,y],link:l});
-            //s_coords += x + "," + y + " ";
         });
 
-
-        // TODO: BUG... aussi changer coordsData!!!
         if(coords.length < 4){
             var nbMin = 4;
             var index = coords.length;
             if(coords.length >= 1){
                 while(index < nbMin){
-                    coords.push(coords[0]);
+                    coords.push(coords[coords.length-1]);
+                    coordsData.push(coordsData[coordsData.length-1]);
+                    coordsDetail.push(coordsDetail[coordsDetail.length-1]);
+                    coordsDataDetail.push(coordsDataDetail[coordsDataDetail.length-1]);
                     index++;
                 }
+                /*
+                if(d.id == "revue3"){
+                    console.log("coords",coords);
+                    console.log("coordsData",coordsData);
+                    console.log("coordsDataDetail",coordsDataDetail);
+                }*/
             }else {
-                console.log("DEBUG:---- coords == 0 ???")
+                console.log("[BUG]:----> coords == 0 ???")
             }   
         }
 
         var box = getBoxFromArray(coords);
         var trans = [xCenterDetailView-box.cx,yCenterDetailView-box.cy];
-        coordsDataDetail.forEach(function(d,i){
-            var coord = d.coord;
-            var newX = coord[0]+trans[0];
-            var newY = coord[1]+trans[1];
-            coordsDetail.push([newX,newY]);
-            d.coord = [newX,newY];
+        /*
+        if(d.id == "revue3"){
+            console.log("TEST name",d.name);
+            console.log("BEFORE");
+            //console.log("coordsDataDetail",coordsDataDetail);
+            console.log("coordsDetail",coordsDetail);
+        }*/
+        //var testcoords = [];
+        coordsDetail.forEach(function(data,i){
+            var newX = data[0]+trans[0];
+            var newY = data[1]+trans[1];
+            data = [newX,newY]; 
+            coordsDetail[i] = [newX,newY];
+            coordsDataDetail[i].coord = [newX,newY];
+            /*
+            if(d.id == "revue3"){
+                console.log("--> coord",data);
+                console.log("--> new coords",newX,newY);
+            }*/
         });
+        /*
+        if(d.id == "revue3"){
+            console.log("AFTER");
+            console.log("coordsDataDetail",coordsDataDetail);
+            console.log("coordsDetail",coordsDetail);
+            //console.log("testcoords",testcoords);
+        }*/
 
         var dPoly = "M" + coords.join("L") + "Z";
         var dPolyDetail = "M" + coordsDetail.join("L") + "Z";
@@ -550,6 +574,7 @@ function loadAllRevuePoly(){
 
 function loadAllCurrentRevuePoly(){
 
+    //return;
     //allRevuePoly = [];
     dataRevue.forEach(function(d,i){
 
@@ -569,14 +594,18 @@ function loadAllCurrentRevuePoly(){
             coordsData.push({coord:[x,y],link:l});
             //s_coords += x + "," + y + " ";
         });
+        
         if(coords.length < 4){
             var nbMin = 4;
             var index = coords.length;
             if(coords.length >= 1){
                 while(index < nbMin){
                     coords.push(coords[0]);
+                    coordsData.push(coordsData[0]);
                     index++;
                 }
+                //console.log(coords);
+                //console.log(coordsData);
             }else {
                 console.log("DEBUG:---- coords == 0 ???")
             }

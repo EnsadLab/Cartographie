@@ -28,7 +28,7 @@ function initTimeline(){
     w = svgWidth - margin.left - margin.right;
     h = svgHeight - margin.top - margin.bottom;
     
-    svgViewport = d3.select("#timeline")//d3.select("body")
+    svgViewport = d3.select("#timeline")
       .append('svg')
       .attr('width', svgWidth)
       .attr('height', svgHeight)
@@ -43,15 +43,9 @@ function initTimeline(){
       //.domain(d3.extent([startYear,endYear]))
       .range([0,w]);
     
-    /*
-    var yAxisScale = d3.scaleLinear()
-      .domain([-10,-20])
-      .range([h,0]);
-    */
     
     // create axis objects
     xAxis = d3.axisBottom(xAxisScale);
-    //var yAxis = d3.axisLeft(yAxisScale);
 
     xAxis.tickFormat(d3.format(""));
 
@@ -81,12 +75,6 @@ function initTimeline(){
         .attr("opacity",0.0)
         .call(xAxis);
     
-    /*
-    var gY = innerSpace.append("g")
-        .attr("class", "axis axis--y")
-        .call(yAxis);
-    */
-    
     // append zoom area
     var view = innerSpace.append("rect")
       .attr("class", "zoom")
@@ -96,7 +84,7 @@ function initTimeline(){
     
     function zoomFunction(){
         // create new scale ojects based on event
-        console.log("scale",d3.event.transform.k);
+        //console.log("scale",d3.event.transform.k);
         var transform = d3.event.transform;
         var xNewScale = transform.rescaleX(xAxisScale);
 
@@ -107,7 +95,6 @@ function initTimeline(){
 
         // update axes
         gX.call(xAxis.scale(xNewScale));
-        //gY.call(yAxis.scale(new_yScale));
     };
     
 }

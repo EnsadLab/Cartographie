@@ -352,7 +352,6 @@ function initVisualisation(){
     animVizRunning = false;
     createMasterNodes();
     loadAllRevuePoly();
-
     zoomViz = d3.zoom()
       //.scaleExtent([1, 10])
       .scaleExtent([1, 5]) // TO CHECK: ALEX le max est réglable...
@@ -361,7 +360,7 @@ function initVisualisation(){
     tViz = [0,0];
     sViz = 1.0;
     svg.call(zoomViz);
-    console.log("finished init visualisation");
+    //console.log("finished init visualisation");
   }
 
 }
