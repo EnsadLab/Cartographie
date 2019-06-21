@@ -8,7 +8,8 @@ var testRevue = {
 	],
 
 	//links: ["sub1", "sub6", "sub5", "key26"], // généré par cécile, ne rien faire
-	locationCoords: [121, 31], // Longitude-latitude. Si rien, laisser la ligne totalement vide (=> enlever le paramètre)
+	locationCoords: [121, 31], // Latitude-longitude. Si rien, laisser la ligne totalement vide (=> enlever le paramètre)
+	about: "lorem ipsum...",
 	name: "Alliage ",
 	time: [1977, 2019], // Si rien, laisser la ligne totalement vide (=> enlever le paramètre)
 	city: "Paris", // Si rien, laisser la ligne totalement vide (=> enlever le paramètre)
@@ -820,6 +821,7 @@ var dataRevue = [
 
 	{
 		name : "Alliage " ,
+		publisher: "publisher",
 		keywords :[ "Fine Arts", "Literature", "Filmmaking", "Science and Technology Studies"],
 	},
 
