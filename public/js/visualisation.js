@@ -421,7 +421,7 @@ function zoomedViz() {
   console.log("center",x,y);*/
 
   // TO CHECK: ALEX ici tu peux changer la valeur de zoom pour l'affichage des labels des subnodes
-  if(sViz > 2){
+  if(sViz > 1.4){
     //console.log("showlabels",sViz);
     subnodeTextShow = true;
     d3.select("#nodes").selectAll(".subnodes").select("text").attr("opacity",1.0);

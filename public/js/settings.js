@@ -90,7 +90,7 @@ var strokeWidthSubNodeOBJ = 6 * scale * sf;
 // MAP
 var triangleDefaultOpacity = 0.1;
 var triangleEdgeLength = 5*scale*sf; // edge lenth du triangle
-var triangleHightlighted = 10*scale*sf;
+var triangleHightlighted = 20*scale*sf;
 var mapBackground = "#E5F6FE";
 var mapStrokeWidth = 0; // be sure stroke is uncommented in loadMap()
 var mapStrokeColor = "white"; // be sure stroke is uncommented in loadMap()
