@@ -126,6 +126,7 @@ function dezoomTimeline(duration){
 }
 
 function dezoomAndDeleteTimeline(duration){
+    console.log("dezoomAndDeleteTimeline");
     //s = 1.0;
     //var t =[0,0];
     // update rectangle revues and x axis
@@ -143,7 +144,7 @@ function dezoomAndDeleteTimeline(duration){
 
 // will also hide the rectangles
 function dezoomAndDeleteTimeline2(duration,reload){
-    //console.log("dezoom timeline 2");
+    console.log("dezoomAndDeleteTimeline2");
     //s = 1.0;
     //var t =[0,0];
     // update rectangle revues and x axis

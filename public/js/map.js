@@ -239,7 +239,7 @@ function rotateMap(endX) {
 function zoomended(){
   if(s !== 1) return;
   rotated = rotated + ((d3.mouse(this)[0] - initX) * 360 / (s * width));
-  rotated = rotated + ((mouse[0] - initX) * 360 / (s * width));
+  //rotated = rotated + ((mouse[0] - initX) * 360 / (s * width));
   mouseClicked = false;
 }  
 
