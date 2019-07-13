@@ -2,8 +2,9 @@
 
 class Anim {
 
-    constructor(id,radius,tmin,tmax){
+    constructor(id,id_pure,radius,tmin,tmax,absX,absY){
       this.id = id;
+      this.id_pure = id_pure;
       this.dt = 0.0;
       this.dx = 0.0;
       this.dy = 0.0;
@@ -13,24 +14,37 @@ class Anim {
       //this.y = getRandomInt(-this.radius,this.radius);
       this.x = 0;
       this.y = 0;
+      this.absX = absX;
+      this.absY = absY;
       this.tmin = tmin;
       this.tmax = tmax;
       this.fps = 60;
       this.node = d3.select("#nodes").select(id).select("g"); // TO DO: to check bug!!!
     }
 
-    update(debug){
+    update(xParent,yParent,debug){
+      var absPosition = [0,0];
       if(this.t < 1.0){
         this.t += this.dt;
         this.x += this.dx;
         this.y += this.dy;
-        if(debug) console.log("update",this.id,this.x, this.y);
+        //if(debug) console.log("update",this.id,this.x, this.y);
+        
         this.node.attr("transform",'translate('+ this.x + ',' + this.y + ')');
+        //console.log("id",this.id_pure);
+        var id = this.id_pure
+        var res = allNodes_flat.find( function(data) { return data.id == id; });
+        res.x = xParent + this.absX + this.x;
+        res.y = yParent + this.absY + this.y;
+        absPosition[0] = res.x;
+        absPosition[1] = res.y;
+       // if(debug) console.log("update absPosition",this.id,absPosition[0], absPosition[1]);
         this.t += this.dt;
       }else {
         this.start();
       }
-      return [this.x,this.y];
+      //return [this.x,this.y];
+      return absPosition;
     }
 
     start(){

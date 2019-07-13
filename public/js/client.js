@@ -23,18 +23,28 @@ var mcount = 0;
 var scount = 0;
 var kcount = 0;
 var dataLinks = [];
+var allNodes_flat = [];
 function genDatas(){
     masterNodes.forEach(function(dM,i){
         dM.id = "master"+mcount;
+        dM.absX = 0;
+        dM.absY = 0;
         dataLinks.push({id:dM.id,name:dM.name,parent:dM.id});
+        allNodes_flat.push({id:dM.id,x:0,y:0,r:0});
         mcount++;
         dM.subCategory.forEach(function(d,i){
             d.id = "sub"+scount;
+            d.absX = 0;
+            d.absY = 0;
             dataLinks.push({id:d.id,name:d.name,parent:dM.id});
+            allNodes_flat.push({id:d.id,x:0,y:0,r:0});
             scount++;
             d.keywords.forEach(function(d,i){
                 d.id = "key"+kcount;
+                d.absX = 0;
+                d.absY = 0;
                 dataLinks.push({id:d.id,name:d.name,parent:dM.id});
+                allNodes_flat.push({id:d.id,x:0,y:0,r:0});
                 kcount++;
             })
         })

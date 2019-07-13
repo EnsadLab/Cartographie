@@ -63,18 +63,38 @@ function drawCanvas(){
         context.lineWidth = 0.04;
         context.globalAlpha = animAlpha.update();
         //dataRevueFake.forEach(function(d,i){
+
+        //console.log("masternodes",masterNodes);
+            
         dataRevue.forEach(function(d,i){
             var s_coords = "";
             var coords = [];
+            
             d.links.forEach( function(l,i){
         
-            //console.log("link",l);
-            var bb = d3.select("#nodes").select("#" + l).select("g").select("circle").node().getBoundingClientRect();
-            var x = bb.x + bb.width*0.5;
-            var y = bb.y + bb.height*0.5;
-            coords.push([x,y]);
-            //s_coords += x + "," + y + " ";
+                //console.log("link",l);
+                //var node = d3.select("#nodes").select("#" + l).select("g").select("circle").node();
+                var res = allNodes_flat.find( function(data) { return data.id == l; });
+               // console.log("id",l);
+               // console.log("res",res);
+                //console.log("r",res.r);
+                var bb_x  = res.x;//node.attr("x");
+                var bb_y = res.y;//node.attr("y");
+                //var bb_width = res.r*2.0;//node.attr("width");
+                //var bb_height = 100;//node.attr("height");
+                //var node = d3.select("#nodes").select("#" + l).select("g").select("circle").node();
+                //var bb = node.getBoundingClientRect();
+                //var bb = {x: 346.63800048828125, y: 477.41363525390625, width: 11.959564208984375, height: 11.9595947265625};
+                //console.log("bb",bb);
+                //var x = bb.x + bb.width*0.5;
+                //var y = bb.y + bb.height*0.5;
+                //var x = bb_x + bb_width*0.5;
+                //var y = bb_y + bb_width*0.5;
+                //coords.push([x,y]);
+                coords.push([bb_x,bb_y]);
+                //s_coords += x + "," + y + " ";
             });
+            
             var p = "M" + coords.join("L") + "Z";
             var path = new Path2D(p);
             context.stroke(path);
@@ -136,7 +156,7 @@ function init(){
     //testMorphingToRect();
     
     // start our internal update loop
-    var fps = 30;
+    var fps = 60; //30
     startUpdateLoop(fps);
     
 }
