@@ -94,9 +94,9 @@ imgArt.onload = function() {
     if(nbImgLoaded == 3) imgLoaded = true;
 };
 //imgSSH.src = 'https://www.tutorialspoint.com/images/seaborn-4.jpg?v=2';
-imgSSH.src = 'http://localhost:8080/imgs/SSh.png';
-imgScience.src = 'http://localhost:8080/imgs/Science.png';
-imgArt.src = 'http://localhost:8080/imgs/Art.png';
+imgSSH.src = 'http://localhost:8080/imgs/SSh_500.png';
+imgScience.src = 'http://localhost:8080/imgs/Science_500.png';
+imgArt.src = 'http://localhost:8080/imgs/Art_500.png';
 
 var imgLoaded = false;
 function drawCanvas(){
