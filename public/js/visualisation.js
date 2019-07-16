@@ -54,11 +54,11 @@ function createMasterNodes(){
       //.on("end",function(){animDone = true;})
       .attr("fill","none")
       .attr("opacity",function(d){
-        return 1.0;
-        //return 0.1;
+        return 0.0;
+        //return 0.8;
       })
-     // .attr("fill", function(d, i) { return "url(#grad" + i + ")"; })
-    //  .attr("filter","url(#blur)")
+      //.attr("fill", function(d, i) { return "url(#grad" + i + ")"; })
+      //.attr("filter","url(#blur)")
       ;
   // TO CHECK: ALEX typo des master nodes
   div_g.append("text")
@@ -174,6 +174,7 @@ function createSubNodes(node,masterNodeId){
         return r;
       })
       .style("stroke",c)
+      
       .style("stroke-width",function(d){
         return mapValue(d.r,rsub_min,rsub_max,sub_strokeWidthMin,sub_strokeWidthMax);
       })
@@ -194,6 +195,7 @@ function createSubNodes(node,masterNodeId){
       .attr("fill",function(){
         d.color = c;
         return c;
+        //return "none";
       })
       .attr("opacity",0.0)
       .attr("font-size",subFontSize)
@@ -228,8 +230,8 @@ function createKeywordNodes(subnode, masterNodeId, subNodeId){
         var angle = resultSub.angleOffset + (index / nbKeyNodes) * Math.PI * 2.0;
         var x = (rsub_keyword+10) * Math.cos(angle);
         var y = (rsub_keyword+10) * Math.sin(angle);
-        d.absX = d.x;
-        d.absY = d.y;
+        d.absX = x;
+        d.absY = y;
         return `translate(${x},${y})`
       })
       ;
@@ -279,9 +281,10 @@ function createKeywordNodes(subnode, masterNodeId, subNodeId){
       .style("alignment-baseline","middle")
       .attr("fill",function(){
         d.color = c;
-        return "none";
+        //return "none";
+        return c;
       })
-      .attr("opacity","1.0")
+      .attr("opacity","0.0")
       .attr("font-size",keyFontSize)
       .call(wrap,keywordsTextLength,keywordsLineHeight)
       .style("alignment-baseline","middle")

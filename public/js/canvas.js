@@ -41,66 +41,234 @@ function drawFrame(){
     //console.log("draw frame");
     drawViz();
     drawCanvas();
+    //drawWebGL();
     updateUI();
 }
 
 
 var animAlpha = new AnimAlpha(0,0,0);
 
+// old version
+
+/*
 function drawCanvas(){
     if(!initCanvasDone) return;
     context.clearRect(0, 0, width, height); // Clear the canvas.
 
-    /*
-    context.fillStyle = "red";
-    context.font = "30px Open Sans";
-    context.textAlign = "start"
-    context.textBaseline = "hanging"
-    context.fillText("Text",100,100);
-    */
-
     if(state == State.VIZ_VIEW && vizdataLoaded){
         context.lineWidth = 0.04;
         context.globalAlpha = animAlpha.update();
-        //dataRevueFake.forEach(function(d,i){
-
-        //console.log("masternodes",masterNodes);
-            
         dataRevue.forEach(function(d,i){
             var s_coords = "";
             var coords = [];
-            
             d.links.forEach( function(l,i){
-        
                 //console.log("link",l);
-                //var node = d3.select("#nodes").select("#" + l).select("g").select("circle").node();
-                var res = allNodes_flat.find( function(data) { return data.id == l; });
-               // console.log("id",l);
-               // console.log("res",res);
-                //console.log("r",res.r);
-                var bb_x  = res.x;//node.attr("x");
-                var bb_y = res.y;//node.attr("y");
-                //var bb_width = res.r*2.0;//node.attr("width");
-                //var bb_height = 100;//node.attr("height");
-                //var node = d3.select("#nodes").select("#" + l).select("g").select("circle").node();
-                //var bb = node.getBoundingClientRect();
-                //var bb = {x: 346.63800048828125, y: 477.41363525390625, width: 11.959564208984375, height: 11.9595947265625};
-                //console.log("bb",bb);
-                //var x = bb.x + bb.width*0.5;
-                //var y = bb.y + bb.height*0.5;
-                //var x = bb_x + bb_width*0.5;
-                //var y = bb_y + bb_width*0.5;
-                //coords.push([x,y]);
-                coords.push([bb_x,bb_y]);
+                var node = d3.select("#nodes").select("#" + l).select("g").select("circle").node();
+                var bb = node.getBoundingClientRect();
+                var x = bb.x + bb.width*0.5;
+                var y = bb.y + bb.height*0.5;
+                coords.push([x,y]);
                 //s_coords += x + "," + y + " ";
             });
-            
             var p = "M" + coords.join("L") + "Z";
             var path = new Path2D(p);
             context.stroke(path);
         });
     }
+}*/
 
+var imgSSH = new Image();
+var imgScience = new Image();
+var imgArt = new Image();
+var nbImgLoaded = 0;
+imgSSH.onload = function() {
+    nbImgLoaded++;
+    if(nbImgLoaded == 3) imgLoaded = true;
+};
+imgScience.onload = function() {
+    nbImgLoaded++;
+    if(nbImgLoaded == 3) imgLoaded = true;
+};
+imgArt.onload = function() {
+    nbImgLoaded++;
+    if(nbImgLoaded == 3) imgLoaded = true;
+};
+//imgSSH.src = 'https://www.tutorialspoint.com/images/seaborn-4.jpg?v=2';
+imgSSH.src = 'http://localhost:8080/imgs/SSh.png';
+imgScience.src = 'http://localhost:8080/imgs/Science.png';
+imgArt.src = 'http://localhost:8080/imgs/Art.png';
+
+var imgLoaded = false;
+function drawCanvas(){
+    if(!initCanvasDone) return;
+    context.clearRect(0, 0, width, height); // Clear the canvas.
+
+    if(state == State.VIZ_VIEW && vizdataLoaded){
+        context.lineWidth = 0.04;
+        context.globalAlpha = animAlpha.update();
+        dataRevue.forEach(function(d,i){
+           // if(i == 0){
+                var s_coords = "";
+                var coords = [];
+                d.links.forEach( function(l,i){
+                    var res = allNodes_flat.find( function(data) { return data.id == l; });
+                    var bb_x  = res.x;
+                    var bb_y = res.y;
+                    //console.log("id",l,res.x,res.y);
+                    coords.push([bb_x,bb_y]);
+                });       
+                var p = "M" + coords.join("L") + "Z";
+                var path = new Path2D(p);
+                context.stroke(path);
+           // }
+        });
+    }
+
+    if(imgLoaded) {
+        var res = allNodes_flat.find( function(data) { return data.id == "master0"; });
+        context.globalAlpha = 0.8;
+        var f = 0.8;
+        var r = res.r*f;
+        context.drawImage(imgArt, res.x-r, res.y-r,r*2.0,r*2.0);
+        res = allNodes_flat.find( function(data) { return data.id == "master1"; });
+        r = res.r*f;
+        context.drawImage(imgSSH, res.x-r, res.y-r,r*2.0,r*2.0);
+        res = allNodes_flat.find( function(data) { return data.id == "master2"; });
+        r = res.r*f;
+        context.drawImage(imgScience, res.x-r, res.y-r,r*2.0,r*2.0);
+        context.globalAlpha = 1.0;
+        
+    }
+}
+
+function drawWebGL(){
+    /*======= Defining and storing the geometry ======*/
+    /*
+    var vertices = [
+        -0.7,-0.1,0,
+        -0.3,0.6,0,
+        -0.3,-0.3,0,
+        0.2,0.6,0,
+        0.3,-0.3,0,
+        0.7,0.6,0 
+    ]
+    */
+    var vertices = [];
+    //var nbVertices = 10;
+    /*
+    for(var i=0; i<nbVertices;i++){
+        vertices.push(Math.random()*2.0-1.0);
+        vertices.push(Math.random()*2.0-1.0);
+        vertices.push(0);
+    }*/
+
+    if(state == State.VIZ_VIEW && vizdataLoaded){
+        //context.lineWidth = 0.04;
+        //context.globalAlpha = animAlpha.update();
+        dataRevue.forEach(function(d,i){
+           // if(i==0){
+                var s_coords = "";
+                var coords = [];
+                d.links.forEach( function(l,i){
+                    
+                    var res = allNodes_flat.find( function(data) { return data.id == l; });
+                    var bb_x  = 2.0*(parseFloat(res.x)/parseFloat(width)) -1.0;
+                    if(bb_x > 1.0) bb_x = 1.0;
+                    else if(bb_x < -1.0) bb_x = -1.0;
+                    var bb_y = 2.0*(parseFloat(res.y)/parseFloat(height)) -1.0;
+                    if(bb_y > 1.0) bb_y = 1.0;
+                    else if(bb_y < -1.0) bb_y = -1.0;
+                    //console.log("id",l,2.0*(res.x/width)-1.0,res.y, width,height);
+                    coords.push([bb_x,bb_y]);
+                    //console.log(bb_x,bb_y,0);
+                    vertices.push(bb_x);
+                    vertices.push(bb_y);
+                    vertices.push(0.0);
+                    
+                });       
+                var p = "M" + coords.join("L") + "Z";
+                //console.log("vertices",vertices);
+                var path = new Path2D(p);
+                //context.stroke(path);
+           // }
+
+        });
+    }
+    var nbVertices = vertices.length/3;
+
+    // Create an empty buffer object
+    var vertex_buffer = gl.createBuffer();
+    // Bind appropriate array buffer to it
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+    // Pass the vertex data to the buffer
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    // Unbind the buffer
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+    /*=================== Shaders ====================*/
+    // Vertex shader source code
+    var vertCode =
+        'attribute vec3 coordinates;' +
+        'void main(void) {' +
+        ' gl_Position = vec4(coordinates, 1.0);' +
+        '}';
+
+    // Create a vertex shader object
+    var vertShader = gl.createShader(gl.VERTEX_SHADER);
+    // Attach vertex shader source code
+    gl.shaderSource(vertShader, vertCode);
+    // Compile the vertex shader
+    gl.compileShader(vertShader);
+    // Fragment shader source code
+    var fragCode =
+        'void main(void) {' +
+        'gl_FragColor = vec4(0.0, 0.0, 0.0, 0.8);' +
+        '}';
+
+    // Create fragment shader object
+    var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+    // Attach fragment shader source code
+    gl.shaderSource(fragShader, fragCode);
+    // Compile the fragmentt shader
+    gl.compileShader(fragShader);
+    // Create a shader program object to store
+    // the combined shader program
+    var shaderProgram = gl.createProgram();
+    // Attach a vertex shader
+    gl.attachShader(shaderProgram, vertShader);
+    // Attach a fragment shader
+    gl.attachShader(shaderProgram, fragShader);
+    // Link both the programs
+    gl.linkProgram(shaderProgram);
+    // Use the combined shader program object
+    gl.useProgram(shaderProgram);
+
+    /*======= Associating shaders to buffer objects ======*/
+    // Bind vertex buffer object
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+    // Get the attribute location
+    var coord = gl.getAttribLocation(shaderProgram, "coordinates");
+    // Point an attribute to the currently bound VBO
+    gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 0, 0);
+    // Enable the attribute
+    gl.enableVertexAttribArray(coord);
+
+    /*============ Drawing the triangle =============*/
+
+    // Clear the canvas
+    gl.clearColor(1.0, 1.0, 1.0, 1.0);
+    // Enable the depth test
+    gl.enable(gl.DEPTH_TEST);
+    // Clear the color and depth buffer
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    // Set the view port
+    gl.viewport(0,0,canvas.width,canvas.height);
+    // Draw the triangle
+    //gl.drawArrays(gl.LINES, 0, 6);
+    gl.drawArrays(gl.LINE_LOOP, 0, nbVertices);
+
+    // POINTS, LINE_STRIP, LINE_LOOP, LINES,
+    // TRIANGLE_STRIP,TRIANGLE_FAN, TRIANGLES
 }
 
 
@@ -109,6 +277,19 @@ function initCanvas(){
         .attr('width', width)
         .attr('height', height);
     context = canvas.node().getContext('2d');
+    initCanvasDone = true;
+}
+
+var gl;
+function initCanvasWebGL(){
+    var canvas = d3.select("#canvas")
+        .attr('width', width)
+        .attr('height', height);
+    gl = canvas.node().getContext('experimental-webgl');
+    gl.clearColor(1.0,1.0,1.0,1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    
+    //context = canvas.node().getContext('2d');
     initCanvasDone = true;
 }
 
@@ -143,6 +324,7 @@ function init(){
     initDB();
     initSVG();
     initCanvas();
+    //initCanvasWebGL();
     initDivStructure();
 
     // init our controller 
@@ -156,7 +338,7 @@ function init(){
     //testMorphingToRect();
     
     // start our internal update loop
-    var fps = 60; //30
+    var fps = 30; //30
     startUpdateLoop(fps);
     
 }
