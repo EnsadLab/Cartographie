@@ -38,9 +38,16 @@ class Anim {
         res.y = yParent + this.absY + this.y;
         absPosition[0] = res.x;
         absPosition[1] = res.y;
-       // if(debug) console.log("update absPosition",this.id,absPosition[0], absPosition[1]);
+        //if(debug) console.log("update absPosition",this.id,absPosition[0], absPosition[1]);
         this.t += this.dt;
       }else {
+        //console.log("restart?");
+        var id = this.id_pure
+        var res = allNodes_flat.find( function(data) { return data.id == id; });
+        res.x = xParent + this.absX + this.x;
+        res.y = yParent + this.absY + this.y;
+        absPosition[0] = res.x;
+        absPosition[1] = res.y;
         this.start();
       }
       //return [this.x,this.y];

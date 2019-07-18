@@ -1,7 +1,11 @@
 
 var svg;
 var context;
-
+var context2;
+var canvas;
+var canvas2;
+var offscreenCanvas;
+var ctxOffscreen;
 
 var stop = false;
 var frameCount = 0;
@@ -50,32 +54,7 @@ var animAlpha = new AnimAlpha(0,0,0);
 
 // old version
 
-/*
-function drawCanvas(){
-    if(!initCanvasDone) return;
-    context.clearRect(0, 0, width, height); // Clear the canvas.
 
-    if(state == State.VIZ_VIEW && vizdataLoaded){
-        context.lineWidth = 0.04;
-        context.globalAlpha = animAlpha.update();
-        dataRevue.forEach(function(d,i){
-            var s_coords = "";
-            var coords = [];
-            d.links.forEach( function(l,i){
-                //console.log("link",l);
-                var node = d3.select("#nodes").select("#" + l).select("g").select("circle").node();
-                var bb = node.getBoundingClientRect();
-                var x = bb.x + bb.width*0.5;
-                var y = bb.y + bb.height*0.5;
-                coords.push([x,y]);
-                //s_coords += x + "," + y + " ";
-            });
-            var p = "M" + coords.join("L") + "Z";
-            var path = new Path2D(p);
-            context.stroke(path);
-        });
-    }
-}*/
 
 var imgSSH = new Image();
 var imgScience = new Image();
@@ -99,44 +78,95 @@ imgScience.src = 'http://localhost:8080/imgs/Science_500.png';
 imgArt.src = 'http://localhost:8080/imgs/Art_500.png';
 
 var imgLoaded = false;
+var doubleBuffer;
+var nbFrames = 0;
 function drawCanvas(){
     if(!initCanvasDone) return;
-    context.clearRect(0, 0, width, height); // Clear the canvas.
+
 
     if(state == State.VIZ_VIEW && vizdataLoaded){
+
+        
+        ctxOffscreen.clearRect(0, 0, width, height); // Clear the canvas.
+        ctxOffscreen.strokeRect(0, 0, 10, 10);
+        ctxOffscreen.lineWidth = 0.04;
+        ctxOffscreen.globalAlpha = animAlpha.update();
+        ctxOffscreen.beginPath();
+        dataRevue.forEach(function(d,i){
+            var x = 0; var y = 0;
+            d.links.forEach( function(l,i){
+                var res = allNodes_flat.find( function(data) { return data.id == l; });
+                if(res.x < 100) console.log(l,res.x,res.y);
+                if(i == 0) {
+                    ctxOffscreen.moveTo(res.x,res.y);
+                    x = res.x;
+                    y = res.y;
+                }
+                else if(i == d.links.length-1){
+                    ctxOffscreen.lineTo(res.x,res.y);
+                    ctxOffscreen.lineTo(x,y);
+                }
+                else {
+                    ctxOffscreen.lineTo(res.x,res.y);
+                }
+            });       
+        });
+        ctxOffscreen.stroke();
+        
+        //imgLoaded = false;
+        if(imgLoaded) {
+            var res = allNodes_flat.find( function(data) { return data.id == "master0"; });
+            ctxOffscreen.globalAlpha = 0.8; var f = 0.8; var r = res.r*f;
+            ctxOffscreen.drawImage(imgArt, res.x-r, res.y-r,r*2.0,r*2.0);
+            res = allNodes_flat.find( function(data) { return data.id == "master1"; }); r = res.r*f;
+            ctxOffscreen.drawImage(imgSSH, res.x-r, res.y-r,r*2.0,r*2.0);
+            res = allNodes_flat.find( function(data) { return data.id == "master2"; }); r = res.r*f;
+            ctxOffscreen.drawImage(imgScience, res.x-r, res.y-r,r*2.0,r*2.0);
+        }
+
+        context.clearRect(0, 0, width, height); // Clear the canvas.
+        context.drawImage(offscreenCanvas,0,0);
+
+
+/*
         context.lineWidth = 0.04;
         context.globalAlpha = animAlpha.update();
+        context.clearRect(0, 0, width, height); // Clear the canvas.
+        context.beginPath();
         dataRevue.forEach(function(d,i){
-           // if(i == 0){
-                var s_coords = "";
-                var coords = [];
-                d.links.forEach( function(l,i){
-                    var res = allNodes_flat.find( function(data) { return data.id == l; });
-                    var bb_x  = res.x;
-                    var bb_y = res.y;
-                    //console.log("id",l,res.x,res.y);
-                    coords.push([bb_x,bb_y]);
-                });       
-                var p = "M" + coords.join("L") + "Z";
-                var path = new Path2D(p);
-                context.stroke(path);
-           // }
+            var x = 0; var y = 0;
+            d.links.forEach( function(l,i){
+                var res = allNodes_flat.find( function(data) { return data.id == l; });
+                if(res.x < 100) console.log(l,res.x,res.y);
+                if(i == 0) {
+                    context.moveTo(res.x,res.y);
+                    x = res.x;
+                    y = res.y;
+                }
+                else if(i == d.links.length-1){
+                    context.lineTo(res.x,res.y);
+                    context.lineTo(x,y);
+                }
+                else {
+                    context.lineTo(res.x,res.y);
+                }
+            });       
         });
-    }
+        context.stroke();
 
-    if(imgLoaded) {
-        var res = allNodes_flat.find( function(data) { return data.id == "master0"; });
-        context.globalAlpha = 0.8;
-        var f = 0.8;
-        var r = res.r*f;
-        context.drawImage(imgArt, res.x-r, res.y-r,r*2.0,r*2.0);
-        res = allNodes_flat.find( function(data) { return data.id == "master1"; });
-        r = res.r*f;
-        context.drawImage(imgSSH, res.x-r, res.y-r,r*2.0,r*2.0);
-        res = allNodes_flat.find( function(data) { return data.id == "master2"; });
-        r = res.r*f;
-        context.drawImage(imgScience, res.x-r, res.y-r,r*2.0,r*2.0);
-        context.globalAlpha = 1.0;
+        //context2.drawImage(canvas.node(),0,0);
+    
+        
+        //imgLoaded = false;
+        if(imgLoaded) {
+            var res = allNodes_flat.find( function(data) { return data.id == "master0"; });
+            context.globalAlpha = 0.8; var f = 0.8; var r = res.r*f;
+            context.drawImage(imgArt, res.x-r, res.y-r,r*2.0,r*2.0);
+            res = allNodes_flat.find( function(data) { return data.id == "master1"; }); r = res.r*f;
+            context.drawImage(imgSSH, res.x-r, res.y-r,r*2.0,r*2.0);
+            res = allNodes_flat.find( function(data) { return data.id == "master2"; }); r = res.r*f;
+            context.drawImage(imgScience, res.x-r, res.y-r,r*2.0,r*2.0);
+        }*/
         
     }
 }
@@ -273,10 +303,26 @@ function drawWebGL(){
 
 
 function initCanvas(){
-    var canvas = d3.select("#canvas")
+    canvas = d3.select("#canvas")
         .attr('width', width)
         .attr('height', height);
     context = canvas.node().getContext('2d');
+
+    
+    offscreenCanvas = document.createElement('canvas');
+    offscreenCanvas.width = width;
+    offscreenCanvas.height = height;
+
+    ctxOffscreen = offscreenCanvas.getContext('2d');
+    
+
+    //var canvas2 = document.createElement('canvas');
+    /*
+    canvas2 = d3.select("#canvas2")
+        .attr('width', width)
+        .attr('height', height);
+    context2 = canvas.node().getContext('2d');
+    */
     initCanvasDone = true;
 }
 
@@ -355,3 +401,77 @@ document.addEventListener("DOMContentLoaded", function(event) {
     init();
 });
 
+
+/* version 1
+function drawCanvas(){
+    if(!initCanvasDone) return;
+    context.clearRect(0, 0, width, height); // Clear the canvas.
+
+    if(state == State.VIZ_VIEW && vizdataLoaded){
+        context.lineWidth = 0.04;
+        context.globalAlpha = animAlpha.update();
+        dataRevue.forEach(function(d,i){
+            var s_coords = "";
+            var coords = [];
+            d.links.forEach( function(l,i){
+                //console.log("link",l);
+                var node = d3.select("#nodes").select("#" + l).select("g").select("circle").node();
+                var bb = node.getBoundingClientRect();
+                var x = bb.x + bb.width*0.5;
+                var y = bb.y + bb.height*0.5;
+                coords.push([x,y]);
+                //s_coords += x + "," + y + " ";
+            });
+            var p = "M" + coords.join("L") + "Z";
+            var path = new Path2D(p);
+            context.stroke(path);
+        });
+    }
+}*/
+
+/* version 2
+function drawCanvas(){
+    if(!initCanvasDone) return;
+    context.clearRect(0, 0, width, height); // Clear the canvas.
+
+    if(state == State.VIZ_VIEW && vizdataLoaded){
+        context.lineWidth = 0.04;
+        context.globalAlpha = animAlpha.update();
+        context.beginPath();
+        dataRevue.forEach(function(d,i){
+           // if(i == 0){
+                //var s_coords = "";
+                //var coords = [];
+                d.links.forEach( function(l,i){
+                    var res = allNodes_flat.find( function(data) { return data.id == l; });
+                    //var bb_x  = res.x;
+                    //var bb_y = res.y;
+                    //console.log("id",l,res.x,res.y);
+                    //coords.push([bb_x,bb_y]);
+                    if(i == 0) context.moveTo(res.x,res.y);
+                    else context.lineTo(res.x,res.y);
+                });       
+                //var p = "M" + coords.join("L") + "Z";
+                //var path = new Path2D(p);
+                //context.stroke(path);
+           // }
+        });
+        context.stroke();
+    }
+
+    if(imgLoaded) {
+        var res = allNodes_flat.find( function(data) { return data.id == "master0"; });
+        context.globalAlpha = 0.8;
+        var f = 0.8;
+        var r = res.r*f;
+        context.drawImage(imgArt, res.x-r, res.y-r,r*2.0,r*2.0);
+        res = allNodes_flat.find( function(data) { return data.id == "master1"; });
+        r = res.r*f;
+        context.drawImage(imgSSH, res.x-r, res.y-r,r*2.0,r*2.0);
+        res = allNodes_flat.find( function(data) { return data.id == "master2"; });
+        r = res.r*f;
+        context.drawImage(imgScience, res.x-r, res.y-r,r*2.0,r*2.0);
+        context.globalAlpha = 1.0;
+    }
+}
+*/

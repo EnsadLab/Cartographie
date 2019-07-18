@@ -19,6 +19,24 @@ var testRevue = {
 	link: "www.lorem.com"
 }
 
+/*
+var dataRevue = [
+
+	{
+		name : "Alliage " ,
+		publisher: "Université de Nice Sophia Antipolis",
+		keywords :[ "Fine Arts", "Literature", "Filmmaking", "Science and Technology Studies"],
+		time: [1989, 2019],
+		locationCoords: [7.266079999999988,43.7031,],
+		city: "Nice",
+		country: "France",
+		about:"Alliage, une revue à trois dimensions : - Le vecteur d'une réflexion de fond sur les rapports de la culture, de la technoscience et de la société - Un…",
+		link: "http://revel.unice.fr/alliage/"
+	},
+]*/
+
+
+
 
 var dataRevue = [
 
