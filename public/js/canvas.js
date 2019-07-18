@@ -82,6 +82,7 @@ imgArt.src = 'http://localhost:8080/imgs/Art_500.png';
 imgSSH.src = 'http://localhost:8080/imgs/SSh_500_DEBUG.png';
 imgScience.src = 'http://localhost:8080/imgs/Science_500_DEBUG.png';
 imgArt.src = 'http://localhost:8080/imgs/Art_500_DEBUG.png';
+var imgs = [imgArt,imgSSH,imgScience];
 
 var imgLoaded = false;
 var doubleBuffer;
@@ -95,10 +96,7 @@ function drawCanvas(){
 
         // one buffer
         context.lineWidth = 0.04;
-        //context.lineWidth = 1.0;
         context.globalAlpha = animAlpha.update();
-        //context.globalAlpha = 1.0;
-        //console.log("globalAlpha",context.globalAlpha);
         context.clearRect(0, 0, width, height); // Clear the canvas.
         context.beginPath();
         dataRevue.forEach(function(d,i){
@@ -113,6 +111,9 @@ function drawCanvas(){
                     x = res.xStart;
                     y = res.yStart;
                 }
+                x += tViz[0];
+                y += tViz[1];
+                x *= sViz;
                 if(i == 0) {
                     context.moveTo(x,y);
                     xBeginPath = x;
@@ -129,20 +130,27 @@ function drawCanvas(){
         });
         context.stroke();
     
-        //imgLoaded = false;
         if(imgLoaded) {
-            var res = allNodes_flat.find( function(data) { return data.id == "master0"; });
-            //context.globalAlpha = masterNodeTrans; 
-            context.globalAlpha = animAlphaMasterNodes.update();
-            //console.log("globalAlpha",context.globalAlpha);
-            var f = 0.8; var r = res.r*f;
-            context.drawImage(imgArt, res.x-r, res.y-r,r*2.0,r*2.0);
-            res = allNodes_flat.find( function(data) { return data.id == "master1"; }); r = res.r*f;
-            context.drawImage(imgSSH, res.x-r, res.y-r,r*2.0,r*2.0);
-            res = allNodes_flat.find( function(data) { return data.id == "master2"; }); r = res.r*f;
-            context.drawImage(imgScience, res.x-r, res.y-r,r*2.0,r*2.0);
+            var f = 0.8;
+            for(var index=0; index<3; index++){
+                var x = 0; var y = 0;
+                var res = allNodes_flat.find( function(data) { return data.id == "master"+index; });
+                if(animVizRunning){
+                    x = res.x;
+                    y = res.y;
+                }else{
+                    x = res.xStart;
+                    y = res.yStart;
+                }
+
+                
+                x += tViz[0];
+                y += tViz[1];
+                x *= sViz;
+                var r = res.r*f*sViz;
+                context.drawImage(imgs[index], x-r, y-r,r*2.0,r*2.0);
+            }
         }
-        
     }
 }
 
