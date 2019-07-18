@@ -51,6 +51,7 @@ function drawFrame(){
 
 
 var animAlpha = new AnimAlpha(0,0,0);
+var animAlphaMasterNodes = new AnimAlpha(0,0,0);
 
 // old version
 
@@ -72,82 +73,57 @@ imgArt.onload = function() {
     nbImgLoaded++;
     if(nbImgLoaded == 3) imgLoaded = true;
 };
-//imgSSH.src = 'https://www.tutorialspoint.com/images/seaborn-4.jpg?v=2';
+
+/*
 imgSSH.src = 'http://localhost:8080/imgs/SSh_500.png';
 imgScience.src = 'http://localhost:8080/imgs/Science_500.png';
 imgArt.src = 'http://localhost:8080/imgs/Art_500.png';
+*/
+imgSSH.src = 'http://localhost:8080/imgs/SSh_500_DEBUG.png';
+imgScience.src = 'http://localhost:8080/imgs/Science_500_DEBUG.png';
+imgArt.src = 'http://localhost:8080/imgs/Art_500_DEBUG.png';
 
 var imgLoaded = false;
 var doubleBuffer;
 var nbFrames = 0;
+
+
 function drawCanvas(){
     if(!initCanvasDone) return;
 
-
     if(state == State.VIZ_VIEW && vizdataLoaded){
-
-        /* 
-        // Double buffering
-        ctxOffscreen.clearRect(0, 0, width, height); // Clear the canvas.
-        ctxOffscreen.strokeRect(0, 0, 10, 10);
-        ctxOffscreen.lineWidth = 0.04;
-        ctxOffscreen.globalAlpha = animAlpha.update();
-        ctxOffscreen.beginPath();
-        dataRevue.forEach(function(d,i){
-            var x = 0; var y = 0;
-            d.links.forEach( function(l,i){
-                var res = allNodes_flat.find( function(data) { return data.id == l; });
-                if(res.x < 100) console.log(l,res.x,res.y);
-                if(i == 0) {
-                    ctxOffscreen.moveTo(res.x,res.y);
-                    x = res.x;
-                    y = res.y;
-                }
-                else if(i == d.links.length-1){
-                    ctxOffscreen.lineTo(res.x,res.y);
-                    ctxOffscreen.lineTo(x,y);
-                }
-                else {
-                    ctxOffscreen.lineTo(res.x,res.y);
-                }
-            });       
-        });
-        ctxOffscreen.stroke();
-
-        if(imgLoaded) {
-            var res = allNodes_flat.find( function(data) { return data.id == "master0"; });
-            ctxOffscreen.globalAlpha = 0.8; var f = 0.8; var r = res.r*f;
-            ctxOffscreen.drawImage(imgArt, res.x-r, res.y-r,r*2.0,r*2.0);
-            res = allNodes_flat.find( function(data) { return data.id == "master1"; }); r = res.r*f;
-            ctxOffscreen.drawImage(imgSSH, res.x-r, res.y-r,r*2.0,r*2.0);
-            res = allNodes_flat.find( function(data) { return data.id == "master2"; }); r = res.r*f;
-            ctxOffscreen.drawImage(imgScience, res.x-r, res.y-r,r*2.0,r*2.0);
-        }
-
-        context.clearRect(0, 0, width, height); // Clear the canvas.
-        context.drawImage(offscreenCanvas,0,0);
-        */
 
         // one buffer
         context.lineWidth = 0.04;
+        //context.lineWidth = 1.0;
         context.globalAlpha = animAlpha.update();
+        //context.globalAlpha = 1.0;
+        //console.log("globalAlpha",context.globalAlpha);
         context.clearRect(0, 0, width, height); // Clear the canvas.
         context.beginPath();
         dataRevue.forEach(function(d,i){
-            var x = 0; var y = 0;
+            var xBeginPath = 0; var yBeginPath = 0;
             d.links.forEach( function(l,i){
                 var res = allNodes_flat.find( function(data) { return data.id == l; });
-                if(i == 0) {
-                    context.moveTo(res.x,res.y);
+                var x = 0; var y = 0;
+                if(animVizRunning){
                     x = res.x;
                     y = res.y;
+                }else{
+                    x = res.xStart;
+                    y = res.yStart;
+                }
+                if(i == 0) {
+                    context.moveTo(x,y);
+                    xBeginPath = x;
+                    yBeginPath = y;
                 }
                 else if(i == d.links.length-1){
-                    context.lineTo(res.x,res.y);
                     context.lineTo(x,y);
+                    context.lineTo(xBeginPath,yBeginPath);
                 }
                 else {
-                    context.lineTo(res.x,res.y);
+                    context.lineTo(x,y);
                 }
             });       
         });
@@ -156,7 +132,10 @@ function drawCanvas(){
         //imgLoaded = false;
         if(imgLoaded) {
             var res = allNodes_flat.find( function(data) { return data.id == "master0"; });
-            context.globalAlpha = 0.8; var f = 0.8; var r = res.r*f;
+            //context.globalAlpha = masterNodeTrans; 
+            context.globalAlpha = animAlphaMasterNodes.update();
+            //console.log("globalAlpha",context.globalAlpha);
+            var f = 0.8; var r = res.r*f;
             context.drawImage(imgArt, res.x-r, res.y-r,r*2.0,r*2.0);
             res = allNodes_flat.find( function(data) { return data.id == "master1"; }); r = res.r*f;
             context.drawImage(imgSSH, res.x-r, res.y-r,r*2.0,r*2.0);
@@ -165,6 +144,11 @@ function drawCanvas(){
         }
         
     }
+}
+
+
+function clearCanvas(){
+    context.clearRect(0, 0, width, height); // Clear the canvas.
 }
 
 function drawWebGL(){
@@ -391,14 +375,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
 });
 
 
-/* version 1
+
+// version 1
+/*
 function drawCanvas(){
     if(!initCanvasDone) return;
     context.clearRect(0, 0, width, height); // Clear the canvas.
 
     if(state == State.VIZ_VIEW && vizdataLoaded){
+
         context.lineWidth = 0.04;
         context.globalAlpha = animAlpha.update();
+        console.log("globalAlpha",context.globalAlpha);
         dataRevue.forEach(function(d,i){
             var s_coords = "";
             var coords = [];
@@ -464,3 +452,94 @@ function drawCanvas(){
     }
 }
 */
+
+/*
+// version 3
+function drawCanvas(){
+    if(!initCanvasDone) return;
+
+
+    if(state == State.VIZ_VIEW && vizdataLoaded){
+
+        /* 
+        // Double buffering
+        ctxOffscreen.clearRect(0, 0, width, height); // Clear the canvas.
+        ctxOffscreen.strokeRect(0, 0, 10, 10);
+        ctxOffscreen.lineWidth = 0.04;
+        ctxOffscreen.globalAlpha = animAlpha.update();
+        ctxOffscreen.beginPath();
+        dataRevue.forEach(function(d,i){
+            var x = 0; var y = 0;
+            d.links.forEach( function(l,i){
+                var res = allNodes_flat.find( function(data) { return data.id == l; });
+                if(res.x < 100) console.log(l,res.x,res.y);
+                if(i == 0) {
+                    ctxOffscreen.moveTo(res.x,res.y);
+                    x = res.x;
+                    y = res.y;
+                }
+                else if(i == d.links.length-1){
+                    ctxOffscreen.lineTo(res.x,res.y);
+                    ctxOffscreen.lineTo(x,y);
+                }
+                else {
+                    ctxOffscreen.lineTo(res.x,res.y);
+                }
+            });       
+        });
+        ctxOffscreen.stroke();
+
+        if(imgLoaded) {
+            var res = allNodes_flat.find( function(data) { return data.id == "master0"; });
+            ctxOffscreen.globalAlpha = 0.8; var f = 0.8; var r = res.r*f;
+            ctxOffscreen.drawImage(imgArt, res.x-r, res.y-r,r*2.0,r*2.0);
+            res = allNodes_flat.find( function(data) { return data.id == "master1"; }); r = res.r*f;
+            ctxOffscreen.drawImage(imgSSH, res.x-r, res.y-r,r*2.0,r*2.0);
+            res = allNodes_flat.find( function(data) { return data.id == "master2"; }); r = res.r*f;
+            ctxOffscreen.drawImage(imgScience, res.x-r, res.y-r,r*2.0,r*2.0);
+        }
+
+        context.clearRect(0, 0, width, height); // Clear the canvas.
+        context.drawImage(offscreenCanvas,0,0);
+        */
+        /*
+        // one buffer
+        context.lineWidth = 0.04;
+        context.globalAlpha = animAlpha.update();
+        console.log("globalAlpha",context.globalAlpha);
+        context.clearRect(0, 0, width, height); // Clear the canvas.
+        context.beginPath();
+        dataRevue.forEach(function(d,i){
+            var x = 0; var y = 0;
+            d.links.forEach( function(l,i){
+                var res = allNodes_flat.find( function(data) { return data.id == l; });
+                if(i == 0) {
+                    context.moveTo(res.x,res.y);
+                    x = res.x;
+                    y = res.y;
+                }
+                else if(i == d.links.length-1){
+                    context.lineTo(res.x,res.y);
+                    context.lineTo(x,y);
+                }
+                else {
+                    context.lineTo(res.x,res.y);
+                }
+            });       
+        });
+        context.stroke();
+    
+        //imgLoaded = false;
+        if(imgLoaded) {
+            var res = allNodes_flat.find( function(data) { return data.id == "master0"; });
+            context.globalAlpha = 0.8; var f = 0.8; var r = res.r*f;
+            context.drawImage(imgArt, res.x-r, res.y-r,r*2.0,r*2.0);
+            res = allNodes_flat.find( function(data) { return data.id == "master1"; }); r = res.r*f;
+            context.drawImage(imgSSH, res.x-r, res.y-r,r*2.0,r*2.0);
+            res = allNodes_flat.find( function(data) { return data.id == "master2"; }); r = res.r*f;
+            context.drawImage(imgScience, res.x-r, res.y-r,r*2.0,r*2.0);
+        }
+        
+    }
+}*/
+

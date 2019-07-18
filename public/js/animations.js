@@ -2,7 +2,7 @@
 
 class Anim {
 
-    constructor(id,id_pure,radius,tmin,tmax,absX,absY){
+    constructor(id,id_pure,radius,tmin,tmax,absX,absY,parentAbsX,parentAbsY){
       this.id = id;
       this.id_pure = id_pure;
       this.dt = 0.0;
@@ -20,6 +20,24 @@ class Anim {
       this.tmax = tmax;
       this.fps = 60;
       this.node = d3.select("#nodes").select(id).select("g"); // TO DO: to check bug!!!
+      var res = allNodes_flat.find( function(data) { return data.id == id_pure; });
+      res.xStart = parentAbsX + absX;
+      res.yStart = parentAbsY + absY;
+    }
+
+    resetNode(xParent,yParent){
+      var absPosition = [0,0];
+      this.node = d3.select("#nodes").select(this.id).select("g");
+      this.x = 0;
+      this.y = 0;
+      var id = this.id_pure;
+      var res = allNodes_flat.find( function(data) { return data.id == id; });
+      res.x = xParent + this.absX + this.x;
+      res.y = yParent + this.absY + this.y;
+      absPosition[0] = res.x;
+      absPosition[1] = res.y;
+      this.start();
+      return absPosition;
     }
 
     update(xParent,yParent,debug){
@@ -36,6 +54,8 @@ class Anim {
         var res = allNodes_flat.find( function(data) { return data.id == id; });
         res.x = xParent + this.absX + this.x;
         res.y = yParent + this.absY + this.y;
+        res.xRel = this.absX;
+        res.yRel = this.absY;
         absPosition[0] = res.x;
         absPosition[1] = res.y;
         //if(debug) console.log("update absPosition",this.id,absPosition[0], absPosition[1]);
@@ -46,6 +66,8 @@ class Anim {
         var res = allNodes_flat.find( function(data) { return data.id == id; });
         res.x = xParent + this.absX + this.x;
         res.y = yParent + this.absY + this.y;
+        res.xRel = this.absX;//this.absX + this.x;
+        res.yRel = this.absY;//this.absY + this.y;
         absPosition[0] = res.x;
         absPosition[1] = res.y;
         this.start();
@@ -84,7 +106,7 @@ class Anim {
 
     update(){
 
-      if(this.t <= 1.0){
+      if(this.runningTheDelay && this.t <= 1.0){
          this.t += this.dtDelay;
          if(this.t >= 1.0){
            this.t = 0;
@@ -99,7 +121,7 @@ class Anim {
       } else {
         this.running = false;
       }
-      //console.log("alpha",this.alpha,this.nbFramesDelay,this.running,this.dtDelay,this.t);
+      //console.log("alpha",this.alpha,this.t);
       return this.alpha;
     }
     
@@ -113,7 +135,10 @@ class Anim {
         this.deltaAlpha = (this.alphaEnd-this.alphaStart)/this.nbFrames;
         this.dt = 1.0/this.nbFrames;
         this.t = 0.0;
-        this.running = false;
+       // this.running = false;
+        if(delay == 0) {this.running = true; this.runningTheDelay = false;}
+        else {this.running = false; this.runningTheDelay = true;}
+        //console.log("alpha START",alphaStart,alphaEnd,this.fps,delay,this.dtDelay,this.nbFramesDelay);
     }
 
   };

@@ -8,6 +8,34 @@ var subAnims = [];
 var keyAnims = [];
 
 var durationFadeAnim = 800;
+
+function showTempMasterNodes(){
+  for(var index=0; index<3; index++){
+    var selg = d3.select("#nodes").select("#master"+index);
+    selg.select("g").select("circle")
+        .attr("fill", function(d, i) { 
+          return "url(#grad" + index + ")"; })
+        .attr("filter","url(#blur)")
+        .attr("opacity",masterNodeTrans);
+        ;
+  }
+}
+
+// this function will probably not have to be used
+function hideTempMasterNodes(){
+  for(var i=0; i<3; i++){
+    var selg = d3.select("#nodes").select("#master"+i);
+    selg.select("g").select("circle")
+        .attr("filter","none")
+        .attr("opacity",0.0)
+        .attr("fill","none")
+        ;
+  }
+  
+}
+
+var startingCreateAllNodesNb = 0;
+var startingCreateAllNodes = true;
 function createMasterNodes(){
 
   //console.log("master nodes",masterNodes);
@@ -21,9 +49,21 @@ function createMasterNodes(){
       .attr("class","masternodes")
       //.attr("transform", d => `translate(${d.x * width},${d.y * height})`)
       .attr("transform", function(d){
-        d.absX = d.x * width;
-        d.absY = d.y * height;
-        return `translate(${d.x * width},${d.y * height})`;
+        if(startingCreateAllNodes){
+          
+          d.absX = d.x * width;
+          d.absY = d.y * height;
+          //console.log("starting master",d.absX,d.absY);
+          startingCreateAllNodesNb++;
+          return `translate(${d.x * width},${d.y * height})`;
+        }
+        else
+        {
+          var res = allNodes_flat.find( function(data) { return data.id == d.id; });
+          //console.log("master CREATE NODE",res);
+          return `translate(${res.xRel},${res.yRel})`;
+        }
+        //return `translate(${d.x * width},${d.y * height})`;
       })
       ;
   var div_g = node.append("g")
@@ -55,7 +95,7 @@ function createMasterNodes(){
       .attr("fill","none")
       .attr("opacity",function(d){
         return 0.0;
-        //return 0.8;
+        //return masterNodeTrans;
       })
       //.attr("fill", function(d, i) { return "url(#grad" + i + ")"; })
       //.attr("filter","url(#blur)")
@@ -93,11 +133,13 @@ function createMasterNodes(){
     createSubNodes(d3.select(this), d3.select(this.parentNode).attr("id"));
   });
 
+  startingCreateAllNodes = false;
+
   // change order of master nodes
   d3.select("#master2").moveToBack();
   d3.select("#master1").moveToBack();
 
-  console.log("master nodes",masterNodes);
+  //console.log("master nodes",masterNodes);
 
 }
 
@@ -129,16 +171,24 @@ function createSubNodes(node,masterNodeId){
       .attr("transform", (d,i) => {
         //var angle = (i / nbSubnode) * Math.PI * 2.0;
         //console.log("weight",d.w);
-        var index = Math.ceil(i/2.0);
-        if(i % 2 == 0 && i != 0) index = nbSubnode - index;
-        //console.log("index",index)
-        var sub = result.subCategory.filter( function(data) { return data.id == d.id; })[0];
-        var angle = angleOffset + (index / nbSubnode) * Math.PI * 2.0;
-        sub.angleOffset = angle;
-        var x = rmaster_sub * Math.cos(angle);
-        var y = rmaster_sub * Math.sin(angle);
-        d.absX = x;
-        d.absY = y;
+        var x = 0; var y = 0;
+        if(startingCreateAllNodes){
+          var index = Math.ceil(i/2.0);
+          if(i % 2 == 0 && i != 0) index = nbSubnode - index;
+          //console.log("index",index)
+          var sub = result.subCategory.filter( function(data) { return data.id == d.id; })[0];
+          var angle = angleOffset + (index / nbSubnode) * Math.PI * 2.0;
+          sub.angleOffset = angle;
+          x = rmaster_sub * Math.cos(angle);
+          y = rmaster_sub * Math.sin(angle);
+          d.absX = x;
+          d.absY = y;
+          startingCreateAllNodesNb++;
+        }else{
+          var res = allNodes_flat.find( function(data) { return data.id == d.id; });
+          x = res.xRel;
+          y = res.yRel;
+        }
         return `translate(${x},${y})`
       })
       ;
@@ -225,13 +275,22 @@ function createKeywordNodes(subnode, masterNodeId, subNodeId){
       .attr("id",d => d.id)
       .attr("class","keywordnodes")
       .attr("transform", (d,i) => {
-        var index = Math.ceil(i/2.0);
-        if(i % 2 == 0 && i != 0) index = nbKeyNodes - index;
-        var angle = resultSub.angleOffset + (index / nbKeyNodes) * Math.PI * 2.0;
-        var x = (rsub_keyword+10) * Math.cos(angle);
-        var y = (rsub_keyword+10) * Math.sin(angle);
-        d.absX = x;
-        d.absY = y;
+        var x = 0; var y = 0;
+        if(startingCreateAllNodes){
+          var index = Math.ceil(i/2.0);
+          if(i % 2 == 0 && i != 0) index = nbKeyNodes - index;
+          var angle = resultSub.angleOffset + (index / nbKeyNodes) * Math.PI * 2.0;
+          x = (rsub_keyword+10) * Math.cos(angle);
+          y = (rsub_keyword+10) * Math.sin(angle);
+          d.absX = x;
+          d.absY = y;
+          startingCreateAllNodesNb++;
+          //startingCreateAllNodes = false;
+        }else{
+          var res = allNodes_flat.find( function(data) { return data.id == d.id; });
+          x = res.xRel;
+          y = res.yRel;
+        }
         return `translate(${x},${y})`
       })
       ;
@@ -296,8 +355,32 @@ function createKeywordNodes(subnode, masterNodeId, subNodeId){
 
 var animVizRunning = false;
 var allNodes = [];
-function startAnimNodes(){
+
+function createAnimNodes(){
   nodeAnims = [];
+  allNodes = [];
+  masterNodes.forEach(function(dM,i){
+    var anim = new Anim("#"+dM.id,dM.id,60,5,10,dM.absX,dM.absY,0,0);
+    anim.start();
+    //nodeAnims.push(anim);
+    //allNodes.push({id:dM.id,x:0,y:0,r:0,subs:[]});
+    allNodes.push({a:anim,subs:[]});
+    dM.subCategory.forEach(function(dS,j){
+        var anim = new Anim("#"+dS.id,dS.id,30,5,8,dS.absX,dS.absY,dM.absX,dM.absY);
+        anim.start();
+        allNodes[i].subs.push({a:anim,keywords:[]});
+        dS.keywords.forEach(function(dK,k){
+            var anim = new Anim("#"+dK.id,dK.id,10,2,4,dK.absX,dK.absY,dM.absX + dS.absX, dM.absY + dS.absY);
+            anim.start();
+            //nodeAnims[i][j].push(anim);
+            allNodes[i].subs[j].keywords.push({a:anim});
+        })
+    })
+  });
+}
+
+function startAnimNodes(){
+  /*nodeAnims = [];
   allNodes = [];
   masterNodes.forEach(function(dM,i){
     var anim = new Anim("#"+dM.id,dM.id,60,5,10,dM.absX,dM.absY);
@@ -316,9 +399,19 @@ function startAnimNodes(){
             allNodes[i].subs[j].keywords.push({a:anim});
         })
     })
-  });
+  });*/
+
+  for(var i=0; i<allNodes.length;i++){
+    var masterPos = allNodes[i].a.resetNode(0,0);
+    for(var j=0; j<allNodes[i].subs.length;j++){
+      var subPos = allNodes[i].subs[j].a.resetNode(masterPos[0],masterPos[1]);
+      for(var k=0; k<allNodes[i].subs[j].keywords.length; k++){
+        allNodes[i].subs[j].keywords[k].a.resetNode(subPos[0],subPos[1]);
+      }
+    }
+  }
   animVizRunning = true;
-  console.log("node anims",allNodes);
+  //console.log("node anims",allNodes);
 }
 
 /*

@@ -143,6 +143,8 @@ function startGeo(comingFromReload){
         createGeoTriPath();
         showMenu(true);
     }else if(previousState == State.VIZ_VIEW){
+        clearCanvas();
+        showTempMasterNodes();
         startTransitionVizGeo();
     }else if(previousState == State.TIMELINE_VIEW){
         dezoomAndDeleteTimeline(500);
@@ -161,6 +163,8 @@ function startGeo(comingFromReload){
     }
 }
 
+
+var starting = true;
 function startViz(){
 
     previousState = state;
@@ -179,8 +183,13 @@ function startViz(){
 
     if(previousState == State.LOAD){
         vizdataLoaded = true;
+        if(starting){
+            starting = false;
+            createAnimNodes();
+        }
         startAnimNodes();
         animAlpha.start(0,1.0,0.5,0);
+        animAlphaMasterNodes.start(0,masterNodeTrans,0.5,0.0);
     } else if(previousState == State.GEO_VIEW){
         dezoomMap(500);
 
@@ -192,6 +201,7 @@ function startViz(){
 
         startTransitionGeoViz();
         animAlpha.start(0,1.0,0.5,0);
+        animAlphaMasterNodes.start(0,masterNodeTrans,0.5,0.0);
         vizdataLoaded = true;
     } else if(previousState == State.OBJ_VIEW){
         showObjMenu(false);
@@ -199,6 +209,7 @@ function startViz(){
         hideAndDeleteObjView(800);
         startAnimNodes();
         animAlpha.start(0,1.0,0.5,0.0);
+        animAlphaMasterNodes.start(0,masterNodeTrans,0.5,0.0);
         vizdataLoaded = true;
     } else if(previousState == State.DETAIL_VIEW){
         showRevueDetail(false);
@@ -206,6 +217,7 @@ function startViz(){
         hideObjectLinked(300);
         morphDetailToViz(currentRevueId);
         animAlpha.start(0,1.0,0.5,0.0);
+        animAlphaMasterNodes.start(0,masterNodeTrans,0.5,0.0);
         vizdataLoaded = true;
     } else if(previousState == State.TIMELINE_VIEW){
         dezoomAndDeleteTimeline(500);
@@ -237,6 +249,8 @@ function startTimeline(){
         showMenu(true);
         showRevueRectangles();
     } else if(previousState == State.VIZ_VIEW){
+        clearCanvas();
+        showTempMasterNodes();
         startTransitionVizTimeline();
     } else if(previousState == State.GEO_VIEW){
         dezoomMap(1000);
@@ -272,6 +286,8 @@ function startObj(id){
     // we know we come from VIZ_VIEW
     // hide ui elements
     if(previousState == State.VIZ_VIEW){
+        clearCanvas();
+        showTempMasterNodes();
         showMenu(false);
     }else if(previousState == State.OBJ_VIEW){
         showObjMenu(false);
@@ -583,6 +599,8 @@ function startDetail(revueId){
 
     if(previousState == State.VIZ_VIEW ){
         sViz_saved = sViz;
+        clearCanvas();
+        showTempMasterNodes();
         loadAllCurrentRevuePoly();
     }else{
         sViz_saved = 1.0;
@@ -635,6 +653,7 @@ function startDetail(revueId){
         popupObjectLinked(500,300);
         makeNodeDisappear(800);
         animAlpha.start(1.0,0.0,0.5);
+        animAlphaMasterNodes.start(0,masterNodeTrans,0.5,0.0);
         d3.selectAll(".back-btn").html("Fields");
     } else if(previousState == State.GEO_VIEW){
         morphTriGeoToPolyDetail(revueId,500,trans);

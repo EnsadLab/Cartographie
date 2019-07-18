@@ -100,6 +100,7 @@ function startTransitionTimelineViz(){
             .duration(500)
             .on("end",function(d){
                 animAlpha.start(0,1.0,0.5,0.0);
+                animAlphaMasterNodes.start(0,masterNodeTrans,0.5,0.0);
                 vizdataLoaded = true;
                 startAnimNodes();
                 d3.select(this).remove();
