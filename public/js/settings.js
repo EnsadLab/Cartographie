@@ -37,7 +37,7 @@ var rsub_keyword = 30 * scale * sf;//20
 
 // BUBBLES look
 // masters
-var masterNodeTrans = 1.0;//0.8;
+var masterNodeTrans = 1.0; // 0.8
 // subcategories
 var sub_strokeWidthMin = 4 * scale * sf;
 var sub_strokeWidthMax = 15 * scale * sf;

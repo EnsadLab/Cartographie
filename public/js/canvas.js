@@ -82,6 +82,7 @@ imgArt.src = 'http://localhost:8080/imgs/Art_500.png';
 imgSSH.src = 'http://localhost:8080/imgs/SSh_500_DEBUG.png';
 imgScience.src = 'http://localhost:8080/imgs/Science_500_DEBUG.png';
 imgArt.src = 'http://localhost:8080/imgs/Art_500_DEBUG.png';
+
 var imgs = [imgArt,imgSSH,imgScience];
 
 var imgLoaded = false;
