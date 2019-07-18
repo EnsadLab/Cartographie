@@ -86,7 +86,8 @@ function drawCanvas(){
 
     if(state == State.VIZ_VIEW && vizdataLoaded){
 
-        
+        /* 
+        // Double buffering
         ctxOffscreen.clearRect(0, 0, width, height); // Clear the canvas.
         ctxOffscreen.strokeRect(0, 0, 10, 10);
         ctxOffscreen.lineWidth = 0.04;
@@ -112,8 +113,7 @@ function drawCanvas(){
             });       
         });
         ctxOffscreen.stroke();
-        
-        //imgLoaded = false;
+
         if(imgLoaded) {
             var res = allNodes_flat.find( function(data) { return data.id == "master0"; });
             ctxOffscreen.globalAlpha = 0.8; var f = 0.8; var r = res.r*f;
@@ -126,9 +126,9 @@ function drawCanvas(){
 
         context.clearRect(0, 0, width, height); // Clear the canvas.
         context.drawImage(offscreenCanvas,0,0);
+        */
 
-
-/*
+        // one buffer
         context.lineWidth = 0.04;
         context.globalAlpha = animAlpha.update();
         context.clearRect(0, 0, width, height); // Clear the canvas.
@@ -137,7 +137,6 @@ function drawCanvas(){
             var x = 0; var y = 0;
             d.links.forEach( function(l,i){
                 var res = allNodes_flat.find( function(data) { return data.id == l; });
-                if(res.x < 100) console.log(l,res.x,res.y);
                 if(i == 0) {
                     context.moveTo(res.x,res.y);
                     x = res.x;
@@ -153,10 +152,7 @@ function drawCanvas(){
             });       
         });
         context.stroke();
-
-        //context2.drawImage(canvas.node(),0,0);
     
-        
         //imgLoaded = false;
         if(imgLoaded) {
             var res = allNodes_flat.find( function(data) { return data.id == "master0"; });
@@ -166,7 +162,7 @@ function drawCanvas(){
             context.drawImage(imgSSH, res.x-r, res.y-r,r*2.0,r*2.0);
             res = allNodes_flat.find( function(data) { return data.id == "master2"; }); r = res.r*f;
             context.drawImage(imgScience, res.x-r, res.y-r,r*2.0,r*2.0);
-        }*/
+        }
         
     }
 }
@@ -307,22 +303,15 @@ function initCanvas(){
         .attr('width', width)
         .attr('height', height);
     context = canvas.node().getContext('2d');
-
     
+    /*
+    // double buffering
     offscreenCanvas = document.createElement('canvas');
     offscreenCanvas.width = width;
     offscreenCanvas.height = height;
-
     ctxOffscreen = offscreenCanvas.getContext('2d');
-    
-
-    //var canvas2 = document.createElement('canvas');
-    /*
-    canvas2 = d3.select("#canvas2")
-        .attr('width', width)
-        .attr('height', height);
-    context2 = canvas.node().getContext('2d');
     */
+    
     initCanvasDone = true;
 }
 
