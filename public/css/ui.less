@@ -1039,7 +1039,43 @@ g {
 				    background:white;
 
 			    	input[type="submit"]{
-				    	width:50%;
+				    	width:25%;
+				    	height:45px;
+				    	background:rgba(rgb(0,200, 100) , 0.5);
+				    	color:white;
+				    	border-radius:0px;
+				    	border:0px;
+				    	float:left;
+				    	text-transform: uppercase;
+				    	font-family:@text_heavy;
+				    	cursor: pointer;
+				    	content:"submit";
+
+				    	&:hover{
+				    		background:rgba(rgb(0,200, 100) , 1);
+				    	}
+				    }
+					
+					.cancel{
+						width:25%;
+				    	height:45px;
+				    	background:rgba(@green, 0);
+				    	color:#CCCC;
+				    	border-radius:0px;
+				    	border:0px;
+				    	float:left;
+				    	text-transform: uppercase;
+				    	font-family:@text_heavy;
+				    	cursor: pointer;
+
+				    	&:hover{
+				    		background:#CCCC;
+				    		color:white;
+				    	}
+				    }
+
+					.saveBefore{
+						width:25%;
 				    	height:45px;
 				    	background:rgba(@green, 0.5);
 				    	color:white;
@@ -1054,10 +1090,11 @@ g {
 				    	&:hover{
 				    		background:@green;
 				    	}
-				    }
+					}
+
 
 				    button.delete{
-				    	width:50%;
+				    	width:25%;
 				    	height:45px;
 				    	background:#CCCC;
 				    	color:white;

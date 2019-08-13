@@ -8,114 +8,139 @@
     <link rel="stylesheet" type="text/css" href="../../css/ui.css">
 
     <script src="../../js/back-office.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
 <div class="back-office">
+	
 
 	<div class="revue-list">
 		<h1>Art & Sciences <br>Map Manager</h1>
 		<button class="new">Create New</button>
 		<input class="search" placeholder="Search" />
-		<ul class="list" id ="menulist">
-			<li class="letter">
-				A
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li class="letter">
-				B
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li class="letter">
-				C
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li class="letter">
-				D
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li class="letter">
-				E
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li class="letter">
-				F
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
-			<li>
-				<h3 class="revue-title">Titre de la revue</h3>
-			</li>
+		<ul class="list" id="menulist">
+			<div class="waitings">
+				<h4>Waiting</h4>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+			</div>
+
+
+			<h4>Online</h4>
+			<div class="online">
+				<li class="letter">
+					A
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li class="letter">
+					B
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li class="letter">
+					C
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li class="letter">
+					D
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li class="letter">
+					E
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li class="letter">
+					F
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+				<li>
+					<h3 class="revue-title">Titre de la revue</h3>
+				</li>
+			</div>
 
 		</ul>
 	</div>
@@ -132,18 +157,18 @@
 					<div class="fields">
 						<div class="col">
 							<label for="name">Journal's name :</label>
-							<input type="text">
+							<input type="text" required>
 						</div>
 						
 						<div class="col">
 							<label for="source">Journal's source (link) :</label>
-							<input type="text">
+							<input type="text" >
 						</div>
 					</div>
 
 					<div class="fields">
 						<label for="since_year">Publication since</label>
-						<input type="number">
+						<input type="number" required>
 						<label for="to_year">to</label>
 						<input type="number">
 						<br>
@@ -174,7 +199,11 @@
 						<input type="text">
 						<br>
 						<label for="country">City :</label>
-						<input type="text">
+						<input type="text" id="country" >
+						<br>
+						<label for="">latitude / longitude:</label>
+						<input type="number" id="lat" required>
+						<input type="number" id="long" required>
 						<br>
 						<label for="language">Language :</label>
 						<select name="" id="">
@@ -273,7 +302,7 @@
 						<div class="col">
 							<label for="about">About (up to 150 characters) :</label>
 							<br>
-							<textarea name="" id="" cols="30" rows="10" maxlength="150"></textarea>
+							<textarea name="" id="" cols="30" rows="10" maxlength="150" required></textarea>
 						</div>
 						
 						<div class="col">
@@ -580,128 +609,128 @@
 							<ul>
 								<h3>SCIENCE</h3>
 								<li>
-									<input type="radio" name ="" value="" id="Life">
+									<input type="checkbox" name ="" value="" id="Life">
 									<label for="Life">Life Sciences</label>
 									
 									<ul>
 										<li>
-											<input type="radio" name ="" value="" id="Biology">
+											<input type="checkbox" name ="" value="" id="Biology">
 											<label for="Biology">Biology</label>
 											
 										</li>
 										<li>
-											<input type="radio" name ="" value="" id="Clinical">
+											<input type="checkbox" name ="" value="" id="Clinical">
 											<label for="Clinical">Clinical Sciences</label>
 											
 										</li>
 										<li>
-											<input type="radio" name ="" value="" id="Cognitive">
+											<input type="checkbox" name ="" value="" id="Cognitive">
 											<label for="Cognitive">Cognitive Sciences</label>
 											
 										</li>
 										<li>
-											<input type="radio" name ="" value="" id="Veterinary">
+											<input type="checkbox" name ="" value="" id="Veterinary">
 											<label for="Veterinary">Veterinary Sciences</label>
 											
 										</li>
 									</ul>
 								</li>
 								<li>
-									<input type="radio" name ="" value="" id="Physical">
+									<input type="checkbox" name ="" value="" id="Physical">
 									<label for="Physical">Physical Sciences</label>
 									
 									<ul>
 										<li>
-											<input type="radio" name ="" value="" id="Astronomy">
+											<input type="checkbox" name ="" value="" id="Astronomy">
 											<label for="Astronomy">Astronomy and space sciences</label>
 											
 										</li>
 										<li>
-											<input type="radio" name ="" value="" id="Physics">
+											<input type="checkbox" name ="" value="" id="Physics">
 											<label for="Physics">Physics</label>
 											
 										</li>
 										<li>
-											<input type="radio" name ="" value="" id="Chemistry">
+											<input type="checkbox" name ="" value="" id="Chemistry">
 											<label for="Chemistry">Chemistry</label>
 											
 										</li>
 										<li>
-											<input type="radio" name ="" value="" id="Geology">
+											<input type="checkbox" name ="" value="" id="Geology">
 											<label for="Geology">Geology</label>
 											
 										</li>
 										<li>
-											<input type="radio" name ="" value="" id="Meteorology">
+											<input type="checkbox" name ="" value="" id="Meteorology">
 											<label for="Meteorology">Meteorology</label>
 											
 										</li>
 									</ul>
 								</li>
 								<li>
-									<input type="radio" name ="" value="" id="Mathematics">
+									<input type="checkbox" name ="" value="" id="Mathematics">
 									<label for="Mathematics">Mathematics and statistics</label>
 									
 								</li>
 								<li>
-									<input type="radio" name ="" value="" id="Computer">
+									<input type="checkbox" name ="" value="" id="Computer">
 									<label for="Computer">Computer Sciences</label>
 									
 								</li>
 								<li>
-									<input type="radio" name ="" value="" id="Engineering-construction">
+									<input type="checkbox" name ="" value="" id="Engineering-construction">
 									<label for="Engineering-construction">Engineering and Construction</label>
 									
 									<ul>
 										<li>
-											<input type="radio" name ="" value="" id="Engineering-drawing">
+											<input type="checkbox" name ="" value="" id="Engineering-drawing">
 											<label for="Engineering-drawing">Engineering drawing </label>
 											
 										</li>
 										<li>
-											<input type="radio" name ="" value="" id="Engineering-mechanics">
+											<input type="checkbox" name ="" value="" id="Engineering-mechanics">
 											<label for="Engineering-mechanics">Engineering Mechanics and Electronics</label>
 											
 										</li>
 										<li>
-											<input type="radio" name ="" value="" id="Civil">
+											<input type="checkbox" name ="" value="" id="Civil">
 											<label for="Civil">Civil Engineering, building, construction</label>
 											
 										</li>
 										<li>
-											<input type="radio" name ="" value="" id="Urban">
+											<input type="checkbox" name ="" value="" id="Urban">
 											<label for="Urban">Urban planning</label>
 											
 										</li>
 									</ul>
 								</li>
 								<li>
-									<input type="radio" name ="" value="" id="Manufacturing">
+									<input type="checkbox" name ="" value="" id="Manufacturing">
 									<label for="Manufacturing">Manufacturing and processing</label>
 									
 								</li>
 								<li>
-									<input type="radio" name ="" value="" id="Agriculture">
+									<input type="checkbox" name ="" value="" id="Agriculture">
 									<label for="Agriculture">Agriculture, forestry and fishery </label>
 									
 								</li>
 								<li>
-									<input type="radio" name ="" value="" id="Health">
+									<input type="checkbox" name ="" value="" id="Health">
 									<label for="Health">Health</label>
 									
 									<ul>
 										<li>
-											<input type="radio" name ="" value="" id="Medecine">
+											<input type="checkbox" name ="" value="" id="Medecine">
 											<label for="Medecine">Medecine</label>
 											
 										</li>
 										<li>
-											<input type="radio" name ="" value="" id="Ergonomics">
+											<input type="checkbox" name ="" value="" id="Ergonomics">
 											<label for="Ergonomics">Ergonomics</label>
 											
 										</li>
 										<li>
-											<input type="radio" name ="" value="" id="Medical">
+											<input type="checkbox" name ="" value="" id="Medical">
 											<label for="Medical">Medical services (include dental)</label>
 											
 										</li>
@@ -711,8 +740,10 @@
 						</div>
 					</div>
 					<div class="ctrl">
-						<input type="submit" value="Confirm">
+						<button class="cancel">Cancel</button>
 						<button class="delete">Delete</button>
+						<button class="saveBefore">Save Before Post</button>
+						<input type="submit" value="Post">
 					</div>
 
 
@@ -724,4 +755,54 @@
 
 		</div>
 </div>
+
+
+<script>
+	//ACTION
+
+	$(".ctrl button").bind("click", function(){
+
+		console.log(checkKeywords());
+		if(checkKeywords()){
+			//POST
+		}else{
+			alert("You need to choose 3 keywords at least");
+		}
+	})
+
+	$(".ctrl input").bind("click", function(){
+
+		console.log(checkKeywords());
+		if(checkKeywords()){
+			//POST
+		}else{
+			alert("You need to choose 3 keywords at least");
+		}
+	})
+
+	function checkKeywords(){
+
+		var keywords = $(".form-keywords input");
+		var checked = 0;
+
+		for (var i = 0; i < keywords.length; i++) {
+			
+			if(keywords.eq(i).is(':checked')){
+				checked = checked + 1;
+			}
+
+		}
+
+		if(checked>=3){
+			return true;
+		}else{
+			return false;
+		}
+
+		return false;
+	}
+
+
+
+</script>
 </body>
