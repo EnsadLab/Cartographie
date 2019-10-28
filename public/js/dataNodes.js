@@ -1,3 +1,10 @@
+var masterNodesInfos = [
+      {},
+      {},
+      {}
+]
+
+
 var masterNodes = [
 {     	
       

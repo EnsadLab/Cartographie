@@ -19,6 +19,37 @@ var testRevue = {
 	link: "www.lorem.com"
 }
 
+
+var databaseRevue = [
+	{
+		id: 0,
+		revueID: 1,
+		name: "alliage",
+		link: "www.alliage.com",
+		year_start: 1920,
+		year_end: 1980, // can also be empty
+		ongoing: true,
+		frequency: "biannual",
+		publisher: "alliage-publisher",
+		city: "London",
+		country: "England", // not used... -> Alex?
+		lat: 45,
+		long: 90,
+		language_val: "AR",
+		language: "Arabic",
+		access_val: "subscription",
+		access: "Subscription only",
+		medium_val: "print",
+		medium: "Print",
+		about: "balblablalbla",
+		peer_review: true,
+		note: "Lorem ipsum dolores lskjd lskdjf jerigj",
+	}
+]
+
+var databaseRevueGen = [];
+
+
 /*
 var dataRevue = [
 
@@ -33,9 +64,9 @@ var dataRevue = [
 		about:"Alliage, une revue à trois dimensions : - Le vecteur d'une réflexion de fond sur les rapports de la culture, de la technoscience et de la société - Un…",
 		link: "http://revel.unice.fr/alliage/"
 	},
-]*/
+]
 
-
+*/
 
 
 var dataRevue = [
@@ -834,6 +865,79 @@ var dataRevue = [
 
 ]
 
+ 
+//TO TEST with just 5 entries
+/*
+var dataRevue = [
+
+	{
+		name : "Alliage " ,
+		publisher: "Université de Nice Sophia Antipolis",
+		keywords :[ "Fine Arts", "Literature", "Filmmaking", "Science and Technology Studies"],
+		time: [1989, 2019],
+		locationCoords: [7.266079999999988,43.7031,],
+		city: "Nice",
+		country: "France",
+		about:"Alliage, une revue à trois dimensions : - Le vecteur d'une réflexion de fond sur les rapports de la culture, de la technoscience et de la société - Un…",
+		link: "http://revel.unice.fr/alliage/"
+	},
+
+	{
+		name : "Archée " ,
+		keywords :[ "New Media and Technological", "Aesthetics", "Science and Technology Studies"],
+		time: [1997, 2019],
+		locationCoords: [-73.6103642,45.4972159,],
+		city: "Montreal",
+		country: "Canada",
+		about: "Notre programme éditorial vise une connaissance élargie et approfondie de l’impact des nouvelles technologies de l’information et de la communication. Cela dit, ...",
+		link: "http://archee.qc.ca/"
+
+	},
+
+	{
+		name : "Architecture and Culture " ,
+		publisher: "Taylor & Francis online",
+		keywords :[ "Architecture", "Literature", "Filmmaking", "Art History", "Anthropology", "Geography", "Social Sciences & Humanities"],
+		time: [2013, 2019],
+		locationCoords: [-0.1276474,51.5073219],
+		city: "London",
+		country: "United Kingdom",
+		about: "Architecture and Culture, the international award winning, peer-reviewed journal of the Architectural Humanities Research Association, investigates the relationship between architecture and the culture that shapes and is shaped by it. (…)",
+		link: "https://www.tandfonline.com/action/journalInformation?show=aimsScope&journalCode=rfac20"
+
+	},
+
+	{
+		name : "ArteCienciaBrasil " ,
+		keywords :[ "Visual (fine arts)", "Performance", "Science"],
+		time: [2015, 2019],
+		locationCoords: [-46.6333824,-23.5506507],
+		city: "Sao Paulo",
+		country: "Brasil",
+		about: "Arte, Ciência e Tecnologia por um olhar transdisciplinar",
+		link: "https://www.artecienciabrasil.org"
+
+
+	},
+
+	{
+		name : "ArtLaboratory Berlin " ,
+		keywords :[ "Fine Arts", "Social Sciences & Humanities", "Art History", "Law", "Science", "Biology"],
+		time: [2006, 2019],
+		locationCoords: [13.3888599,52.5170365],
+		city: "Berlin",
+		country: "Germany",
+		about: "The multiple award winning art and research platform Art Laboratory Berlin (ALB) presents interdisciplinary art projects in an international context. It was founded in 2006 by an international team of art historians and artists - including Regine Rapp & Christian de Lutz. Our main goal is the presentation and mediation of contemporary art at the interface of art, science and technology. In recent years, ALB has focused on the field of art, biology and artistic research.",
+		link: "http://www.artlaboratory-berlin.org/html/eng-team.htm"
+
+
+	},
+]
+
+
+
+
+
 /* TO TEST with smaller datas
 var dataRevue = [
 
@@ -869,3 +973,4 @@ var dataRevue = [
 	},
 
 ]*/
+

@@ -45,7 +45,7 @@ function createMasterNodes(){
       .data(masterNodes)
       .enter()
       .append("g") // check diff with join!!
-      .attr("id", d => d.id )
+      .attr("id", function(d){ return d.id })
       .attr("class","masternodes")
       //.attr("transform", d => `translate(${d.x * width},${d.y * height})`)
       .attr("transform", function(d){
@@ -89,6 +89,7 @@ function createMasterNodes(){
         //console.log("master node",res);
         return d.r;
       })
+      .attr("fill","none")
       .transition()
       .duration(durationFadeAnim)
       //.on("end",function(){animDone = true;})
@@ -102,13 +103,13 @@ function createMasterNodes(){
       ;
   // TO CHECK: ALEX typo des master nodes
   div_g.append("text")
-      .text(d => d.name.toUpperCase())
+      .text(function(d){ return d.name.toUpperCase()})
       // .text(d => d.name)
       .attr("font-family","latoheavy")
       .attr("text-anchor","middle")
       .style("alignment-baseline","middle")
       // .attr("fill","white")
-      .attr("fill", d => d.color)
+      .attr("fill", function(d){ return d.color})
       .attr("opacity",0.0)
       .attr("y",0.0)
       .attr("font-size",masterFontSize)
@@ -119,7 +120,7 @@ function createMasterNodes(){
         d3.select(this).style("cursor", "default");
       })
       .on("click",function(d){
-        //console.log("### mouseclick !!!!!!",d.id);
+        console.log("### mouseclick !!!!!!",d.id);
         startObj(d.id);
       })
       .transition()
@@ -162,13 +163,13 @@ function createSubNodes(node,masterNodeId){
   //console.log("nb sub",nbSubnode);
 
   const subnode = node.selectAll("g")
-      .data(d => d.subCategory)
+      .data(function(d){ return d.subCategory})
       //.data(fakeSubCategory) // on part du principe qu'ils sont dans le bon ordre selon le poids w
       .enter()
       .append("g")
-      .attr("id",d => d.id)
+      .attr("id",function(d){ return d.id})
       .attr("class","subnodes")
-      .attr("transform", (d,i) => {
+      .attr("transform", function(d,i) {
         //var angle = (i / nbSubnode) * Math.PI * 2.0;
         //console.log("weight",d.w);
         var x = 0; var y = 0;
@@ -209,7 +210,10 @@ function createSubNodes(node,masterNodeId){
             })
             .on("click",function(d){
               console.log("### mouseclick",d.id);
-              startObj(d.id);
+              if(!keywordHasBeenClicked){
+                startObj(d.id);
+              }
+              keywordHasBeenClicked = false;
             });
 
 
@@ -238,10 +242,10 @@ function createSubNodes(node,masterNodeId){
      
   // TO CHECK: ALEX typo des sub nodes
   div_g.append("text")
-      .text(d => d.name)
+      .text(function(d){ return d.name})
       .attr("font-family","latoregular")
       .attr("x",0)
-      .attr("y",d => -d.r)
+      .attr("y",function(d){ return -d.r})
       .attr("fill",function(){
         d.color = c;
         return c;
@@ -261,6 +265,8 @@ function createSubNodes(node,masterNodeId){
 
 }
 
+
+var keywordHasBeenClicked = false;
 function createKeywordNodes(subnode, masterNodeId, subNodeId){
 
   var result = masterNodes.filter( function(d) { return d.id == masterNodeId; })[0];
@@ -269,12 +275,12 @@ function createKeywordNodes(subnode, masterNodeId, subNodeId){
   var nbKeyNodes = resultSub.keywords.length;
 
   const keyword = subnode.selectAll("g")
-      .data(d => d.keywords)
+      .data(function(d){ return d.keywords})
       .enter()
       .append("g")
-      .attr("id",d => d.id)
+      .attr("id",function(d){ return d.id})
       .attr("class","keywordnodes")
-      .attr("transform", (d,i) => {
+      .attr("transform", function(d,i){
         var x = 0; var y = 0;
         if(startingCreateAllNodes){
           var index = Math.ceil(i/2.0);
@@ -308,11 +314,13 @@ function createKeywordNodes(subnode, masterNodeId, subNodeId){
       })
       .on("click",function(d){
         console.log("### mouseclick",d.id);
+        keywordHasBeenClicked = true;
         startObj(d.id);
       });
 
   div_g.append("circle")
-      .attr("id",d => "keyword" + d.id)
+      .attr("id",function(d){ return "keyword" + d.id})
+      .attr("fill", "none")
       .attr("r", function(d){
         //d.r = getRandomInt(rkey_min,rkey_max);
         d.r = mapValue(d.w,kweight_min, kweight_max,rkey_min,rkey_max);
@@ -326,15 +334,15 @@ function createKeywordNodes(subnode, masterNodeId, subNodeId){
       .attr("opacity",function(d){
         return mapValue(d.r,rkey_min,rkey_max,key_maxTrans,key_minTrans);
       })
-      .attr("fill", d => c)
+      .attr("fill", function(){ return c})
       //.attr("fill", "none")
       ;
 
   // TO CHECK: ALEX typo des keyword nodes
   div_g.append("text")
-      .text(d => d.name)
+      .text(function(d){ return d.name})
       .attr("font-family","latoregular")
-      .attr("x",d => d.r*1.5)
+      .attr("x",function(d){ return d.r*1.5})
       .attr("y",0) 
       .attr("text-anchor","start")
       .style("alignment-baseline","middle")
@@ -448,6 +456,7 @@ function startAnimNodes(){
 */
 
 function drawViz(){
+  //animVizRunning = false;
   if(animVizRunning){
     //console.log("###############")
     for(var i=0; i<allNodes.length;i++){
@@ -501,7 +510,7 @@ function createDefs(){
                           ;
 
   grads.append("stop").attr("offset", "0%").style("stop-color",  function(d) { return d.color;/*d.color;*/ });
-  grads.append("stop").attr("offset", "100%").style("stop-color", function(d) { return "RGBA(255,255,255,0)";/*"RGBA(103,72,144,0)";/*d3.color(d.color.r,d.color.g,d.color.b,0);*/});
+  grads.append("stop").attr("offset", "80%").style("stop-color", function(d) { return "RGBA(255,255,255,0)";/*"RGBA(103,72,144,0)";/*d3.color(d.color.r,d.color.g,d.color.b,0);*/});
   
   var filterBlur = defs.append("filter")
                        .attr("id","blur")

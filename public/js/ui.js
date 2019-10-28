@@ -8,6 +8,8 @@ d3.select("#timelineView").on("click", function(){ startTimeline();})
 d3.select("#DEBUGView").on("click", goingBack ) // A ENELEVER A LA FIN
 */
 
+
+
 d3.select("#geoView").on("click", function(){ 
     startGeo();
     document.getElementById("vizView").className = "";
@@ -71,7 +73,6 @@ function blup(){
     showMenu(true);
     showRevueDetail(false);
     showObjMenu(false);
-    showFormular(false);
 }
 
 function initController(){
@@ -83,7 +84,6 @@ function initController(){
     showMenu(false);
     showRevueDetail(false);
     showObjMenu(false);
-    showFormular(false);
     // start visualisation
     startViz();
 
@@ -130,15 +130,20 @@ function startGeo(comingFromReload){
     console.log("current state:",getName(state),"/ previous state:",getName(previousState));
 
     if(previousState == State.GEO_VIEW){
+        console.log("x");
         showMenu(false);
+        console.log("a");
         dezoomMapAndTriangles(500,true); // will delete all map objects at the end and reload
+        console.log("aa");
         //hideAndDeleteMap(500,true);
         //fadeAndDeleteTriangles(500);
+        
         return;
     }
-
-    if(comingFromReload) initGeoMap(500); // will show it as well
-    else initGeoMap(800);
+    console.log("aaa");
+    if(comingFromReload) { console.log("one");initGeoMap(500);} // will show it as well
+    else {console.log("two");initGeoMap(800);}
+    console.log("b");
     if(previousState == State.LOAD){
         createGeoTriPath();
         showMenu(true);
@@ -280,8 +285,8 @@ function startObj(id){
 
     console.log("current state:",getName(state),"/ previous state:",getName(previousState));
 
-    var objParent = dataLinks.find(data => data.id == id).parent;
-    var objColor = masterNodes.find(data => data.id == objParent).color;
+    var objParent = dataLinks.find(function(data){ return data.id == id}).parent;
+    var objColor = masterNodes.find(function(data){ return data.id == objParent}).color;
 
     // we know we come from VIZ_VIEW
     // hide ui elements
@@ -314,12 +319,12 @@ function startObj(id){
     var uniqueLinks = getArrayWithUniqueElemAndKey(result);
     //console.log("uniqueLinks",uniqueLinks);
     var nbLinks = uniqueLinks.length;
-    var min = uniqueLinks.find( d => d.id == "DATA_MIN").nb;
-    var max = uniqueLinks.find( d => d.id == "DATA_MAX").nb;
-    var max2 = uniqueLinks.find( d => d.id == "DATA_SECOND_MAX").nb;
-    var nbMaster0 = uniqueLinks.filter( d => d.parent == "master0").length;
-    var nbMaster1 = uniqueLinks.filter( d => d.parent == "master1").length;
-    var nbMaster2 = uniqueLinks.filter( d => d.parent == "master2").length;
+    var min = uniqueLinks.find( function(d){ return d.id == "DATA_MIN"}).nb;
+    var max = uniqueLinks.find( function(d){ return d.id == "DATA_MAX"}).nb;
+    var max2 = uniqueLinks.find( function(d){ return d.id == "DATA_SECOND_MAX"}).nb;
+    var nbMaster0 = uniqueLinks.filter( function(d){ return d.parent == "master0"}).length;
+    var nbMaster1 = uniqueLinks.filter( function(d){ return d.parent == "master1"}).length;
+    var nbMaster2 = uniqueLinks.filter( function(d){ return d.parent == "master2"}).length;
     var countMaster0 = 0; var countMaster1 = 0; var countMaster2 = 0;
     //console.log("nbmasters",nbMaster0,nbMaster1,nbMaster2);
 
@@ -330,7 +335,7 @@ function startObj(id){
         d3.select("#obj-nodes").selectAll(".g-objects").each(function(d,i){   
             var node = d3.select(this);
             var id = node.attr("id");
-            var r = uniqueLinks.find( data => data.id == id);
+            var r = uniqueLinks.find( function(data){ return data.id == id});
             if(r == undefined){
                 //var n = dataLinks.find(data => data.id == id).name;
                 node.select("circle").transition()
@@ -521,6 +526,7 @@ function startObj(id){
     d3.select("#svg").append("circle").attr("id","TODELETE").transition().duration(1000)
                      .on("end",function(d){
                          startingSTARTOBJ = false;
+                         keywordHasBeenClicked = false; // necessary in case a keyword had been selected and not the parent sub node! => check in visualisation.js
                          d3.select(this).remove();
                     });
  
@@ -690,8 +696,8 @@ function startDetail(revueId){
 }
 
 function cloneObjectLinkedToDetail(revueId,trans){
-    var revue = dataRevue.find(d => d.id == revueId);
-    var poly = allRevuePoly.find(data => data.id == "poly" + revueId);
+    var revue = dataRevue.find(function(d){ return d.id == revueId});
+    var poly = allRevuePoly.find(function(data){ return data.id == "poly" + revueId});
     //console.log("revue",revue);
     d3.select("#detail-nodes").append("g").attr("id","detail-obj-nodes");
     revue.links.forEach(function(d,i){
@@ -705,7 +711,7 @@ function cloneObjectLinkedToDetail(revueId,trans){
     for(var i=0; i<revue.links.length; i++){
         var id = revue.links[i];
         //var coord = poly.coords.find(data => data.link == id).coord;
-        var coord = poly.coordsDetail.find(data => data.link == id).coord;
+        var coord = poly.coordsDetail.find(function(data){ return data.link == id}).coord;
         var node = d3.select("#detail-obj-nodes").select("#"+id);
         node.transition()
             .duration(800)
@@ -717,8 +723,8 @@ function cloneObjectLinkedToDetail(revueId,trans){
                 poly.attr("opacity",1.0);
                 // on va trouver la couleur.. TODO: faudrait faire plus simple
                 var nodeId = d3.select(this).attr("id");
-                var nodeParent = dataLinks.find(data => data.id == nodeId).parent;
-                var nodeColor = masterNodes.find(data => data.id == nodeParent).color;
+                var nodeParent = dataLinks.find(function(data){ return data.id == nodeId}).parent;
+                var nodeColor = masterNodes.find(function(data){ return data.id == nodeParent}).color;
                 // update the text settings
                 var text = d3.select(this).select("text");
                 var yOffset;
@@ -751,15 +757,15 @@ function cloneObjectLinkedToDetail(revueId,trans){
 
 
 function createObjectLinkedToDetail(revueId){
-    var revue = dataRevue.find(d => d.id == revueId);
+    var revue = dataRevue.find(function(d){ return d.id == revueId});
     //console.log("searching for " + "poly" + revueId);
-    var poly = allRevuePoly.find(data => data.id == "poly" + revueId);
+    var poly = allRevuePoly.find(function(data){ return data.id == "poly" + revueId});
     //console.log("poly",poly);
     d3.select("#detail-nodes").append("g").attr("id","detail-obj-nodes");
     poly.coordsDetail.forEach(function(d,i){
-        var label = dataLinks.find(data => data.id == d.link).name;
-        var parent = dataLinks.find(data => data.id == d.link).parent;
-        var color = masterNodes.find(data => data.id == parent).color;
+        var label = dataLinks.find(function(data){ return data.id == d.link}).name;
+        var parent = dataLinks.find(function(data){ return data.id == d.link}).parent;
+        var color = masterNodes.find(function(data){ return data.id == parent}).color;
         //console.log("LABEL/parent",label,parent,color);
         if(d.link.startsWith("master")){
             //console.log("create master node at ",d.coord);
@@ -910,10 +916,6 @@ function showObjMenu(show){
     }
 }
 
-function showFormular(show){
-
-}
-
 
 // TODO: to check if when using fill=none -> performance get better or not.. little trick for now.
 function showLabelOnHover(show,obj,trick){
@@ -965,7 +967,7 @@ function goingBack(){
 var sDetail_saved = 1.0;
 function morphDetailToViz(revueId){
     loadAllCurrentRevuePoly();
-    var revuePoly = allRevuePoly.find(data => data.id == "poly" + revueId);
+    var revuePoly = allRevuePoly.find(function(data){ return data.id == "poly" + revueId});
     var mPath = d3.select("#morph" + revueId);
     
     mPath.transition()
@@ -994,7 +996,7 @@ function morphPolyToPolyDetail(revueId,duration,center,trans){
 
     var scale = 1.0/sViz_saved;
     sDetail_saved = scale;
-    var revue = allRevuePoly.find( data => data.id == ("poly" + revueId));
+    var revue = allRevuePoly.find( function(data){ return data.id == ("poly" + revueId)});
      
     mPath.transition()
         .duration(duration)
@@ -1040,7 +1042,7 @@ function morphRectToPolyDetail(revueId,duration,trans){
     var x = bb.x + bb.width*0.5;
     var y = bb.y + bb.height*0.5;
     var offset = [bb.x,bb.y];
-    var revuePoly = allRevuePoly.find(data => data.id == "poly" + revueId);
+    var revuePoly = allRevuePoly.find(function(data){ return data.id == "poly" + revueId});
     var dRect = getRectanglePath(revuePoly.nb,bb.width,barHeight,offset);
 
     // create path
@@ -1065,7 +1067,7 @@ function morphRectToPolyDetail(revueId,duration,trans){
 }
 
 function morphObjToDetail(revueId,trans){
-    var revuePoly = allRevuePoly.find(data => data.id == "poly" + revueId);
+    var revuePoly = allRevuePoly.find(function(data){return data.id == "poly" + revueId});
 
     // create polygone
     var revue = dataRevue.find( function(d) { return d.id == revueId; });
@@ -1086,7 +1088,7 @@ function morphDetailToRect(revueId){
 
     var mPath = d3.select(".morphopolyDETAIL");
 
-    var revuePoly = allRevuePoly.find(data => data.id == "poly" + revueId);
+    var revuePoly = allRevuePoly.find(function(data){ return data.id == "poly" + revueId});
 
     // get Rectangle
     var revueRect = d3.select("#timeline" + revueId); 
@@ -1150,6 +1152,8 @@ function deleteVizNodes(){
 }
 
 function createMenu(){
+
+    
     // order revues according to letter - or we do that in DB sql
     var previousLetter = "Z";
     dataRevue.sort(function (a,b) {return d3.ascending(a.name, b.name);});
@@ -1179,6 +1183,7 @@ function createMenu(){
     var hackerList = new List('menu', options);
 }
 
+
 /*
 <div class="polygone"></div>
 <div class="col-right">
@@ -1207,7 +1212,7 @@ function loadObjMenu(id,revueConnectedToObj,color){
                 .data(revueConnectedToObj)
                 .enter()
                 .append("li")
-                .attr("id",d => "thumbnail"+d.id)
+                .attr("id",function(d){ return "thumbnail"+d.id})
                 .on("mouseenter",function(d){/*console.log("### mouseenter",d);*/showObjOnMap(true,d.id);})
                 .on("mouseleave",function(d){/*console.log("### mouseleave",d);*/showObjOnMap(false,d.id);})
                 .on("click",function(d){/*console.log("### mouseclick",d);*/startDetail(d.id);})
@@ -1216,7 +1221,7 @@ function loadObjMenu(id,revueConnectedToObj,color){
         for(var i=0; i<revueConnectedToObj.length;i++){
             var revueId = revueConnectedToObj[i].id;
             //console.log("revue",revueConnectedToObj[i]);
-            var revuePoly = allRevuePoly.find(data => data.id == "poly" + revueId);
+            var revuePoly = allRevuePoly.find(function(data){ return data.id == "poly" + revueId});
             //console.log("revuePoly",revuePoly);
             var coords = revuePoly.coords;
             var newCoords = scaleCoords(coords,75);
@@ -1240,7 +1245,7 @@ function loadObjMenu(id,revueConnectedToObj,color){
         }
         
         var div = li.append("div").attr("class","col-right");            
-        div.append("h3").html(d => d.name);
+        div.append("h3").html(function(d){ return d.name});
     }
   
 }
@@ -1297,7 +1302,7 @@ function showRevueOnMap(show,id){
         } else if(state == State.GEO_VIEW){
             // get triangle
             var triPath = d3.select("#morph" + id);
-            var revuePoly = allRevuePoly.find(data => data.id == "poly" + revue.id);
+            var revuePoly = allRevuePoly.find(function(data){ return data.id == "poly" + revue.id});
             //console.log("revuePoly",revuePoly);
             var offset = projection(revue.locationCoords);
             var dTri = getTrianglePath(revuePoly.nb,triangleHightlighted,offset);
@@ -1323,7 +1328,7 @@ function showRevueOnMap(show,id){
         } else if(state == State.GEO_VIEW){
             var triPath = d3.select("#morph" + id);
             var offset = projection(revue.locationCoords);
-            var revuePoly = allRevuePoly.find(data => data.id == "poly" + revue.id);
+            var revuePoly = allRevuePoly.find(function(data){ return data.id == "poly" + revue.id});
             var dTri = getTrianglePath(revuePoly.nb,triangleEdgeLength,offset);
             triPath.attr("d",dTri)
                     .attr("fill","#31373F")
@@ -1385,12 +1390,12 @@ function loadDetailRevue(id){
                     //.on("mouseover",function(d){ d3.select(this).style("cursor", "pointer"); showLabelOnHoverWithId(true,d);})
                     //.on("mouseout",function(d){ d3.select(this).style("cursor", "default"); showLabelOnHoverWithId(false,d);})
                     .style("color",function(d){
-                        var r = dataLinks.find(data => data.id == d);
-                        var c = masterNodes.find(data => data.id == r.parent).color;
+                        var r = dataLinks.find(function(data){ return data.id == d});
+                        var c = masterNodes.find(function(data){ return data.id == r.parent}).color;
                         return c;
                     })
                     .html(function(d,i,a){
-                        var name = dataLinks.find(data => data.id == d).name;
+                        var name = dataLinks.find(function(data){ return data.id == d}).name;
                         if(i == (a.length-1)) return name;
                         else return name + ",&nbsp;";
                     })
@@ -1450,6 +1455,8 @@ function changeColor(enter){
     if(enter) svg.select("#blup").style("stroke-width","4px");
     else svg.select("#blup").style("stroke-width","1px");
 }
+
+
 // Display Form
 
 var addBTN = document.getElementById("add-journal");
@@ -1457,22 +1464,30 @@ var layerClose = document.getElementsByClassName("layer-close")[0];
 var form =  document.getElementsByClassName("add-revue-form")[0];
 var open = false;
 
-layerClose.addEventListener("click", function(){
-    showFormRevue(false);
-});
+if(!is_cms){
+    layerClose.addEventListener("click", function(){
+        showFormRevue(false);
+    });
 
-addBTN.addEventListener("click", function(){
+    addBTN.addEventListener("click", function(){
+        if(open){
+            showFormRevue(false); 
+        }else{
+            showFormRevue(true);
 
-    if(open){
-        showFormRevue(false); 
-    }else{
-        showFormRevue(true);
-
-    }
-	
-});
+        }
+    });
 
 
+    d3.select("#add_journal").on("click", function(){ 
+        if(open){
+            showFormRevue(false); 
+        }else{
+            showFormRevue(true);
+        }
+    });
+
+}
 
 
 function showFormRevue(show){

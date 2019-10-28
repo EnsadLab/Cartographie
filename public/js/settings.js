@@ -1,6 +1,7 @@
 
 // COLORS
-/* Pratique d'avoir les couleurs vite sous la main pour tester
+/* 
+// Pratique d'avoir les couleurs vite sous la main pour tester
 var ArtDesign_Color = "#00A3F5";
 var SS_Color = "#674890";
 var Science_Color = "#F8405E";
@@ -147,7 +148,7 @@ function getArrayWithUniqueElemAndKey(a){
         // if the item with the id is not already in our result array yet
         if(d.length == 0){
             var r = a.filter(function(d){return d == item}).length;
-            var parent = dataLinks.find( data => data.id == item).parent;
+            var parent = dataLinks.find( function(data){ return data.id == item}).parent;
             result.push({id: item, nb: r, parent: parent});
             if(r > nb_max) {nb_second_max = nb_max; nb_max = r;}
             if(r > nb_second_max && r < nb_max) nb_second_max = r;
@@ -508,8 +509,8 @@ function testTriangle(){
         .data(test)
         .enter()
         .append("circle")
-        .attr("cx",d => d[0])
-        .attr("cy",d => d[1])
+        .attr("cx", function(d){ return d[0]})
+        .attr("cy",function(d){ return d[1]})
         .attr("r",3)
         .attr("fill","black")
         ;
@@ -518,8 +519,8 @@ function testTriangle(){
         .data(test)
         .enter()
         .append("text")
-        .attr("x",d => d[0])
-        .attr("y",d => d[1])
+        .attr("x",function(d){ return d[0]})
+        .attr("y",function(d){ return d[1]})
         .text(function(d,i){ return i;})
         ;
     

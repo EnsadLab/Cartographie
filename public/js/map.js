@@ -34,6 +34,12 @@ function createProjection(){
     s = 1;
     initX = 0;
 
+    /*svgViewport = d3.select("#timeline")
+    .append('svg')
+    .attr('width', svgWidth)
+    .attr('height', svgHeight)
+    ;*/
+
     zoomGeo = d3.zoom()
       .scaleExtent([1, 10])
       .on("zoom", zoomed)
@@ -142,7 +148,7 @@ function transformMap() {
 
 function recenterRevue(revueId){
   if(s<=1.0) return;
-  var coord = dataRevue.find(data => data.id == revueId).locationCoords;
+  var coord = dataRevue.find(function(data){ return data.id == revueId}).locationCoords;
   //var name = dataRevue.find(data => data.id == revueId).name;
   var offset = projection(coord);
   var translateDiffX = -offset[0]*s + (mapwidth*0.5);
@@ -152,25 +158,29 @@ function recenterRevue(revueId){
   
   // TO CHECK: ALEX - solution A fait des zoom/dezoom trop violent je pense
   // *** solution A ***
+  
   var duration = 1000;
   svg.transition().duration(duration).call(zoomGeo.transform,
       d3.zoomIdentity.translate(translateDiffX,translateDiffY).scale(s))
   ;
   // *****************
   
-    /*
+    
   // *** solution B ***
+  /*
   t = [translateDiffX,translateDiffY];
   var duration = 1200;
   g.transition().duration(duration).attr("transform", "translate(" + t + ")scale(" + s + ")");
   d3.selectAll(".boundary").selectAll("path").transition().duration(duration).style("stroke-width", mapStrokeWidth / s);
   d3.select("#map").selectAll(".morphopoly").transition().duration(duration).attr("transform", "translate(" + t + ")scale(" + s + ")");
-  // *****************
   */
+  // *****************
+  
 }
 
 
 function dezoomMap(duration){
+  console.log("a");
     sMap_saved = s;
     s = 1.0;
     var t =[0,0];
@@ -182,8 +192,9 @@ function dezoomMap(duration){
       .duration(duration)
       .attr("transform", "translate(" + t + ")scale(" + s + ")")
       .on("end",function(){
-        svg.call(zoomGeo.transform,d3.zoomIdentity.translate(0,0).scale(s));
         deleteMap();
+        svg.call(zoomGeo.transform,d3.zoomIdentity.translate(0,0).scale(s));
+        
       })
       ;
 }
@@ -192,6 +203,7 @@ function dezoomMap(duration){
 // when reload is true, will restart the map -> see startGeo()
 var sMap_saved = s;
 function dezoomMapAndTriangles(duration,reload){
+  console.log("dezoomMapAndTriangles");
   sMap_saved = s;
   s = 1.0;
   var t =[0,0];
@@ -203,8 +215,20 @@ function dezoomMapAndTriangles(duration,reload){
     .duration(duration)
     .attr("transform", "translate(" + t + ")scale(" + s + ")")
     .on("end",function(){
-      svg.call(zoomGeo.transform,d3.zoomIdentity.translate(0,0).scale(s));
+      
+
+
+      t = [0.0,0.0];
+      s = 1.0;
+      /*var duration = 1200;
+      g.transition().duration(duration).attr("transform", "translate(" + t + ")scale(" + s + ")");
+      d3.selectAll(".boundary").selectAll("path").transition().duration(duration).style("stroke-width", mapStrokeWidth / s);
+      d3.select("#map").selectAll(".morphopoly").transition().duration(duration).attr("transform", "translate(" + t + ")scale(" + s + ")");
+      */
+
+
       deleteMap();
+      svg.call(zoomGeo.transform,d3.zoomIdentity.translate(0.0,0.0).scale(s));
       if(reload){
         state = State.LOAD;
         startGeo(true);
@@ -285,8 +309,11 @@ function zoomed() {
 
 function initGeoMap(duration){
 
+  console.log("bla");
   createProjection();
+  
   loadMap(duration);
+  console.log("bla B");
 
 }
 

@@ -26,21 +26,21 @@ var dataLinks = [];
 var allNodes_flat = [];
 function genDatas(){
     masterNodes.forEach(function(dM,i){
-        dM.id = "master"+mcount;
+        if(isSimulateDB) dM.id = "master"+mcount;
         dM.absX = 0;
         dM.absY = 0;
         dataLinks.push({id:dM.id,name:dM.name,parent:dM.id});
         allNodes_flat.push({id:dM.id,x:0,y:0,xRel:0,yRel:0,xStart:0,yStart:0,r:0});
         mcount++;
         dM.subCategory.forEach(function(d,i){
-            d.id = "sub"+scount;
+            if(isSimulateDB) d.id = "sub"+scount;
             d.absX = 0;
             d.absY = 0;
             dataLinks.push({id:d.id,name:d.name,parent:dM.id});
             allNodes_flat.push({id:d.id,x:0,y:0,xRel:0,yRel:0,xStart:0,yStart:0,r:0});
             scount++;
             d.keywords.forEach(function(d,i){
-                d.id = "key"+kcount;
+                if(isSimulateDB) d.id = "key"+kcount;
                 d.absX = 0;
                 d.absY = 0;
                 dataLinks.push({id:d.id,name:d.name,parent:dM.id});
@@ -49,8 +49,9 @@ function genDatas(){
             })
         })
     });
-    //console.log("dataLinks",dataLinks);
-    //console.log("masterNodes",masterNodes);
+    console.log("dataLinks",dataLinks);
+    console.log("masterNodes",masterNodes);
+    console.log("allNodes_flat",allNodes_flat);
     getWeight();
 
     getMinYear();
@@ -61,7 +62,7 @@ function genDatas(){
 
 function getMinYear(){
     dataRevue.forEach(function(d,i){
-        if(d.time[0] < minYear){
+        if(d.time != undefined && d.time[0] < minYear){
             minYear = d.time[0];
         }
     });
@@ -82,60 +83,69 @@ function getWeight(){
     //console.log("dataLinks",dataLinks);
     var nbFakeLocations = 0;
     var nbFakeTimes = 0;
-    dataRevue.forEach(function(d,i){
-        d.id = "revue"+rcount;
-        d.links = [];
-        d.keywords.forEach(function(k,i){
-            var r = dataLinks.find( function(key) { 
-                //if(d.id == "revue20"){ console.log("testing",key.name,"/",k);}
-                return key.name == k; 
+    if(isSimulateDB){
+        dataRevue.forEach(function(d,i){
+        //dataFiveRevues.forEach(function(d,i){
+            d.id = "revue"+rcount;
+            d.links = [];
+            d.keywords.forEach(function(k,i){
+                var r = dataLinks.find( function(key) { 
+                    //if(d.id == "revue20"){ console.log("testing",key.name,"/",k);}
+                    return key.name == k; 
+                });
+                if(r != undefined){
+                    d.links.push(r.id);
+                    //if(d.id == "revue20") console.log("FOUND!!");
+                }else {console.log("[BUG]: undefined",k,"for revue",d.name,"with id",d.id);}
             });
-            if(r != undefined){
-                d.links.push(r.id);
-                //if(d.id == "revue20") console.log("FOUND!!");
-            }else {console.log("[BUG]: undefined",k,"for revue",d.name,"with id",d.id);}
+            if(d.links.length < 3){
+                console.log("[DATAS]: revue",d.name,"has less than 3 links");
+                console.log("[TODO]: consider revues when links are less than 3!",d.links.length);
+                d.links.push(d.links[d.links.length-1]);
+            }
+            allLinks = allLinks.concat(d.links);
+            rcount++;
+
+            // FAKING LOCATIONS
+            var fakeIndex = getRandomInt(0,8);
+            //fakeIndex = 8; // 2:italie, 3:am du sud 8 asie
+            //d.locationCoords = [fakeLocations[fakeIndex][0] + getRandomInt(0,40)-20,fakeLocations[fakeIndex][1] + getRandomInt(0,20)-10 ];
+            //d.locationCoords = fakeLocations[fakeIndex];
+            if(!is_cms && d.locationCoords == undefined) {
+                d.locationCoords = fakeLocations[fakeIndex];
+                nbFakeLocations++;
+                console.log("[DATAS]: faking location for revue",d.name,"with id",d.id);
+            }
+
+            if( !is_cms && !(d.locationCoords[0] >= -180 && d.locationCoords[0] <= 180)){
+                console.log("[BUG]: longitude should be between -180 and 180",d.name);
+            }
+            if(!is_cms && !(d.locationCoords[1] >= -90 && d.locationCoords[1] <= 90)){
+                console.log("[BUG]: latitude should be between -90 and 90",d.name);
+            }
+
+            // FAKING STARTING AND END DATE
+            if(!is_cms && d.time == undefined){
+                var xStart = getRandomInt(1950,2000);
+                var xEnd = getRandomInt(30,50) + xStart;
+                xEnd = 2019;
+                d.time = [xStart,xEnd];
+                console.log("[DATAS]: faking time datas for revue",d.name,"with id",d.id);
+                nbFakeTimes++;
+            }
         });
-        if(d.links.length < 3){
-            console.log("[DATAS]: revue",d.name,"has less than 3 links");
-            console.log("[TODO]: consider revues when links are less than 3!",d.links.length);
-            d.links.push(d.links[d.links.length-1]);
-        }
-        allLinks = allLinks.concat(d.links);
-        rcount++;
-
-        // FAKING LOCATIONS
-        var fakeIndex = getRandomInt(0,8);
-        //fakeIndex = 8; // 2:italie, 3:am du sud 8 asie
-        //d.locationCoords = [fakeLocations[fakeIndex][0] + getRandomInt(0,40)-20,fakeLocations[fakeIndex][1] + getRandomInt(0,20)-10 ];
-        //d.locationCoords = fakeLocations[fakeIndex];
-        if(d.locationCoords == undefined) {
-            d.locationCoords = fakeLocations[fakeIndex];
-            nbFakeLocations++;
-            console.log("[DATAS]: faking location for revue",d.name,"with id",d.id);
-        }
-
-        if(!(d.locationCoords[0] >= -180 && d.locationCoords[0] <= 180)){
-            console.log("[BUG]: longitude should be between -180 and 180",d.name);
-        }
-        if(!(d.locationCoords[1] >= -90 && d.locationCoords[1] <= 90)){
-            console.log("[BUG]: latitude should be between -90 and 90",d.name);
-        }
-
-        // FAKING STARTING AND END DATE
-        if(d.time == undefined){
-            var xStart = getRandomInt(1950,2000);
-            var xEnd = getRandomInt(30,50) + xStart;
-            xEnd = 2019;
-            d.time = [xStart,xEnd];
-            console.log("[DATAS]: faking time datas for revue",d.name,"with id",d.id);
-            nbFakeTimes++;
-        }
-    });
-    //console.log("data",dataRevue);
+    }else{
+        dataRevue.forEach(function(d,i){
+            allLinks = allLinks.concat(d.links);
+        });
+    }
+    console.log("data",dataRevue);
     allLinks.sort();
-    //console.log("allLinks",allLinks);
-    console.log("[DATAS]:",nbFakeLocations,"revues have no locations");
-    console.log("[DATAS]:",nbFakeTimes,"revues have no time datas");
+    console.log("allLinks",allLinks);
+    if(!is_cms){
+        console.log("[DATAS]:",nbFakeLocations,"revues have no locations");
+        console.log("[DATAS]:",nbFakeTimes,"revues have no time datas");
+    }
     
     masterNodes.forEach(function(d,i){
         var nbCountMaster = 0;
@@ -221,20 +231,146 @@ function getFakeSubCategory(masterNodeId){
 
 function initDB(){
 
-    genDatas();
+    if(isSimulateDB){
+        genDatas();
+    } else{
+        genJsonFromDB();
+    }
+
+    //genJsonDatasForDatabase();
   
-    /*
-    subNodesMaster0 = getFakeSubCategory("master0");
-    subNodesMaster1 = getFakeSubCategory("master1");
-    subNodesMaster2 = getFakeSubCategory("master2");
-    */
-    //dataRevueFake = getDataRevueFake();
 }
 
+function genJsonFromDB(){
+    console.log("******** genJsonFromDB *******");
+    socket.emit('getAllNodes');
+    
+}
 
-socket.on('magazines', function(message) {
-    console.log('=> server - on magazines: ' + message);
-})
+var dataNodesFromDB;
+function convertDBNodesToJson(datas){
+    masterNodes = [];
+
+    console.log("datas",datas);
+    dataNodesFromDB = datas;
+
+    var masters = datas.filter(function(d){ return d.parentNameID == ''});
+    masters.forEach(function(dM,i){
+        var master_node = new Object();
+        master_node.id = dM.nameID;
+        master_node.name = dM.name;
+        master_node.subCategory = new Array();
+        if(master_node.id == "master0") {master_node.x = 0.5; master_node.y = 0.28; master_node.color = "#565CC4"; master_node.angle = Math.PI/2.0;}
+        else if(master_node.id == "master1") {master_node.x = 0.3; master_node.y = 0.7; master_node.color = "#E8606C"; master_node.angle = -Math.PI/6.0;}
+        else if(master_node.id == "master2") {master_node.x = 0.75; master_node.y = 0.6; master_node.color = "#1B6C47"; master_node.angle = 7.0*Math.PI/6.0;}
+
+        var sub = datas.filter(function(d){ return d.parentNameID == dM.nameID});
+        //console.log("MASTER",dM.nameID,"sub",sub);
+        sub.forEach(function(dS,j){
+            var sub_node = new Object();
+            sub_node.id = dS.nameID;
+            sub_node.name = dS.name;
+            sub_node.keywords = new Array();
+
+            var keys = datas.filter(function(d){ return d.parentNameID == dS.nameID});
+            //console.log("SUB",dS.nameID,"keys:",keys);
+            keys.forEach(function(dk,k){
+                //console.log("keyword name:",dk.nameID);
+                var key_node = new Object();
+                key_node.id = dk.nameID;
+                key_node.name = dk.name;
+                sub_node.keywords.push(key_node);
+            });
+            master_node.subCategory.push(sub_node);
+        });
+
+        masterNodes.push(master_node);
+    });
+    console.log("masterNODES",masterNodes);
+
+    //var nbMaster0 = uniqueLinks.filter( function(d){ return d.parent == "master0"}).length;
+
+    socket.emit('getAllRevuesOnline');
+}
+
+function convertDBRevueToJson(datas){
+    dataRevue = [];
+    datas.forEach(function(d,i){
+        var dd = new Object();
+        dd.id = i;
+        dd.revueID = d.revueID;
+        dd.name = d.name;
+        dd.link = d.link;
+        dd.time = new Array(2);
+        dd.time[0] = d.yearStart;
+        dd.time[1] = d.yearEnd;
+        dd.publisher = d.publisher;
+        dd.city = d.city;
+        dd.locationCoords = new Array(2);
+        dd.locationCoords[0] = d.lat;
+        dd.locationCoords[1] = d.long;
+        dd.about = d.about;
+        dataRevue.push(dd);
+    });
+    socket.emit("getAllLinks");
+}
+
+function addDBLinksToJsonRevues(links){
+    dataRevue.forEach(function(d,i){
+        d.links = [];
+        d.keywords = [];
+        var revueLinks = links.filter(function(l,j){ return l.revueID == d.revueID});
+        console.log("revue",d.name,d.id,d.revueID,revueLinks);
+        revueLinks.forEach(function(k,j){
+            d.links.push(k.linkID);
+            console.log("searching.....",k.linkID);
+            var node = dataNodesFromDB.find(function(m,n){ return m.nameID == k.linkID});
+            console.log("link node",node);
+            d.keywords.push(node.name);
+        });
+    });
+    console.log("###############");
+    console.log("dataRevue",dataRevue);
+    console.log("###############");
+    genDatas();
+    databaseLoaded();
+}
+        
+function genJsonDatasForDatabase(){
+    console.log("******** DATABASE *********");
+    dataRevue.forEach(function(d,i){
+       // if(i<5){
+            console.log(d);
+            var data = new Object();
+            data.id = i;
+            data.revueID = d.id;
+            data.name = d.name;
+            data.link = d.link;
+            data.yearStart = d.time[0];
+            data.yearEnd = d.time[1];
+            data.ongoing = false;
+            data.frequency = "";
+            data.publisher = d.publisher;
+            data.city = d.city;
+            data.country = d.country;
+            data.lat = d.locationCoords[0]; // OR INVERSE ??? - 85 to +85
+            data.long = d.locationCoords[1]; // -180 to +180
+            data.language_val = "";
+            data.language = "";
+            data.access_val = "";
+            data.access = "";
+            data.medium_val = "";
+            data.medium = "";
+            data.about = d.about;
+            data.note = "";
+            databaseRevueGen.push(data);
+       // }
+    });
+    console.log("databaseRevueGen",databaseRevueGen);
+    d3.select("body").html("<p style='font-size:5px;'>" + JSON.stringify(databaseRevueGen) + "</p>");
+
+}
+
 
 var fakeText = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repudiandae quidem ab ducimus molestias deleniti ipsa ullam necessitatibus, voluptatem earum dicta consequatur deserunt veniam eius praesentium maxime et architecto corrupti eos nihil, quibusdam autem nulla? Ut earum quam deserunt aspernatur, molestiae iste, delectus magni. Vero pariatur commodi, in ipsa culpa exercitationem.";
 

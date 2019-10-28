@@ -73,7 +73,7 @@ function startTransitionTimelineViz(){
                     var id = idTimeline.substring("timeline".length);
                     //console.log("id??",id);
                     // get poly
-                    var revuePoly = allRevuePoly.find(data => data.id == "poly" + id);
+                    var revuePoly = allRevuePoly.find( function(data){ return data.id == "poly" + id});
                     
                     var p = d3.select("#morph"+id);
                     p.transition()
@@ -150,8 +150,8 @@ function startTransitionTimelineGeo(){
                     var idTimeline = d3.select(this).attr("id");
                     var id = idTimeline.substring("timeline".length);
                     // get poly
-                    var revuePoly = allRevuePoly.find(data => data.id == "poly" + id);
-                    var d = dataRevue.find(data => data.id == id);
+                    var revuePoly = allRevuePoly.find(function(data){ return data.id == "poly" + id});
+                    var d = dataRevue.find(function(data) { return data.id == id});
                     // get triangle
                     var offset = projection(d.locationCoords);
                     var dTri = getTrianglePath(revuePoly.nb,triangleEdgeLength,offset);
@@ -185,7 +185,7 @@ function createGeoTriPath(expectRevueId){
     dataRevue.forEach(function(d,i){
 
         // get poly
-        var revuePoly = allRevuePoly.find(data => data.id == "poly" + d.id);
+        var revuePoly = allRevuePoly.find( function(data){ return data.id == "poly" + d.id});
 
         // get triangle
         var offset = projection(d.locationCoords);
@@ -232,7 +232,7 @@ function morphVizToGeo(){
     dataRevue.forEach(function(d,i){
 
         // get poly
-        var revuePoly = allRevuePoly.find(data => data.id == "poly" + d.id);
+        var revuePoly = allRevuePoly.find(function(data){ return data.id == "poly" + d.id});
 
         // create path
         var p = d3.select("#map").append("path")
@@ -295,7 +295,7 @@ function morphAllVizToTimeline(){
 
     dataRevue.forEach(function(d,i){
         // get poly
-        var revuePoly = allRevuePoly.find(data => data.id == "poly" + d.id);
+        var revuePoly = allRevuePoly.find( function(data){return data.id == "poly" + d.id});
 
 
         // create path
@@ -347,7 +347,7 @@ function morphGeoToTimeline(){
     dataRevue.forEach(function(d,i){
 
         // get poly - no need to reload the allRevuePoly datas
-        var revuePoly = allRevuePoly.find(data => data.id == "poly" + d.id);
+        var revuePoly = allRevuePoly.find(function(data){return data.id == "poly" + d.id});
 
         // get exisiting poly TRIANGLE path
         var mPath = d3.select("#morph" + d.id);
@@ -391,7 +391,7 @@ function morphTimelineToGeo(delay_axis){
     dataRevue.forEach(function(d,i){
 
         // get poly - no need to reload the allRevuePoly datas
-        var revuePoly = allRevuePoly.find(data => data.id == "poly" + d.id);
+        var revuePoly = allRevuePoly.find(function(data){ return data.id == "poly" + d.id});
 
         // get Rectangle
         var revueRect = d3.select("#timeline" + d.id); 
@@ -425,7 +425,7 @@ function morphGeoToViz(duration,delayRandom){
     console.log("---> morphGeoToViz()");
     dataRevue.forEach(function(d,i){
         // get poly
-        var revuePoly = allRevuePoly.find(data => data.id == "poly" + d.id);
+        var revuePoly = allRevuePoly.find(function(data){ return data.id == "poly" + d.id});
 
         // get exisiting poly TRIANGLE path
         //var mPath = d3.select("#morph" + d.id);
@@ -461,7 +461,7 @@ function morphTimelineToViz(delay_axis){
 
     dataRevue.forEach(function(d,i){
         // get poly
-        var revuePoly = allRevuePoly.find(data => data.id == "poly" + d.id);
+        var revuePoly = allRevuePoly.find(function(data){ return data.id == "poly" + d.id});
 
         // get Rectangle
         var revueRect = d3.select("#timeline" + d.id); 
@@ -613,12 +613,12 @@ function loadAllCurrentRevuePoly(){
             
         }
         var dPoly = "M" + coords.join("L") + "Z";
-        var r = allRevuePoly.find(data => data.id == "poly"+id);
+        var r = allRevuePoly.find(function(data){ return data.id == "poly"+id});
        // console.log("r before",r);
         r.data = dPoly;
         r.nb = coords.length;
         r.coords = coordsData;
-        r = allRevuePoly.find(data => data.id == "poly"+id);
+        r = allRevuePoly.find(function(data){ return data.id == "poly"+id});
      //   console.log("r after",r);
         //allRevuePoly.push({id:"poly" + id, data: dPoly, nb: coords.length, coords: coordsData});
     });
@@ -848,8 +848,8 @@ function testMorphingToRectDEBUG(){
         .data(datas)
         .enter()
         .append("circle")
-        .attr("cx",d => d[0])
-        .attr("cy",d => d[1])
+        .attr("cx",function(d){ return d[0]})
+        .attr("cy", function(d){ return d[1]})
         .attr("r",5)
         .attr("fill","black")
         .attr("opacity",1.0)
@@ -860,8 +860,8 @@ function testMorphingToRectDEBUG(){
         .data(datas)
         .enter()
         .append("text")
-        .attr("x",d => d[0])
-        .attr("y",d => d[1])
+        .attr("x",function(d){ return d[0]})
+        .attr("y",function(d){ return d[1]})
         .text(function(d,i){ return i;})
         ;
 

@@ -1,4 +1,5 @@
 //JAVASCRIPT FOR BACK-OFFICE
+/*
 window.onload = function(){
 	var deleteBTN = document.getElementsByClassName("delete")[0];
 
@@ -9,4 +10,4 @@ window.onload = function(){
 		    console.log("canceled");
 		}
 	})
-}
+}*/

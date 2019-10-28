@@ -89,8 +89,8 @@ function initTimeline(){
         var xNewScale = transform.rescaleX(xAxisScale);
 
         // update rectangle revues
-        timelineRevues.attr("x", d => xNewScale(d.time[0]))
-            .attr("width", d => xNewScale(d.time[1]) - xNewScale(d.time[0]))
+        timelineRevues.attr("x", function(d){ return xNewScale(d.time[0])})
+            .attr("width", function(d) { return xNewScale(d.time[1]) - xNewScale(d.time[0])})
             ;
 
         // update axes
@@ -115,8 +115,8 @@ function dezoomTimeline(duration){
     //d3.event.transform = d3.zoomIdentity;
     var transform = d3.zoomIdentity;
     var xNewScale = transform.rescaleX(xAxisScale);
-    timelineRevues.transition().duration(duration).attr("x", d => xNewScale(d.time[0]))
-        .attr("width", d => xNewScale(d.time[1]) - xNewScale(d.time[0]))
+    timelineRevues.transition().duration(duration).attr("x", function(d){ return xNewScale(d.time[0])})
+        .attr("width", function(d){ return xNewScale(d.time[1]) - xNewScale(d.time[0])})
         ;
     gX.transition().duration(duration).call(xAxis.scale(xNewScale))
         /*.on("end",function(){
@@ -133,8 +133,8 @@ function dezoomAndDeleteTimeline(duration){
     //console.log("dezoom timeline")
     var transform = d3.zoomIdentity;
     var xNewScale = transform.rescaleX(xAxisScale);
-    timelineRevues.transition().duration(duration).attr("x", d => xNewScale(d.time[0]))
-        .attr("width", d => xNewScale(d.time[1]) - xNewScale(d.time[0]))
+    timelineRevues.transition().duration(duration).attr("x", function(d){ return xNewScale(d.time[0])})
+        .attr("width", function(d){ return xNewScale(d.time[1]) - xNewScale(d.time[0])})
         ;
     gX.transition().duration(duration).attr("opacity",0.0).call(xAxis.scale(xNewScale))
         .on("end",function(d){
@@ -150,8 +150,8 @@ function dezoomAndDeleteTimeline2(duration,reload){
     // update rectangle revues and x axis
     var transform = d3.zoomIdentity;
     var xNewScale = transform.rescaleX(xAxisScale);
-    timelineRevues.transition().duration(duration).attr("x", d => xNewScale(d.time[0]))
-        .attr("width", d => xNewScale(d.time[1]) - xNewScale(d.time[0]))
+    timelineRevues.transition().duration(duration).attr("x", function(d){ return xNewScale(d.time[0])})
+        .attr("width", function(d){ return xNewScale(d.time[1]) - xNewScale(d.time[0])})
         ;
     
     timelineRevues.transition()
@@ -183,7 +183,7 @@ function loadRevues(){
                     .data(dataRevue)
                     .enter()
                     .append("rect")
-                    .attr("id",d => "timeline"+d.id)
+                    .attr("id",function(d){ return "timeline"+d.id})
                     .attr("class","timelineRect")
                     .attr("x",function(d){
                         return xAxisScale(d.time[0]);
