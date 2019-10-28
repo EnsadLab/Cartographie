@@ -1453,11 +1453,22 @@ function changeColor(enter){
 // Display Form
 
 var addBTN = document.getElementById("add-journal");
+var btnCloseForm = document.getElementById("close-form");
 var layerClose = document.getElementsByClassName("layer-close")[0];
 var form =  document.getElementsByClassName("add-revue-form")[0];
+
+var btnAbout = document.getElementById("btnAbout");
+// var closeAbout = document.getElementsById("closeAbout");
+
 var open = false;
 
+
 layerClose.addEventListener("click", function(){
+    showFormRevue(false);
+});
+
+
+btnCloseForm.addEventListener("click", function(){
     showFormRevue(false);
 });
 
@@ -1484,6 +1495,32 @@ function showFormRevue(show){
         form.className = "add-revue-form";  
         layerClose.className = "layer-close";
         open = false;
+    }
+}
+
+
+btnAbout.addEventListener("click", function(){
+    console.log("show");
+    showAbout(true);
+
+});
+
+
+
+function showAbout(s){
+    console.log("coucou");
+    var about =  document.getElementsByClassName("about")[0];
+
+    if(s){
+        about.className = "about active";
+
+        closeAbout.addEventListener("click", function(){
+            showAbout(false);
+        });
+
+        
+    }else{
+        about.className = "about";  
     }
 }
 

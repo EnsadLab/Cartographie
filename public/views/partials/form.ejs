@@ -2,36 +2,19 @@
 	
 	
 	<div class="add-revue-form">
-		<div class="add-btn" id="add-journal"></div>
+		<div class="close-btn" id="close-form"></div>
 		
 		<form action="">
 			<h2>Add your journal <br> •</h2>
 
-			<!-- INFO  -->
-			<div class="fields">
-				<div class="infos">
-					<div class="col">
-						<label for="name">Your name :</label>
-						<input type="text">
-					</div>
-					<div class="col">
-						<label for="name">Your e-mail :</label>
-						<input type="mail">
-					</div>
-				</div>
-			</div>
-
 
 			<div class="fields">
-				<div class="col">
 					<label for="name">Journal's name :</label>
 					<input type="text">
-				</div>
+				<br>
 				
-				<div class="col">
 					<label for="source">Journal's source (link) :</label>
 					<input type="text">
-				</div>
 			</div>
 
 			<div class="fields">
@@ -185,8 +168,9 @@
 			</div>
 
 			<div class="fields form-keywords">
-				<div class="col-3">
+				<div class="col-3 art-design">
 					<ul>
+						<input type="checkbox" name ="" value="" id="art-design">
 						<h3>ART-DESIGN</h3>
 						<li>
 							<input type="checkbox" name ="" value="" id="Fine">
@@ -281,7 +265,8 @@
 
 					</ul>
 				</div>
-				<div class="col-3">
+				<div class="col-3 ss-humanities">
+					<input type="checkbox" name ="" value="" id="ssh">
 					<h3>SS & HUMANITIES</h3>
 					<ul>
 						<li>
@@ -469,8 +454,9 @@
 					</ul>
 				</div>
 
-				<div class="col-3">
+				<div class="col-3 science">
 					<ul>
+						<input type="checkbox" name ="" value="" id="science">
 						<h3>SCIENCE</h3>
 						<li>
 							<input type="radio" name ="" value="" id="Life">
@@ -603,8 +589,21 @@
 					</ul>
 				</div>
 			</div>
+			<!-- INFO  -->
+			<div class="fields">
+				<div class="infos">
+					<div class="col">
+						<label for="name">Your name :</label>
+						<input type="text">
+					</div>
+					<div class="col">
+						<label for="name">Your e-mail :</label>
+						<input type="mail">
+					</div>
+				</div>
+				<input type="submit" value="submit my journal">
+			</div>
 
-			<input type="submit" value="submit my journal">
 
 		</form>
 	</div>

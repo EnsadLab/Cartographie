@@ -29,11 +29,12 @@
 
 
 
+
 #nav-menu{
-	text-align: center;
+	text-align: left;
 	position:fixed;
 	top:20px;
-	left:25%!important;
+	left:20px!important;
 	width:50%;
 	button{
 		-webkit-appearance:none;
@@ -209,7 +210,8 @@
 	    }
 	}
 
-	.add-btn{
+	.close-btn{
+		display:none;
 		background-image:url(../assets/ico_add.png);
 		background-size: 29.5px 29.5px;
 	    background-repeat: no-repeat;
@@ -259,8 +261,9 @@
 
 			}
 
-			.add-btn{
+			.close-btn{
 				transform: rotate(135deg);
+				display:block;
 			}
 		}
 		
@@ -315,6 +318,7 @@
 		    		h3{
 		    			border-bottom:1px solid black;
 		    			margin-top:30px;
+		    			display:inline-block;
 		    		}
 		    		ul{
 		    			padding:0px;
@@ -451,7 +455,7 @@
 		    }
 
 		    .form-keywords{
-		    	
+			    	
 		    	ul{
 		    		margin-bottom:10px;
 		    		li{
@@ -459,10 +463,23 @@
 		    			margin-bottom:5px;
 		    		}
 		    	}
+
+		    	.art-design{
+		    		.mixinHoverCat(@fineArt)
+		    	}
+
+		    	.ss-humanities{
+		    		.mixinHoverCat(@SSHum)
+		    	}
+
+		    	.science{
+		    		.mixinHoverCat(@Science)
+		    	}
 		    }
 		}
 		
 	}
+
 }
 
 .journal-info{
@@ -911,6 +928,7 @@ g {
 			    		h3{
 			    			border-bottom:1px solid black;
 			    			margin-top:30px;
+			    			display:inline-block;
 			    		}
 			    		ul{
 			    			padding:0px;
@@ -1142,6 +1160,144 @@ g {
 	}
 }
 
+.about{
+	
+	width:100vw;
+	height:calc(100vh - 100px);
+	left:0;
+	top:0;
+	z-index:-1;
+	background:rgba(255, 255, 255, 1);
+	color:black;
+	padding:50px 100px;
+	position:absolute;
+	overflow:auto;
+	visibility:hidden;
+	opacity:0;	
+	transition: 300ms all ease-out;
+	// display:none;
+	
+	.content{
+		width:75%;
+		max-width:900px;
+	}
+
+	h1{
+		font-family:@title_bold;
+		text-align:left;
+		font-size: 55px;
+		margin: 0px;
+		line-height: 65px;
+	}
+	h4{
+		font-family:@title_light;
+		text-align:left;
+		font-size: 20px;
+		margin-bottom: 0px;	
+		line-height: 30px;
+	}
+	p{
+		font-family:@text_light;
+		font-size: 16px;
+		margin-bottom: 0px;
+	}
+	
+	&.active{
+		z-index:10000;
+		visibility:visible;
+		opacity:1;
+		// display:block;
+	}
+
+	.close-btn{
+		background-image:url(../assets/ico_add.png);
+		background-size: 29.5px 29.5px;
+	    background-repeat: no-repeat;
+	    background-position: -1.6px -1.6px;
+	    width: 26.5px;
+	    height: 26.5px;
+    	position:fixed;
+    	top:20px;
+    	left:20px;
+    	background-color:white;
+    	border-radius:28px;
+    	cursor:pointer;
+    	z-index:1;
+    	transition: 300ms transform linear;
+		transform: rotate(45deg);
+
+    	&:hover{
+    		filter:invert(1);
+    	}
+
+    	&:active{
+			transform: scale(0.9) rotate(45deg);
+			transition: all 200ms ease-in;
+		}
+	}
+}
+
+
+.intro{
+	width:100vw;
+	height:calc(100vh - 100px);
+	left:0;
+	top:0;
+	z-index:100000;
+	background:rgba(255, 255, 255, 1);
+	color:black;
+	padding:50px;
+	position:absolute;
+	
+	animation-delay: 0.9s;
+	animation-duration: 1.3s;
+  	animation-name: introfadeout;
+  	animation-iteration-count: 1;
+  	animation-fill-mode: forwards;
+
+	h1{
+		font-family:@title_bold;
+		text-align:left;
+		font-size: 60px;
+		margin: 220px 30px;
+		line-height: 70px;
+		max-width:1000px;
+
+		sub{
+			font-size: 16px;
+			display:block;
+			font-family: @text_reg;
+		}
+	}
+
+
+}
+
+
+@keyframes introfadeout {
+  from {
+    opacity:1;
+  }
+
+  to {
+    opacity:0;
+    z-index:-1;
+   	display:none;
+  }
+}
+
+
+.beta{
+	color:black;
+	opacity:0.7;
+	font-size: 10px;
+	position:absolute;
+	bottom:10px;
+	left:10px;
+
+}
+
+
 //MIXIN
 .mixinHoverCat(@color){
 	ul{
@@ -1170,3 +1326,4 @@ g {
 		}
 	}
 }
+
