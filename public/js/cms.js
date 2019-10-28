@@ -15,7 +15,7 @@ var toto = "blupToto";
 //////////////////////    POUR ALEX     /////////////////////////
 /////////////////////////////////////////////////////////////////
 // a mettre a true si j'ai oublié.... pour simuler la DB chez toi.
-var isSimulateDB = false;
+var isSimulateDB = true;
 /////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ function testStuff(){
 socket.on('allRevuesWaiting',function(revues){
     console.log("client receives all revues waiting",revues);
     dataRevueWaitingFromDB = revues;
-    addCmsRevues("waitings",true,revues);
+    addCmsRevues("waiting",true,revues);
     socket.emit("getAllRevuesOnline");
 });
 
@@ -175,7 +175,7 @@ function createCmsMenu(){
 function addCmsRevues(divName,isWaiting,data){
     var menu = d3.select("#cms_menulist");
     var div = menu.append("div").attr("class",divName);
-    if(isWaiting) div.append("h4").html("Waiting");
+    if(isWaiting) div.append("h4").html("Drafts");
     else div.append("h4").html("Online");
 
     var previousLetter = "Z";

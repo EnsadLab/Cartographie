@@ -34,7 +34,7 @@
 
     <div class="view" id="cms_formular">
             <div class="add-revue-form">
-                    <form method="POST" action="/cms">
+                    <form method="POST" action="/cms" onkeydown="return event.key != 'Enter';">
                             <h2>Journal's Name<br> •</h2>
         
         
@@ -243,11 +243,11 @@
                                     <button class="cancel" id="cms_buttonCancel" formaction="/cms/cancel">Cancel</button>
                                     <button class="delete" id="cms_buttonDelete" formaction="/cms/delete">Delete</button>
                                     <button class="saveBefore" id="cms_buttonSaveWaiting" formaction="/cms/savewaiting">Save Before Post</button>
-                                    <button class="saveBefore" id="cms_buttonSave" formaction="/cms/save">Post</button>
+                                    <input class="saveBefore" type="submit" id="cms_buttonSave" formaction="/cms/save" value="Post">
                                     <input type="hidden" name="isCreateNew" id="hidden_isCreateNew" value="perdefault1">
                                     <input type="hidden" name="isWaiting" id="hidden_isWaiting" value="perdefault2">
                                     <input type="hidden" name="revueID" id="hidden_revueID" value="0">
-                                  <!--  <input type="submit" value="Post"> -->
+                                   <!-- <input type="submit" value="Post"> -->
                             </div>
                     </form>
             </div>
