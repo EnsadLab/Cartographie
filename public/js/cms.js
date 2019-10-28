@@ -15,7 +15,7 @@ var toto = "blupToto";
 //////////////////////    POUR ALEX     /////////////////////////
 /////////////////////////////////////////////////////////////////
 // a mettre a true si j'ai oublié.... pour simuler la DB chez toi.
-var isSimulateDB = true;
+var isSimulateDB = false;
 /////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
@@ -108,9 +108,10 @@ function sendJsonRevuesToDatabase(){
         //console.log("dd:",d);
         if(i < 10){
             console.log("d:",d);
-            d.name = d.name.replace("&","AND");
-            d.name = "Name_" + d.id;
+            //d.name = d.name.replace("&","AND");
+            //d.name = "Name_" + d.id;
             console.log("d.name",d.name);
+            //d.name = "balbal_" + d.id;
             socket.emit("writeIntoTableOnline", d);
         }
     });
@@ -154,13 +155,6 @@ function showCms(){
     else {
         socket.emit("getAllRevuesWaiting");   
     }
-
-    // to test ...
-    //createNewRevue();
-
-    // to test ...
-    //showWaitingRevue();
-    //showOnlineRevue();
 
     hideFormular();
 
@@ -215,9 +209,10 @@ function addCmsRevues(divName,isWaiting,data){
 }
 
 function addKeywordsToFormular(nodes){
-    console.log("************** CMS ******************");
-    console.log("nodes",nodes);
-    console.log("************** CMS ******************");
+    console.log("-> addKeywordsToFormular()");
+    //console.log("************** CMS ******************");
+    //console.log("nodes",nodes);
+    //console.log("************** CMS ******************");
 }
 
 function createNewRevue(){

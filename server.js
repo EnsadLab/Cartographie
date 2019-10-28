@@ -51,11 +51,11 @@ io.on('connection', function(client,pseudo) {
         console.log("client sends test message");
     });
     client.on('writeIntoTableWaiting', function(message){
-        console.log("-> client sends writeIntoTableWaiting message",message);
+        console.log("-> client sends writeIntoTableWaiting message");//,message);
         insertRow("waiting_revues",message.id,undefined,message);
     });
     client.on('writeIntoTableOnline', function(message){
-        console.log("-> client sends writeIntoTableOnline message",message);
+        console.log("-> client sends writeIntoTableOnline message");//,message);
         insertRow("online_revues",message.id,undefined,message);
     });
     client.on('writeIntoNodes',function(message){
@@ -282,17 +282,18 @@ function retrieveHiddenVariables(postBody){
 function insertRow(tableName,revueID,postBody,d){
     var year_start = 0; var year_end = 0;
     var lat = 0; var long = 0;
+   // d.name = "Alliage";
     if(d.time != undefined) {year_start = d.time[0]; year_end = d.time[1];}
     if(d.locationCoords != undefined) {lat = d.locationCoords[0]; long = d.locationCoords[1];}
     // revueID is a UNIQUE index in the DB
     var db_query = "REPLACE INTO " + tableName +  
             " (`revueID`, `name`,`link`,`year_start`, `year_end`,`ongoing`, `frequency`, `publisher`,`city`,`country`,`lat`,`long`,`about`)" + //,`city`,`country`,`about`) " + 
-            "VALUES ('"+revueID+"', '" + d.name + "', '" + /*d.link*/"www.ll.at" + "','" + year_start + "','" + year_end + "','0','','','" + d.city + "','" + d.country + "','" + lat + "','" + long + "','" + "ABOUT" + "' )"; 
+            "VALUES ('"+revueID+"', '" + d.name + "', '" + d.link + "','" + year_start + "','" + year_end + "','0','','"+ d.publisher + "','" + d.city + "','" + d.country + "','" + lat + "','" + long + "','" + "ABOUT" + "' )"; 
 
     console.log("DBQUERY: ",db_query);
 
     db.query(db_query, function(err,result,fields){
-        if(err) throw err;
+        if(err) {console.log("could not insert",d.name);throw err};
         //else console.log("db query succeeded!",result);
     });
 }

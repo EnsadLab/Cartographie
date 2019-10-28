@@ -49,9 +49,9 @@ function genDatas(){
             })
         })
     });
-    console.log("dataLinks",dataLinks);
-    console.log("masterNodes",masterNodes);
-    console.log("allNodes_flat",allNodes_flat);
+    //console.log("dataLinks",dataLinks);
+    //console.log("masterNodes",masterNodes);
+    //console.log("allNodes_flat",allNodes_flat);
     getWeight();
 
     getMinYear();
@@ -139,9 +139,9 @@ function getWeight(){
             allLinks = allLinks.concat(d.links);
         });
     }
-    console.log("data",dataRevue);
+    //console.log("data",dataRevue);
     allLinks.sort();
-    console.log("allLinks",allLinks);
+    //console.log("allLinks",allLinks);
     if(!is_cms){
         console.log("[DATAS]:",nbFakeLocations,"revues have no locations");
         console.log("[DATAS]:",nbFakeTimes,"revues have no time datas");
@@ -236,8 +236,6 @@ function initDB(){
     } else{
         genJsonFromDB();
     }
-
-    //genJsonDatasForDatabase();
   
 }
 
@@ -251,7 +249,7 @@ var dataNodesFromDB;
 function convertDBNodesToJson(datas){
     masterNodes = [];
 
-    console.log("datas",datas);
+    //console.log("datas",datas);
     dataNodesFromDB = datas;
 
     var masters = datas.filter(function(d){ return d.parentNameID == ''});
@@ -286,7 +284,7 @@ function convertDBNodesToJson(datas){
 
         masterNodes.push(master_node);
     });
-    console.log("masterNODES",masterNodes);
+    //console.log("masterNODES",masterNodes);
 
     //var nbMaster0 = uniqueLinks.filter( function(d){ return d.parent == "master0"}).length;
 
@@ -320,18 +318,18 @@ function addDBLinksToJsonRevues(links){
         d.links = [];
         d.keywords = [];
         var revueLinks = links.filter(function(l,j){ return l.revueID == d.revueID});
-        console.log("revue",d.name,d.id,d.revueID,revueLinks);
+        //console.log("revue",d.name,d.id,d.revueID,revueLinks);
         revueLinks.forEach(function(k,j){
             d.links.push(k.linkID);
-            console.log("searching.....",k.linkID);
+            //console.log("searching.....",k.linkID);
             var node = dataNodesFromDB.find(function(m,n){ return m.nameID == k.linkID});
-            console.log("link node",node);
+            //console.log("link node",node);
             d.keywords.push(node.name);
         });
     });
-    console.log("###############");
-    console.log("dataRevue",dataRevue);
-    console.log("###############");
+    //console.log("###############");
+    //console.log("dataRevue",dataRevue);
+    //console.log("###############");
     genDatas();
     databaseLoaded();
 }
