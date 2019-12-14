@@ -9,18 +9,20 @@
 
 var isCreateNew = false;
 var isWaiting = false;
-var toto = "blupToto";
 
 /////////////////////////////////////////////////////////////////
 //////////////////////    POUR ALEX     /////////////////////////
 /////////////////////////////////////////////////////////////////
 // a mettre a true si j'ai oublié.... pour simuler la DB chez toi.
-var isSimulateDB = true;
+var isSimulateDB = false;
 /////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
-var dataRevueWaitingFromDB;
-var dataRevueOnlineFromDB;
+
+// careful... ideally, we should retrieve these values from the database.. same in server.js
+var nbM = 3;
+var nbS = 25;
+var nbK = 53;
 
 
 d3.select("#cms_newRevue").on("click", function(){ 
@@ -31,19 +33,39 @@ d3.select("#cms_buttonCancel").on("click", function(){
     hideFormular();
 });
 
-d3.select("#cms_buttonDelete").on("click", function(){
-
-});
+d3.select("#cms_buttonDelete").on("click", function(){});
 
 d3.select("#cms_buttonSaveWaiting").on("click", function(){
-
+    console.log("cms_buttoonSaveWaiting button  has been clicked");
+    checkCmsParameters();
 });
-
-
-// POST BUTTON
 d3.select("#cms_buttonSave").on("click", function(){
 
+    console.log("cms_buttonSave button has been clicked");
+    checkCmsParameters();
+
+}); // POST BUTTON
+
+// FORMULAR ADD_JOURNAL
+d3.select("#add_jounal_submit").on("click", function(){
+
+    console.log("add_jounal_submit button has been clicked");
+    //checkFormParameters();
+
+}); // POST BUTTON
+
+d3.select("#cms_test3").on("click", function(){
+    console.log("yeep");
+    d3.request("/cms/revue")
+        .header("X-Requested-With", "XMLHttpRequest")
+        .header("Content-Type", "application/x-www-form-urlencoded")
+        .post("revueID=revue1&type=online", dataReturned);
 });
+
+function dataReturned(data){
+    console.log("dataReturned",data,data.response);
+}
+
 
 function testStuff(){
     console.log("-> testStuff()");
@@ -52,54 +74,6 @@ function testStuff(){
     //sendJsonNodesToDatabase();
     //sendJsonLinksToDatabase();
 }
-
-socket.on('allRevuesWaiting',function(revues){
-    console.log("client receives all revues waiting",revues);
-    dataRevueWaitingFromDB = revues;
-    addCmsRevues("waiting",true,revues);
-    socket.emit("getAllRevuesOnline");
-});
-
-socket.on('allRevuesOnline',function(revues){
-    console.log("client receives all revues online",revues);
-    if(is_cms){
-        dataRevueOnlineFromDB = revues;
-        var filteredRevue = [];
-        dataRevueOnlineFromDB.forEach(function(d,i){
-            var found = dataRevueWaitingFromDB.find(function(e,j){ return e.revueID == d.revueID});
-            if(found == undefined) filteredRevue.push(d);
-        });
-        addCmsRevues("online",false,filteredRevue);
-        socket.emit("getAllNodes");
-    } else { // not very logical to have this case here... should be moved in an upper layer...
-        convertDBRevueToJson(revues);
-    }
-});
-
-// not very logical to have this case here... 
-socket.on('allNodes',function(nodes){
-    if(is_cms){
-        addKeywordsToFormular(nodes);
-    }else{
-        convertDBNodesToJson(nodes); 
-    }
-});
-
-// not very logical to have this case here... 
-socket.on('allLinks',function(links){
-    console.log("client receives all links",links);
-    addDBLinksToJsonRevues(links);
-});
-
-socket.on('revueWaiting',function(revue){
-    console.log("client receives infos from revueWaiting",revue);
-    showRevue(revue);
-});
-
-socket.on('revueOnline',function(revue){
-    console.log("client receives infos from revueWaiting",revue);
-    showRevue(revue);
-});
 
 
 function sendJsonRevuesToDatabase(){
@@ -112,7 +86,7 @@ function sendJsonRevuesToDatabase(){
             //d.name = "Name_" + d.id;
             console.log("d.name",d.name);
             //d.name = "balbal_" + d.id;
-            socket.emit("writeIntoTableOnline", d);
+            // BACK socket.emit("writeIntoTableOnline", d);
         }
     });
 }
@@ -121,7 +95,7 @@ function sendJsonNodesToDatabase(){
     console.log("dataLinks",dataLinks);
     dataLinks.forEach(function(d,i){
         console.log("sending new data NODE",d);
-        socket.emit("writeIntoNodes",d);
+        // BACK socket.emit("writeIntoNodes",d);
     });
 }
 
@@ -144,6 +118,12 @@ function sendJsonLinksToDatabase(){
     });
 }
 
+
+// Search input
+var options = {
+    valueNames: [ 'revue-title' ]
+};
+
 function showCms(){
 
     //sendJsonToDatabase();
@@ -153,14 +133,33 @@ function showCms(){
     //initCms_form(); // alex stuff
     if(isSimulateDB) createCmsMenu();
     else {
-        socket.emit("getAllRevuesWaiting");   
+        //socket.emit("getAllRevuesWaiting");  
+        addCmsRevues("waiting",true,dataRevueWaitingFromDB);
+        var filteredRevue = [];
+        dataRevueOnlineFromDB.forEach(function(d,i){
+            var found = dataRevueWaitingFromDB.find(function(e,j){ return e.revueID == d.revueID});
+            if(found == undefined) filteredRevue.push(d);
+        });
+        console.log("filtered",filteredRevue);
+        addCmsRevues("online",false,filteredRevue); 
+       // addKeywordsToFormular(nodes);
+        addKeywordsToFormular(nodes);
     }
 
     hideFormular();
 
     testStuff();
 
+    var hackerList = new List('menu', options);
+
 }
+
+// Search input
+/*
+var options_cms = {
+    valueNames: [ 'revue-title-cms' ]
+};
+*/
 
 function createCmsMenu(){
 
@@ -168,18 +167,18 @@ function createCmsMenu(){
     addCmsRevues("online",false,dataRevue);
 
     // Search engine
-    var hackerList = new List('menu', options);
+    //var hackerList = new List('menu', options);
 }
 
-// ATTENTION: pour les revues online, check before whether it is already in the WAITING LIST.
 function addCmsRevues(divName,isWaiting,data){
     var menu = d3.select("#cms_menulist");
     var div = menu.append("div").attr("class",divName);
     if(isWaiting) div.append("h4").html("Drafts");
     else div.append("h4").html("Online");
-
+    console.log("??",data);
     var previousLetter = "Z";
-    data.sort(function (a,b) {return d3.ascending(a.name, b.name);});
+
+    data.sort(function (a,b) {return d3.ascending(a.name.toUpperCase(), b.name.toUpperCase());});
     data.forEach(function(d,i){
         var letter = d.name.charAt(0).toUpperCase();
         if(letter != previousLetter && !isWaiting){ // we only want the letter for the ONLINE menu revues
@@ -201,7 +200,7 @@ function addCmsRevues(divName,isWaiting,data){
                     }
                 })
                 .append("h3")
-                .attr("class","revue-title")
+                .attr("class","revue-title-cms")
                 .html(d.name);
         previousLetter = letter;
     });
@@ -213,6 +212,55 @@ function addKeywordsToFormular(nodes){
     //console.log("************** CMS ******************");
     //console.log("nodes",nodes);
     //console.log("************** CMS ******************");
+    var div = d3.select("#cms").select("#keywords_selection");
+    var nodesM = nodes.filter(function(d,i){ return d.parentNameID == ''});
+
+    nodesM.forEach(function(dM,i){
+        div.select("#" + dM.nameID).html(dM.name);
+        var nodesS = nodes.filter(function(d){ return d.parentNameID == dM.nameID; });
+        var div_li_subs = div.select("#" + dM.nameID + "_li");
+        var div_ul_S = div_li_subs.append("ul");
+        //console.log("nodesS",nodesS);
+
+        nodesS.forEach(function(dS,j){
+            var div_li = div_ul_S.append("li");
+            div_li.append("input").attr("type","checkbox").attr("name",dS.nameID).attr("id",dS.nameID);
+            div_li.append("label").attr("for",dS.name).html(dS.name);
+            var nodesK = nodes.filter(function(d){ return d.parentNameID == dS.nameID; });
+            var div_ul_K = div_li.append("ul");
+            nodesK.forEach(function(dK,k){
+                div_li = div_ul_K.append("li");
+                div_li.append("input").attr("type","checkbox").attr("name",dK.nameID).attr("id",dK.nameID);
+                div_li.append("label").attr("for",dK.nameID).html(dK.name);
+            });
+            //<input type="checkbox" name ="" value="" id="Fine">
+            //<label for="Fine">Fine Arts</label>            
+        })
+    });
+}
+
+function addKeywordsRevueToFormular(keywords){
+    var div = d3.select("#cms").select("#keywords_selection");
+
+    // empty first all the checkboxes
+    for(var i=0; i<nbM; i++){
+        var keyM = "master" + i;
+        div.select("#"+keyM).property("checked",false);
+    }
+    for(var i=0;i<nbS; i++){
+        var keyS = "sub" + i;
+        div.select("#"+keyS).property("checked",false);
+    }
+    for(var i=0;i<nbK; i++){
+        var keyK = "key" + i;
+        div.select("#"+keyK).property("checked",false);
+    }
+
+    // select the wanted keywords
+    keywords.forEach(function(d,i){
+        console.log("keyword",d.linkID);
+        div.select("#"+d.linkID).property("checked",true);
+    });
 }
 
 function createNewRevue(){
@@ -221,28 +269,9 @@ function createNewRevue(){
     isCreateNew = true;
     isWaiting = true;
     
-    storeHiddenVariablesInFormular();
-
-    var cms = d3.select("#cms");
-    cms.select("#name").property("value","");
-    cms.select("#link").property("value","");
-    cms.select("#year_start").property("value",""); 
-    cms.select("#year_end").property("value","");
-    cms.select("#ongoing").property("checked",false); 
-    cms.select("#frequency").property("value",""); 
-    cms.select("#publisher").property("value",""); 
-    cms.select("#country").property("value",""); // TODO: check city versus country with Alex
-    cms.select("#lat").property("value","");
-    cms.select("#long").property("value",""); 
-    cms.select("#language").property("value",""); 
-    cms.select("#access").property("value",""); 
-    cms.select("#medium").property("value",""); 
-    cms.select("#about").property("value",""); 
-    //cms.select("#peer_review").property("value","yes");  // TODO: check boolean -> ask ALEX
-    cms.select("#note").property("value",""); 
-
+    storeHiddenVariablesInFormular("revue" + dataRevueOnlineFromDB.length);
+    emptyFormular();
     showFormular();
-
 }
 
 function showWaitingRevue(revueID){
@@ -251,7 +280,15 @@ function showWaitingRevue(revueID){
     storeHiddenVariablesInFormular(revueID);
     if(isSimulateDB) showRevue(undefined,revueID);
     else{
-        socket.emit("getWaitingRevue",revueID);
+        // BACK socket.emit("getWaitingRevue",revueID);
+        // BAK socket.emit("getWaitingLinks",revueID);
+        var revue = dataRevueWaitingFromDB.find(function(d){return d.revueID == revueID; });
+        d3.request("/cms/revue")
+        .header("X-Requested-With", "XMLHttpRequest")
+        .header("Content-Type", "application/x-www-form-urlencoded")
+        .post("revueID="+revueID+"&type=waiting", dataReturned);
+        
+        showRevue(revue);
     }
 }
 
@@ -261,8 +298,23 @@ function showOnlineRevue(revueID){
     storeHiddenVariablesInFormular(revueID);
     if(isSimulateDB) showRevue(undefined,revueID);
     else{
-        socket.emit("getOnlineRevue",revueID);
+        // BACK socket.emit("getOnlineRevue",revueID);
+        // BAK socket.emit("getOnlineLinks",revueID);
+        console.log("show online revue",revueID);
+        var revue = dataRevueOnlineFromDB.find(function(d){return d.revueID == revueID; });
+        d3.request("/cms/revue")
+        .header("X-Requested-With", "XMLHttpRequest")
+        .header("Content-Type", "application/x-www-form-urlencoded")
+        .post("revueID="+revueID+"&type=online", dataReturned);
+        
+        showRevue(revue);
     }
+}
+
+function dataReturned(data){
+    console.log("dataReturned",data,data.response);
+    var keywords = JSON.parse(data.response);
+    addKeywordsRevueToFormular(keywords);
 }
 
 function showRevue(revue,revueID){
@@ -271,23 +323,31 @@ function showRevue(revue,revueID){
     //var revue = databaseRevue.find(function(d) { return d.revueID == 1; }); 
     if(isSimulateDB) revue = dataRevuesFakedDB.find(function(d) { return d.revueID == revueID; }); 
     // TODO: sends to server a GET request... in order to retrieve final database DATAS
+    
+    emptyFormular();
+    
     console.log("revue",revue);
     var cms = d3.select("#cms");
     cms.select("#name").property("value",revue.name);
     cms.select("#link").property("value",revue.link);
     cms.select("#year_start").property("value",revue.year_start); 
     cms.select("#year_end").property("value",revue.year_end);
-    cms.select("#ongoing").property("checked",revue.ongoing); 
+    if(revue.ongoing == 0) cms.select("#ongoing").property("checked",false);
+    else cms.select("#ongoing").property("checked",true);
     cms.select("#frequency").property("value",revue.frequency); 
     cms.select("#publisher").property("value",revue.publisher); 
-    cms.select("#country").property("value",revue.city); // TODO: check city versus country with Alex
-    cms.select("#lat").property("value",revue.lat);
-    cms.select("#long").property("value",revue.long); 
-    cms.select("#language").property("value",revue.language_val); 
-    cms.select("#access").property("value",revue.access_val); 
-    cms.select("#medium").property("value",revue.medium_val); 
+    cms.select("#city").property("value",revue.city); 
+    cms.select("#lat").property("value",revue.long);
+    cms.select("#long").property("value",revue.lat); 
+    console.log("lan??",revue.language);
+    cms.select("#language").property("value",revue.language); 
+    cms.select("#access").property("value",revue.access); 
+    cms.select("#medium").property("value",revue.medium); 
     cms.select("#about").property("value",revue.about); 
-    cms.select("#peer_review").property("value","yes");  // TODO: check boolean -> ask ALEX
+    console.log("peer_review ???",revue.peer_review);
+    //if(revue.peer_review == 0) cms.select("#peer_review").property("value","yes");  // TODO: check boolean -> ask ALEX
+    if(revue.peer_review == 1) cms.select("#peer_review_yes").property("checked",true);  // TODO: check boolean -> ask ALEX
+    else cms.select("#peer_review_no").property("checked",true);
     cms.select("#note").property("value",revue.note); 
 
     showFormular();
@@ -311,10 +371,121 @@ function showFormular(){
 }
 
 
+function emptyFormular(){
+    var cms = d3.select("#cms");
+    cms.select("#name").property("value","");
+    cms.select("#link").property("value","");
+    cms.select("#year_start").property("value",""); 
+    cms.select("#year_end").property("value","");
+    cms.select("#ongoing").property("checked",false); 
+    cms.select("#frequency").property("value",""); 
+    cms.select("#publisher").property("value",""); 
+    cms.select("#city").property("value",""); 
+    cms.select("#lat").property("value","");
+    cms.select("#long").property("value",""); 
+    cms.select("#language").property("value",""); 
+    cms.select("#access").property("value",""); 
+    cms.select("#medium").property("value",""); 
+    cms.select("#about").property("value",""); 
+    cms.select("#peer_review_yes").property("checked",false);
+    cms.select("#peer_review_no").property("checked",false);
+    cms.select("#note").property("value",""); 
+
+    var div = cms.select("#keywords_selection");
+    for(var i=0; i<nbM; i++){
+        var keyM = "master" + i;
+        div.select("#"+keyM).property("checked",false);
+    }
+    for(var i=0;i<nbS; i++){
+        var keyS = "sub" + i;
+        div.select("#"+keyS).property("checked",false);
+    }
+    for(var i=0;i<nbK; i++){
+        var keyK = "key" + i;
+        div.select("#"+keyK).property("checked",false);
+    }
+}
+
+
+function emptyAddJournalFormular(){
+    console.log("emptyAddJournalFormular");
+    var div = d3.select("#form_add_journals");
+    /*
+    div.select("#name").property("value","");
+    div.select("#link").property("value","");
+    div.select("#year_start").property("value",""); 
+    div.select("#year_end").property("value","");
+    div.select("#ongoing").property("checked",false); 
+    */
+    div.select("#frequency").property("value",""); 
+   // div.select("#publisher").property("value",""); 
+   // div.select("#city").property("value",""); 
+    div.select("#language").property("value",""); 
+    div.select("#access").property("value",""); 
+    div.select("#medium").property("value",""); 
+    /*
+    div.select("#about").property("value",""); 
+    div.select("#peer_review_yes").property("checked",false);
+    div.select("#peer_review_no").property("checked",false);
+    div.select("#note").property("value",""); 
+    */
+
+    var d = div.select("#keywords_selection");
+    for(var i=0; i<nbM; i++){
+        var keyM = "master" + i;
+        d.select("#"+keyM).property("checked",false);
+    }
+    for(var i=0;i<nbS; i++){
+        var keyS = "sub" + i;
+        d.select("#"+keyS).property("checked",false);
+    }
+    for(var i=0;i<nbK; i++){
+        var keyK = "key" + i;
+        d.select("#"+keyK).property("checked",false);
+    }
+}
+
+
+
+// function called from the add journal formular
+function generateKeywordsForForm(nodes){
+    console.log("-> addKeywordsToFormular() !!!");
+    //console.log("************** CMS ******************");
+    //console.log("nodes",nodes);
+    //console.log("************** CMS ******************");
+    var div = d3.select("#form_add_journals").select("#keywords_selection");
+    var nodesM = nodes.filter(function(d,i){ return d.parentNameID == ''});
+
+    nodesM.forEach(function(dM,i){
+        div.select("#" + dM.nameID).html(dM.name);
+        var nodesS = nodes.filter(function(d){ return d.parentNameID == dM.nameID; });
+        var div_li_subs = div.select("#" + dM.nameID + "_li");
+        var div_ul_S = div_li_subs.append("ul");
+        //console.log("nodesS",nodesS);
+
+        nodesS.forEach(function(dS,j){
+            var div_li = div_ul_S.append("li");
+            div_li.append("input").attr("type","checkbox").attr("name",dS.nameID).attr("id",dS.nameID).attr("class","keyword_input");
+            div_li.append("label").attr("for","Fine").html(dS.name);
+            var nodesK = nodes.filter(function(d){ return d.parentNameID == dS.nameID; });
+            var div_ul_K = div_li.append("ul");
+            nodesK.forEach(function(dK,k){
+                div_li = div_ul_K.append("li");
+                div_li.append("input").attr("type","checkbox").attr("name",dK.nameID).attr("id",dK.nameID).attr("class","keyword_input");
+                div_li.append("label").attr("for","Fine").html(dK.name);
+            });
+            //<input type="checkbox" name ="" value="" id="Fine">
+            //<label for="Fine">Fine Arts</label>            
+        })
+    });
+}
+
+
 // Alex functions
 
-function initCms_form(){
-    /*
+// Alex functions
+if(is_cms){
+    
 	var deleteBTN = document.getElementsByClassName("delete")[0];
 
 	deleteBTN.addEventListener("click", function(){
@@ -323,32 +494,69 @@ function initCms_form(){
 		} else {
 		    console.log("canceled");
 		}
-	})*/
+	})
 }
 
-//ACTION
-
-/*
-$(".ctrl button").bind("click", function(){
-
-    console.log(checkKeywords());
-    if(checkKeywords()){
-        //POST
-    }else{
+function checkFormParameters(){
+    // check number of keywords
+    var checked = 0;
+    var div = d3.select("#form_add_journals");
+    for(var i=0; i<nbM; i++){
+        var keyM = "master" + i;
+        var c = div.select("#"+keyM).property("checked");
+        if(c == true) checked++;
+    }
+    for(var i=0;i<nbS; i++){
+        var keyS = "sub" + i;
+        var c = div.select("#"+keyS).property("checked");
+        if(c == true) checked++;
+    }
+    for(var i=0;i<nbK; i++){
+        var keyK = "key" + i;
+        var c = div.select("#"+keyK).property("checked");
+        if(c == true) checked++;
+    }
+    console.log("nb checked",checked);
+    if(checked < 3){
         alert("You need to choose 3 keywords at least");
     }
-})
+}
 
-
-$(".ctrl input").bind("click", function(){
-
-    console.log(checkKeywords());
-    if(checkKeywords()){
-        //POST
-    }else{
+function checkCmsParameters(){
+    var cms = d3.select("#cms");
+    var year_start = cms.select("#year_start").property("value"); 
+    var year_end = cms.select("#year_end").property("value");
+    var ongoing = cms.select("#ongoing").property("checked"); 
+    console.log("tests",year_start,year_end,ongoing);
+    if(year_end < year_start && ongoing == false){
+        alert("Something is wrong with the years");
+    }
+    if(year_end == undefined && ongoing == false){
+        alert("you haven't decided between an ongoing publication or an end date of publication.");
+    }
+    // check number of keywords
+    var checked = 0;
+    var div = cms.select("#keywords_selection");
+    for(var i=0; i<nbM; i++){
+        var keyM = "master" + i;
+        var c = div.select("#"+keyM).property("checked");
+        if(c == true) checked++;
+    }
+    for(var i=0;i<nbS; i++){
+        var keyS = "sub" + i;
+        var c = div.select("#"+keyS).property("checked");
+        if(c == true) checked++;
+    }
+    for(var i=0;i<nbK; i++){
+        var keyK = "key" + i;
+        var c = div.select("#"+keyK).property("checked");
+        if(c == true) checked++;
+    }
+    console.log("nb checked",checked);
+    if(checked < 3){
         alert("You need to choose 3 keywords at least");
     }
-})*/
+}
 
 
 function checkKeywords(){

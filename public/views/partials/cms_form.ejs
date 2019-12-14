@@ -3,255 +3,290 @@
 
 <div class="back-office" id="cms">
 
-    <div class="revue-list">
-            <h1>Art & Sciences <br>Map Manager</h1>
-            <button class="new" id="cms_newRevue">Create New</button>
-            <input class="search" placeholder="Search" />
-            <ul class="list" id="cms_menulist"> <!-- CECILE: changé id name -->
-                <!--
-                <div class="waitings">
-                    <h4>Waiting</h4>
-                    <li>
-                        <h3 class="revue-title">Titre de la revue</h3>
-                    </li>
-                </div>
-                -->
-                
-                <!--
-                <h4>Online</h4>
-                <div class="online">
-                    <li class="letter">
-                        A
-                    </li>
-                    <li>
-                        <h3 class="revue-title">Titre de la revue</h3>
-                    </li>
-                </div>
-                -->
+        <script>
+            var dataRevueWaitingFromDB = [];
+            var dataRevueOnlineFromDB = [];
+            var nodes = [];
+        </script>
+        
+            <% data_online.forEach(function(o) { %>
+                <!-- <script>dataRevueOnlineFromDB.push('{name: <%= o.name %>, revueID: <%= o.revueID %>, ID: <%= o.ID %>}');</script> -->
+                <script>dataRevueOnlineFromDB.push({ID: '<%= o.ID %>', revueID: '<%= o.revueID %>', name: '<%= o.name %>',
+                            link: '<%= o.link %>', year_start: '<%= o.year_start %>', year_end: '<%= o.year_end %>',
+                            ongoing: '<%= o.ongoing %>', frequency: '<%= o.frequency %>', publisher: '<%= o.publisher %>',
+                            city: '<%= o.city %>', country: '<%= o.country %>', lat: '<%= o.lat %>',
+                            long: '<%= o.long %>', language: '<%= o.language %>', access: '<%= o.access %>', medium: '<%= o.medium %>',
+                            about: '<%= o.about %>', peer_review: '<%= o.peer_review %>', note: '<%= o.note %>'
+                },);</script>
+            <% }); %>
+            <% data_waiting.forEach(function(o) { %>
+                <!-- <script>dataRevueWaitingFromDB.push('{name: <%= o.name %>, revueID: <%= o.revueID %>, ID: <%= o.ID %>}');</script> -->
+                <script>dataRevueWaitingFromDB.push({ID: '<%= o.ID %>', revueID: '<%= o.revueID %>', name: '<%= o.name %>',
+                    link: '<%= o.link %>', year_start: '<%= o.year_start %>', year_end: '<%= o.year_end %>',
+                    ongoing: '<%= o.ongoing %>', frequency: '<%= o.frequency %>', publisher: '<%= o.publisher %>',
+                    city: '<%= o.city %>', country: '<%= o.country %>', lat: '<%= o.lat %>',
+                    long: '<%= o.long %>', language: '<%= o.language %>', access: '<%= o.access %>', medium: '<%= o.medium %>',
+                    about: '<%= o.about %>', peer_review: '<%= o.peer_review %>', note: '<%= o.note %>'
+                 },);</script>   <% }); %>
+            <% nodes.forEach(function(o) { %>
+                <!-- <script>nodes.push('{id: <%= o.id %>, parentNameID: <%= o.parentNameID %>, nameID: <%= o.nameID %>,name: <%= o.name %>}');</script> -->
+                <script>nodes.push({id: '<%= o.id %>', parentNameID: '<%= o.parentNameID %>', nameID: '<%= o.nameID %>',name: '<%= o.name %>'});</script>
+            <% }); %>
     
-            </ul>
-    </div>
+        <script>
+            console.log("dataRevueOnlineFromDB",dataRevueOnlineFromDB);
+            console.log("dataRevueWaitingFromDB",dataRevueWaitingFromDB);
+            console.log("nodes",nodes);
+        </script>
 
-    <div class="view" id="cms_formular">
-            <div class="add-revue-form">
-                    <form method="POST" action="/cms" onkeydown="return event.key != 'Enter';">
-                            <h2>Journal's Name<br> •</h2>
+
+
+        <div class="revue-list" id="menu-list">
+                <h1>Art & Sciences <br>Map Manager</h1>
+                <button class="new" id="cms_newRevue">Create New</button>
+                <input class="search" placeholder="Search" />
+                <ul class="list" id="cms_menulist"> <!-- CECILE: changé id name -->
+                    <!--
+                    <div class="waitings">
+                        <h4>Waiting</h4>
+                        <li>
+                            <h3 class="revue-title">Titre de la revue</h3>
+                        </li>
+                    </div>
+                    -->
+                    
+                    <!--
+                    <h4>Online</h4>
+                    <div class="online">
+                        <li class="letter">
+                            A
+                        </li>
+                        <li>
+                            <h3 class="revue-title">Titre de la revue</h3>
+                        </li>
+                    </div>
+                    -->
         
-        
-                            <div class="fields">
-                                <div class="col">
-                                    <label for="name">Journal's name :</label>
-                                    <input type="text" required name="name" id="name">
+                </ul>
+                </form>
+        </div>
+    
+        <div class="view" id="cms_formular">
+                <div class="add-revue-form">
+                        <form method="POST" action="/cms" onkeydown="return event.key != 'Enter';">
+                                <h2>Journal's Name<br> •</h2>
+            
+            
+                                <div class="fields">
+                                    <div class="col">
+                                        <label for="name">Journal's name :</label>
+                                        <input type="text" required name="name" id="name">
+                                    </div>
+                                    
+                                    <div class="col">
+                                        <label for="source">Journal's source (link) :</label>
+                                        <input type="text" name="link" id="link">
+                                    </div>
+                                    
                                 </div>
                                 
-                                <div class="col">
-                                    <label for="source">Journal's source (link) :</label>
-                                    <input type="text" name="link" id="link">
+                                <div class="fields">
+                                    <label for="since_year">Publication since</label>
+                                    <input type="number" name="year_start" required id="year_start">
+                                    <label for="to_year">to</label>
+                                    <input type="number" name="year_end" id="year_end">
+                                    <br>
+                                    <input type="checkbox" name="ongoing" id="ongoing">
+                                    <label for="ongoing">ongoing</label>
+                                </div>
+            
+                                <div class="fields">
+                                    <div class="col">
+                                        <label for="frequency">Frequency :</label>
+                                        <select name="frequency" id="frequency">
+                                            <option value="monthly">monthly</option>
+                                            <option value="quarterly">Quarterly</option>
+                                            <option value="annual">Annual</option>
+                                            <option value="biannual">biannual</option>
+                                            <option value="irregular">Irregular</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <!-- <label for="issues">Number of issues :</label>
+                                        <input type="number"> -->
+                                    </div>
                                 </div>
                                 
-                            </div>
-                            
-                            <div class="fields">
-                                <label for="since_year">Publication since</label>
-                                <input type="number" name="year_start" required id="year_start">
-                                <label for="to_year">to</label>
-                                <input type="number" name="year_end" id="year_end">
-                                <br>
-                                <input type="checkbox" name="ongoing" id="ongoing">
-                                <label for="ongoing">ongoing</label>
-                            </div>
-        
-                            <div class="fields">
-                                <div class="col">
-                                    <label for="frequency">Frequency :</label>
-                                    <select name="frequency" id="frequency">
-                                        <option value="monthly">monthly</option>
-                                        <option value="quarterly">Quarterly</option>
-                                        <option value="annual">Annual</option>
-                                        <option value="biannual">biannual</option>
-                                        <option value="irregular">Irregular</option>
-                                        <option value="other">Other</option>
+                                <div class="fields">
+                                    <label for="plublisher">Publisher / institution affiliation :</label>
+                                    <input type="text" name="publisher" id="publisher">
+                                    <br>
+                                    <label for="city">City :</label>
+                                    <input type="text" name="city" id="city" >
+                                    <br>
+                                    <label for="">latitude / longitude:</label>
+                                    <!-- <input type="number" name="lat" id="lat" > -->
+                                    <input type="number" name="lat" id="lat" min="-90" max="90" required>
+                                    <!-- <input type="number" name="long" id="long" > -->
+                                    <input type="number" name="long" id="long" min="-180" max="180" required>
+                                    <br>
+                                    <label for="language">Language :</label>
+                                    <select name="language" id="language">
+                                            <option value="AF">Afrikanns</option>
+                                            <option value="SQ">Albanian</option>
+                                            <option value="AR">Arabic</option>
+                                            <option value="HY">Armenian</option>
+                                            <option value=" ">Basque</option>
+                                            <option value="BN">Bengali</option>
+                                            <option value="BG">Bulgarian</option>
+                                            <option value="CA">Catalan</option>
+                                            <option value="KM">Cambodian</option>
+                                            <option value="ZH">Chinese (Mandarin)</option>
+                                            <option value="HR">Croation</option>
+                                            <option value="CS">Czech</option>
+                                            <option value="DA">Danish</option>
+                                            <option value="NL">Dutch</option>
+                                            <option value="EN">English</option>
+                                            <option value="ET">Estonian</option>
+                                            <option value="FJ">Fiji</option>
+                                            <option value="FI">Finnish</option>
+                                            <option value="FR">French</option>
+                                            <option value="KA">Georgian</option>
+                                            <option value="DE">German</option>
+                                            <option value="EL">Greek</option>
+                                            <option value="GU">Gujarati</option>
+                                            <option value="HE">Hebrew</option>
+                                            <option value="HI">Hindi</option>
+                                            <option value="HU">Hungarian</option>
+                                            <option value="IS">Icelandic</option>
+                                            <option value="ID">Indonesian</option>
+                                            <option value="GA">Irish</option>
+                                            <option value="IT">Italian</option>
+                                            <option value="JA">Japanese</option>
+                                            <option value="JW">Javanese</option>
+                                            <option value="KO">Korean</option>
+                                            <option value="LA">Latin</option>
+                                            <option value="LV">Latvian</option>
+                                            <option value="LT">Lithuanian</option>
+                                            <option value="MK">Macedonian</option>
+                                            <option value="MS">Malay</option>
+                                            <option value="ML">Malayalam</option>
+                                            <option value="MT">Maltese</option>
+                                            <option value="MI">Maori</option>
+                                            <option value="MR">Marathi</option>
+                                            <option value="MN">Mongolian</option>
+                                            <option value="NE">Nepali</option>
+                                            <option value="NO">Norwegian</option>
+                                            <option value="FA">Persian</option>
+                                            <option value="PL">Polish</option>
+                                            <option value="PT">Portuguese</option>
+                                            <option value="PA">Punjabi</option>
+                                            <option value="QU">Quechua</option>
+                                            <option value="RO">Romanian</option>
+                                            <option value="RU">Russian</option>
+                                            <option value="SM">Samoan</option>
+                                            <option value="SR">Serbian</option>
+                                            <option value="SK">Slovak</option>
+                                            <option value="SL">Slovenian</option>
+                                            <option value="ES">Spanish</option>
+                                            <option value="SW">Swahili</option>
+                                            <option value="SV">Swedish </option>
+                                            <option value="TA">Tamil</option>
+                                            <option value="TT">Tatar</option>
+                                            <option value="TE">Telugu</option>
+                                            <option value="TH">Thai</option>
+                                            <option value="BO">Tibetan</option>
+                                            <option value="TO">Tonga</option>
+                                            <option value="TR">Turkish</option>
+                                            <option value="UK">Ukranian</option>
+                                            <option value="UR">Urdu</option>
+                                            <option value="UZ">Uzbek</option>
+                                            <option value="VI">Vietnamese</option>
+                                            <option value="CY">Welsh</option>
+                                            <option value="XH">Xhosa</option>
+                                    </select>
+                                    <br>
+                                    <label for="access">Access</label>
+                                    <select name="access" id="access">
+                                        <option value="free_acc">Free access</option>
+                                        <option value="free_online_paper">Free online access, paper by subscription</option>
+                                        <option value="free_online_access">Free online access</option>
+                                        <option value="subscription">Subscription only</option>
+                                        <option value="open">Open access</option>
+                                    </select>
+                                    <br>
+                                    <label for="medium">Medium :</label>
+                                    <select name="medium" id="medium">
+                                        <option value="online_print">Online & print</option>
+                                        <option value="print">Print</option>
+                                        <option value="online">Online</option>
                                     </select>
                                 </div>
-                                <div class="col">
-                                    <!-- <label for="issues">Number of issues :</label>
-                                    <input type="number"> -->
+                                    
+                                <div class="fields">
+                                    <div class="col">
+                                        <label for="about">About (up to 500 characters) :</label>
+                                        <br>
+                                        <textarea name="about" id="about" cols="30" rows="10" maxlength="500" required></textarea>
+                                    </div>
+                                    
+                                    <div class="col">
+                                        <label for="pr">Peer review :</label>
+                                        
+                                        <p><input type="radio" name ="pr" value="yes" id="peer_review_yes"> yes</p>
+                                        
+                                        <p><input type="radio" name ="pr" value="no" id="peer_review_no"> no</p>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            <div class="fields">
-                                <label for="plublisher">Publisher / institution affiliation :</label>
-                                <input type="text" name="publisher" id="publisher">
-                                <br>
-                                <label for="country">City :</label>
-                                <input type="text" name="country" id="country" >
-                                <br>
-                                <label for="">latitude / longitude:</label>
-                                <input type="number" name="lat" id="lat" required>
-                                <input type="number" name="long" id="long" required>
-                                <br>
-                                <label for="language">Language :</label>
-                                <select name="language" id="language">
-                                        <option value="AF">Afrikanns</option>
-                                        <option value="SQ">Albanian</option>
-                                        <option value="AR">Arabic</option>
-                                        <option value="HY">Armenian</option>
-                                        <option value="EU">Basque</option>
-                                        <option value="BN">Bengali</option>
-                                        <option value="BG">Bulgarian</option>
-                                        <option value="CA">Catalan</option>
-                                        <option value="KM">Cambodian</option>
-                                        <option value="ZH">Chinese (Mandarin)</option>
-                                        <option value="HR">Croation</option>
-                                        <option value="CS">Czech</option>
-                                        <option value="DA">Danish</option>
-                                        <option value="NL">Dutch</option>
-                                        <option value="EN">English</option>
-                                        <option value="ET">Estonian</option>
-                                        <option value="FJ">Fiji</option>
-                                        <option value="FI">Finnish</option>
-                                        <option value="FR">French</option>
-                                        <option value="KA">Georgian</option>
-                                        <option value="DE">German</option>
-                                        <option value="EL">Greek</option>
-                                        <option value="GU">Gujarati</option>
-                                        <option value="HE">Hebrew</option>
-                                        <option value="HI">Hindi</option>
-                                        <option value="HU">Hungarian</option>
-                                        <option value="IS">Icelandic</option>
-                                        <option value="ID">Indonesian</option>
-                                        <option value="GA">Irish</option>
-                                        <option value="IT">Italian</option>
-                                        <option value="JA">Japanese</option>
-                                        <option value="JW">Javanese</option>
-                                        <option value="KO">Korean</option>
-                                        <option value="LA">Latin</option>
-                                        <option value="LV">Latvian</option>
-                                        <option value="LT">Lithuanian</option>
-                                        <option value="MK">Macedonian</option>
-                                        <option value="MS">Malay</option>
-                                        <option value="ML">Malayalam</option>
-                                        <option value="MT">Maltese</option>
-                                        <option value="MI">Maori</option>
-                                        <option value="MR">Marathi</option>
-                                        <option value="MN">Mongolian</option>
-                                        <option value="NE">Nepali</option>
-                                        <option value="NO">Norwegian</option>
-                                        <option value="FA">Persian</option>
-                                        <option value="PL">Polish</option>
-                                        <option value="PT">Portuguese</option>
-                                        <option value="PA">Punjabi</option>
-                                        <option value="QU">Quechua</option>
-                                        <option value="RO">Romanian</option>
-                                        <option value="RU">Russian</option>
-                                        <option value="SM">Samoan</option>
-                                        <option value="SR">Serbian</option>
-                                        <option value="SK">Slovak</option>
-                                        <option value="SL">Slovenian</option>
-                                        <option value="ES">Spanish</option>
-                                        <option value="SW">Swahili</option>
-                                        <option value="SV">Swedish </option>
-                                        <option value="TA">Tamil</option>
-                                        <option value="TT">Tatar</option>
-                                        <option value="TE">Telugu</option>
-                                        <option value="TH">Thai</option>
-                                        <option value="BO">Tibetan</option>
-                                        <option value="TO">Tonga</option>
-                                        <option value="TR">Turkish</option>
-                                        <option value="UK">Ukranian</option>
-                                        <option value="UR">Urdu</option>
-                                        <option value="UZ">Uzbek</option>
-                                        <option value="VI">Vietnamese</option>
-                                        <option value="CY">Welsh</option>
-                                        <option value="XH">Xhosa</option>
-                                </select>
-                                <br>
-                                <label for="access">Access</label>
-                                <select name="access" id="access">
-                                    <option value="free_acc">Free access</option>
-                                    <option value="free_online_paper">Free online access, paper by subscription</option>
-                                    <option value="free_online_access">Free online access</option>
-                                    <option value="subscription">Subscription only</option>
-                                    <option value="open">Open access</option>
-                                </select>
-                                <br>
-                                <label for="medium">Medium :</label>
-                                <select name="medium" id="medium">
-                                    <option value="online_print">Online & print</option>
-                                    <option value="print">Print</option>
-                                    <option value="online">Online</option>
-                                </select>
-                            </div>
-                                
-                            <div class="fields">
-                                <div class="col">
-                                    <label for="about">About (up to 150 characters) :</label>
+                
+                                <div class="fields">
+                                    <label for="note">Note :</label>
                                     <br>
-                                    <textarea name="about" id="about" cols="30" rows="10" maxlength="150" required></textarea>
+                                    <textarea name="note" id="note" cols="30" rows="10" maxlength="150"></textarea>
                                 </div>
                                 
-                                <div class="col">
-                                    <label for="pr">Peer review :</label>
-                                    
-                                    <p><input type="radio" name ="pr" value="yes" id="peer_review"> yes</p>
-                                    
-                                    <p><input type="radio" name ="pr" value="no"> no</p>
+    
+                                <!-- KEYWORDS -->
+                                <div class="fields form-keywords" id="keywords_selection">
+                                    <div class="col-3 art-design">
+                                        <ul>
+                                            <input type="checkbox" name="master0" id="master0" class="keyword_input">
+                                            <h3 for="master0" id="master0" >ART-DESIGN</h3> <!--content will be overwritten from DB-->
+                                            <li id="master0_li">
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-3 ss-humanities">
+                                        <ul>
+                                            <input type="checkbox" name="master1" id="master1" class="keyword_input">
+                                            <h3 id="master1" >SS & HUMANITIES</h3>
+                                            <li id="master1_li"></li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-3 science">
+                                        <ul>
+                                            <input type="checkbox" name="master2" id="master2" class="keyword_input">
+                                            <h3 id="master2" >SCIENCE</h3>
+                                            <li id="master2_li"></li>
+                                        </ul>
+                                    </div>
                                 </div>
-                            </div>
-            
-                            <div class="fields">
-                                <label for="note">Note :</label>
-                                <br>
-                                <textarea name="note" id="note" cols="30" rows="10" maxlength="150"></textarea>
-                            </div>
-                            
-
-                            <!-- KEYWORDS -->
-                            <div class="fields form-keywords">
-                                <div class="col-3 art-design">
-                                    <ul>
-                                        <input type="checkbox" name ="" value="" id="art-design">
-                                        <h3>ART-DESIGN</h3>
-                                        <li>
-                                            <input type="checkbox" name ="" value="" id="Fine">
-                                            <label for="Fine">Fine Arts</label>
-        
-                                            <ul>
-                                                <li>
-                                                    <input type="checkbox" name ="" value="" id="Visual">
-                                                    <label for="Visual">Visual (fine arts)</label>
-        
-                                                </li>
-                                            </ul>
-                                        </li>
-                                    </ul>
+                                
+                                <div class="ctrl">
+                                        <button class="cancel" id="cms_buttonCancel" type="button" formaction="/cms/cancel">Cancel</button>
+                                        <button class="delete" id="cms_buttonDelete" formaction="/cms/delete">Delete</button>
+                                        <button class="saveBefore" id="cms_buttonSaveWaiting" formaction="/cms/savewaiting">Save Before Post</button>
+                                        <input class="saveBefore" type="submit" id="cms_buttonSave" formaction="/cms/save" value="Post">
+                                        <input type="hidden" name="isCreateNew" id="hidden_isCreateNew" value="perdefault1">
+                                        <input type="hidden" name="isWaiting" id="hidden_isWaiting" value="perdefault2">
+                                        <input type="hidden" name="revueID" id="hidden_revueID" value="0">
+                                       <!-- <input type="submit" value="Post"> -->
                                 </div>
-                                <div class="col-3 ss-humanities">
-                                    <h3>SS & HUMANITIES</h3>
-                                </div>
-                                <div class="col-3 science">
-                                    <ul>
-                                        <h3>SCIENCE</h3>
-                                    </ul>
-                                </div>
-                            </div>
-
-
-                            
-                            
-                            <div class="ctrl">
-                                    <button class="cancel" id="cms_buttonCancel" formaction="/cms/cancel">Cancel</button>
-                                    <button class="delete" id="cms_buttonDelete" formaction="/cms/delete">Delete</button>
-                                    <button class="saveBefore" id="cms_buttonSaveWaiting" formaction="/cms/savewaiting">Save Before Post</button>
-                                    <input class="saveBefore" type="submit" id="cms_buttonSave" formaction="/cms/save" value="Post">
-                                    <input type="hidden" name="isCreateNew" id="hidden_isCreateNew" value="perdefault1">
-                                    <input type="hidden" name="isWaiting" id="hidden_isWaiting" value="perdefault2">
-                                    <input type="hidden" name="revueID" id="hidden_revueID" value="0">
-                                   <!-- <input type="submit" value="Post"> -->
-                            </div>
-                    </form>
-            </div>
-            <div class="layer-close"></div>
+                        </form>
+                </div>
+                <div class="layer-close"></div>
+        </div>
+    
     </div>
-
-</div>
+    

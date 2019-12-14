@@ -9,6 +9,21 @@ var server = require('http').createServer(app);
 var auth = require('basic-auth')
 var compare = require('tsscmp')
 
+const nodemailer = require('nodemailer');
+
+var winston = require('winston');
+
+const logConfiguration = {
+    'transports' : [
+        new winston.transports.File({
+            filename: 'winston_log.log',
+            level: 'debug'
+        })
+    ]
+}
+
+const logger = winston.createLogger(logConfiguration);
+
 
 // Basic function to validate credentials for example
 function check (name, pass) {
@@ -18,164 +33,98 @@ function check (name, pass) {
     valid = compare(name, 'personne') && valid
     valid = compare(pass, 'sisi') && valid
    
-    return valid
+    return valid;
 }
 
 
-var io = require('socket.io').listen(server);
+//var io = require('socket.io').listen(server);
 var mysql = require('mysql');
 
 var USE_DB = true;
+var USE_LOCAL = true;
 
 app.use(express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/node_modules'));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 if(USE_DB){
-    var db = mysql.createConnection({
-        host: "localhost",
-        user: "cecile",
-        password: "abcd1234",
-        database: "magazines"
-    });
-
-    db.connect(function(err) {
-        if (err) throw err;
-        console.log("DB Connected!");
-    });
+    if(USE_LOCAL){
+        db = mysql.createConnection({
+            host: "localhost",
+            user: "cecile",
+            password: "abcd1234",
+            database: "magazines",
+            multipleStatements: true,
+        });
+    }else{
+       db = mysql.createConnection({
+            host: database__connection__host,
+            user: database__connection__user,
+            password: database__connection__password,
+            database: database__connection__database,
+            multipleStatements: true,
+        });
+    }
+    var db_connected = false;
+    if(!db_connected){
+        db.connect(function(err) {
+            if (err) throw err;
+            else {
+                logger.info("DB connected!");
+                console.log("DB Connected!");
+                db_connected = true;
+            }
+        })
+    }
 }
-
-io.on('connection', function(client,pseudo) {  
-
-    client.on('test', function(message){
-        console.log("client sends test message");
-    });
-    client.on('writeIntoTableWaiting', function(message){
-        console.log("-> client sends writeIntoTableWaiting message");//,message);
-        insertRow("waiting_revues",message.id,undefined,message);
-    });
-    client.on('writeIntoTableOnline', function(message){
-        console.log("-> client sends writeIntoTableOnline message");//,message);
-        insertRow("online_revues",message.id,undefined,message);
-    });
-    client.on('writeIntoNodes',function(message){
-        console.log("-> client sends writeIntoNodes message", message);
-        insertRowNode(message);
-    });
-    client.on('writeIntoLinks',function(revueID,linkID){
-        console.log("-> client sends writeIntoLinks message",revueID,linkID);
-        insertRowLinks(revueID,linkID);
-    });
-    client.on('getAllRevuesWaiting',function(message){
-        console.log("-> client sends getAllRevuesWaiting message");
-        var db_query =  "SELECT * FROM waiting_revues";
-        
-        db.query(db_query, function(err,result,fields){
-            if(err)throw err;
-            else {
-                //console.log("result",result);
-                client.emit("allRevuesWaiting",result);
-            };
-        });
-    });
-    client.on('getAllRevuesOnline',function(message){
-        console.log("-> client sends getAllRevuesOnline message");
-        var db_query =  "SELECT * FROM online_revues";
-        
-        db.query(db_query, function(err,result,fields){
-            if(err)throw err;
-            else {
-                //console.log("result",result);
-                client.emit("allRevuesOnline",result);
-            };
-        });
-    });
-    client.on('getAllNodes',function(message){
-        console.log("-> client sends getAllNodes message");
-        var db_query = "SELECT * FROM nodes";
-        db.query(db_query, function(err,result,fields){
-            if(err)throw err;
-            else {
-                //console.log("result",result);
-                client.emit("allNodes",result);
-            };
-        });
-    });
-    client.on('getAllLinks',function(message){
-        console.log("-> client sends getAllLinks message");
-        var db_query = "SELECT * from links";
-        db.query(db_query, function(err,result,fields){
-            if(err)throw err;
-            else {
-                console.log("result",result);
-                client.emit("allLinks",result);
-            };
-        });
-    });
-    client.on('getWaitingRevue',function(message){
-        console.log("-> client sends getRevue message",message);
-        var db_query =  "SELECT * FROM waiting_revues WHERE revueID = '" + message + "'";
-        db.query(db_query, function(err,result,fields){
-            if(err)throw err;
-            else {
-                client.emit("revueWaiting",result[0]);
-            };
-        });
-    });
-    client.on('getOnlineRevue',function(message){
-        console.log("-> client sends getRevue message",message);
-        var db_query =  "SELECT * FROM online_revues WHERE revueID = '" + message + "'";
-        db.query(db_query, function(err,result,fields){
-            if(err)throw err;
-            else {
-                client.emit("revueOnline",result[0]);
-            };
-        });
-    });
-
-
-});
 
 
 app.get('/test', function(req, res){  
     console.log("/test");
-    res.json({a:1});
+    logger.info("/test");
+    var sql = "SELECT * FROM online_revues; SELECT * FROM waiting_revues; SELECT * FROM nodes";
+
+    db.query(sql, function(error, results, fields) {
+        if (error) {
+            throw error;
+        }
+        //console.log(results[0]);
+        //console.log(results[1]);
+        //console.log(results[2]);
+        logger.info("database OK");
+        res.render(__dirname + '/public/views/cms.ejs',{data_online: results[0], data_waiting: results[1], nodes: results[2]});
+    });
+    // res.json({a:1});
 });
 
 
 app.get('/', function (req, res){
     console.log("/");
-    //res.render(__dirname + '/public/views/index.ejs',{vartest: "variable"});
-    var credentials = auth(req);
-    // Check credentials
-    // The "check" function will typically be against your user store
-    if (!credentials || !check(credentials.name, credentials.pass)) {
-        res.statusCode = 401
-        res.setHeader('WWW-Authenticate', 'Basic realm="pas de chance."')
-        res.end('<html><body></body></html>')
-    } else {
-        if(USE_DB){
-            db.query("SELECT * FROM magazine", function (err, result,fields) {
-                if (err) throw err;
-                //console.log(result);
-                //console.log(JSON.stringify(result));
-                //client.emit('magazines',JSON.stringify(result));
-            });
-        }
-        res.render(__dirname + '/public/views/index.ejs',{vartest: "variable"});
-        // TODO debug: every "get" is called twice... check this...
-        // next();
+    logger.info("/");
+    if(USE_DB){
+        var sql = "SELECT * FROM nodes; SELECT * FROM online_revues; SELECT * FROM online_links";
+        db.query(sql, function(error, results, fields) {
+            if (error) {
+                throw error;
+            }
+            //console.log(results[0]);
+            //console.log(results[1]);
+            //console.log(results[2]);
+            logger.info("database OK");
+            res.render(__dirname + '/public/views/index.ejs',{data_node: results[0], data_revue: results[1], data_links: results[2]});
+        });
     }
-    
+    //res.render(__dirname + '/public/views/index.ejs',{vartest: "variable"});
 })
 
 // CMS
 var isCreateNew = false;
 var isWaiting = false;
 var revueID = 0;
-// if we want to test some stuff
+
 app.get('/cms/', function(req, res) {
     console.log("/cms");
+    logger.info("/cms");
     var credentials = auth(req);
     // Check credentials
     // The "check" function will typically be against your user store
@@ -185,57 +134,68 @@ app.get('/cms/', function(req, res) {
         res.end('<html><body></body></html>')
     } else {
         if(USE_DB){
-
-            /*
-            db.query("INSERT INTO magazine VALUES ()", function(err,result,fields){
-                if(err) throw err;
-
-            });
-            */
-
-            //insertRow_waiting(0,undefined);
-           // deleteTable_waiting();
-            //deleteRow_waiting();
-            //insertFromJsonToDB();
-
-            db.query("SELECT * FROM magazine", function (err, result,fields) {
-                if (err) throw err;
-                //console.log(result);
-                //console.log(JSON.stringify(result));
-                //client.emit('magazines',JSON.stringify(result));
+            var sql = "SELECT * FROM online_revues; SELECT * FROM waiting_revues; SELECT * FROM nodes";
+            db.query(sql, function(error, results, fields) {
+                if (error) {
+                    throw error;
+                }
+                //console.log(results[0]);
+                //console.log(results[1]);
+                //console.log(results[2]);
+                logger.info("DB cms datas have been received");
+                res.render(__dirname + '/public/views/cms.ejs',{data_online: results[0], data_waiting: results[1], nodes: results[2]});
             });
         }
-        res.render(__dirname + '/public/views/cms.ejs',{vartest: "variable"});
     }
-
-   
-    /*const postBody = req.body;
-    console.log(postBody);
-    console.log(postBody.name);
-    res.render(__dirname + '/public/views/cms.ejs',{vartest: "variable"});
-    */
 })
 
-// 
+
+// get revue
+app.post('/cms/revue', function(req, res) {
+    console.log("client wants to get infos about revue");
+    const postBody = req.body;
+    console.log("revueID",postBody.revueID,postBody.type);
+    var db_query;
+    if(postBody.type == "online"){
+        db_query = "SELECT * from online_links WHERE revueID = '" + postBody.revueID + "'";
+    }else{
+        db_query = "SELECT * from waiting_links WHERE revueID = '" + postBody.revueID + "'";
+    }
+    db.query(db_query, function(err,result,fields){
+        if(err)throw err;
+        else {
+            //client.emit("revueKeywordsOnline",result);
+            console.log("response",result);
+            logger.info("DB selected revue datas has been received");
+            res.send(result);
+        };
+    });
+})
+
+// cancel
 app.post('/cms/cancel', function(req, res) {
     console.log("/cms/cancel");
+    logger.info("/cms/cancel");
+    if(!USE_DB) res.redirect(req.get('referer'));
     //const postBody = req.body;
     //console.log(postBody);
     //console.log("name",postBody.name);
+    res.redirect(req.get('referer'));
 })
 
 app.post('/cms/delete', function(req, res) {
     console.log("/cms/delete");
+    logger.info("/cms/delete");
+    if(!USE_DB) res.redirect(req.get('referer'));
+    console.log("/cms/delete");
     const postBody = req.body;
 
     retrieveHiddenVariables(postBody);
-    //var revueID = 0;
     if(isWaiting){ // delete row in table WAITING and ONLINE
-        deleteRow_waiting(revueID,true,req,res);
-        //deleteRow_online(revueID,true,req,res);
+        deleteRow('waiting_revues','waiting_links',revueID,true,req,res);
     }
     else { // delete row in table ONLINE
-        deleteRow_online(revueID,true,req,res);
+        deleteRow_online('online_revues','online_links',revueID,true,req,res);
     }
 })
 
@@ -243,13 +203,16 @@ app.post('/cms/delete', function(req, res) {
 app.post('/cms/savewaiting', function(req, res) {
     
     console.log("/cms/savewaiting");
+    logger.info("/cms/savewaiting");
+    if(!USE_DB) res.redirect(req.get('referer'));
+    
+    console.log("/cms/savewaiting");
 
     const postBody = req.body;
     retrieveHiddenVariables(postBody);
 
     // TODO NOW CECILE
-    insertRowFromForm('waiting_revues',revueID,postBody,true,req,res);
-    // if not yet in the database, should we add it to the menu automatically => @Alex? -> client side ...
+    insertRowFromForm('waiting_revues','waiting_links',revueID,postBody,true,req,res);
 
 })
 
@@ -258,16 +221,30 @@ app.post('/cms/savewaiting', function(req, res) {
 app.post('/cms/save', function(req, res) {
 
     console.log("/cms/save");
+    logger.info("/cms/save");
+    if(!USE_DB) res.redirect(req.get('referer'));
+
+    console.log("/cms/save");
 
     const postBody = req.body;
     retrieveHiddenVariables(postBody);
 
-    if(isWaiting && !isCreateNew){
+    //console.log("blup???",isWaiting,isCreateNew);
+    //if(isWaiting && !isCreateNew){
+    //if(isCreateNew && isWaiting){
+    // BUG........ ???
+    //if(isWaiting){ console.log("1A")} else console.log("1B");
+    //if(isCreateNew){console.log("2A");} else console.log("2B");
+    //if(!isCreateNew && isWaiting) console.log("blup 1");
+    //if(isWaiting && !isCreateNew) console.log("blup 2");
+    //if(isWaiting && !isCreateNew){
+    if(isWaiting){
         console.log("should delete row!!");
-        deleteRow_waiting(revueID,false);
+        deleteRow('waiting_revues','waiting_links',revueID,false);
     }
     // TODO NOW CECILE
-    insertRowFromForm("online_revues",revueID,postBody,true,req,res);
+    insertRowFromForm("online_revues","online_links",revueID,postBody,true,req,res);
+
 })
 
 function retrieveHiddenVariables(postBody){
@@ -285,10 +262,12 @@ function insertRow(tableName,revueID,postBody,d){
    // d.name = "Alliage";
     if(d.time != undefined) {year_start = d.time[0]; year_end = d.time[1];}
     if(d.locationCoords != undefined) {lat = d.locationCoords[0]; long = d.locationCoords[1];}
+
+    d.about = d.about.replace("'","\'");
     // revueID is a UNIQUE index in the DB
     var db_query = "REPLACE INTO " + tableName +  
             " (`revueID`, `name`,`link`,`year_start`, `year_end`,`ongoing`, `frequency`, `publisher`,`city`,`country`,`lat`,`long`,`about`)" + //,`city`,`country`,`about`) " + 
-            "VALUES ('"+revueID+"', '" + d.name + "', '" + d.link + "','" + year_start + "','" + year_end + "','0','','"+ d.publisher + "','" + d.city + "','" + d.country + "','" + lat + "','" + long + "','" + "ABOUT" + "' )"; 
+            "VALUES ('"+revueID+"', '" + (d.name) + "', '" + (d.link) + "','" + year_start + "','" + year_end + "','0','','"+ d.publisher + "','" + d.city + "','" + d.country + "','" + lat + "','" + long + "','" + d.about + "' )"; 
 
     console.log("DBQUERY: ",db_query);
 
@@ -299,42 +278,97 @@ function insertRow(tableName,revueID,postBody,d){
 }
 
 // function used when called from using the cms formular
-function insertRowFromForm(tableName,revueID,d,reload,req,res){
+function insertRowFromForm(tableNameRevue,tableNameLink,revueID,pB,reload,req,res){
 
-    console.log("postBody",d);
-    
-    var db_query = "REPLACE INTO " + tableName +  
-    " (`revueID`, `name`,`link`,`year_start`, `year_end`,`ongoing`, `frequency`, `publisher`,`city`,`country`,`lat`,`long`,`about`)" + //,`city`,`country`,`about`) " + 
-    "VALUES ('"+revueID+"', '" + d.name + "', '" + "www.ll.at" + "','" + d.year_start + "','" + d.year_end + "','0','','','" + d.city + "','" + d.country + "','" + d.lat + "','" + d.long + "','" + "ABOUT" + "' )"; 
+    console.log("postBody",pB);
+
+
+    if(pB.year_end == '') pB.year_end = 0;
+    if(pB.ongoing) {pB.ongoing = 1;}else {pB.ongoing = 0;};
+    if(pB.pr == "yes") pB.pr = 1; else pB.pr = 0;
+    console.log("ABOUT",pB.about);
+    pB.about = pB.about.replace(/'/g,"\\'");
+    console.log("ABOUT",pB.about);
+    pB.note = pB.note.replace(/'/g,"\\'");
+    pB.name = pB.name.replace(/'/g,"\\'");
+    pB.link = pB.link.replace(/'/g,"\\'");
+    //var test = mysql.escape(pB.about);
+    //console.log("ABOUT TEST",test);
+    // TODO... write into table tableName - waiting_revues or online_revues
+    // revueID is a UNIQUE index in the DB
+    // lat and long are inversed!!! -> "normal...."
+    var db_query = "REPLACE INTO " + tableNameRevue +  
+            " (`revueID`, `name`,`link`,`year_start`, `year_end`,`ongoing`, `frequency`, `publisher`,`city`,`country`,`lat`,`long`,`language`,`access`,`medium`,`peer_review`,`about`,`note`)" + //,`city`,`country`,`about`) " + 
+            "VALUES ('"+revueID+"', '" + pB.name + "', '" + pB.link + "','" + pB.year_start + "','" + pB.year_end + 
+            "','" + pB.ongoing + "','" + pB.frequency + "','"+ pB.publisher + "','" + pB.city + "','" + pB.country + 
+            "','" + pB.long + "','" + pB.lat + "','"  + pB.language + "','" + pB.access + "','" + pB.medium + 
+            "','" + pB.pr + "','" + pB.about + "','" + pB.note + "' )"; 
 
     console.log("DBQUERY: ",db_query);
-    
 
     db.query(db_query, function(err,result,fields){
+        if(err) {console.log("could not insert",pB.name);throw err}
+        else console.log("db query succeeded!");
+    });
+
+    // retrieve keywords from revue
+    var keywords = [];
+    // careful... ideally, we should retrieve these values from the database.. same in cms.js
+    var nbM = 3;
+    var nbS = 25;
+    var nbK = 53;
+    for(var i=0; i<nbM; i++){
+        var keyM = "master" + i;
+        if(pB[keyM]){ keywords.push(keyM);}
+    }
+    for(var i=0;i<nbS; i++){
+        var keyS = "sub" + i;
+        if(pB[keyS]){ keywords.push(keyS); }
+    }
+    for(var i=0;i<nbK; i++){
+        var keyK = "key" + i;
+        if(pB[keyK]){ keywords.push(keyK); }
+    }
+    console.log(revueID,keywords);
+
+    var db_query = "SET SQL_SAFE_UPDATES=0;";
+    db_query += "DELETE FROM " + tableNameLink + " WHERE `revueID` = '" + revueID + "';";
+    keywords.forEach(function(d,i){
+       db_query += "INSERT INTO " + tableNameLink + " (`revueID`, `linkID`) VALUES ('" + revueID + "','" + d + "');";
+    });
+    db_query += "SET SQL_SAFE_UPDATES=1;";
+
+    console.log("db_query",db_query);
+    db.query(db_query, function(err,result,fields){
         if(err) throw err;
-        else console.log("db query succeeded!",result);
+        else console.log("db query succeeded!"); 
+    });
+
+    res.redirect(req.get('referer'));
+
+}
+
+
+function deleteRow(tableNameRevue, tableNameLink, revueID,reload,req,res){
+    // DELETE ROW from table WAITING_REVUES .... with revueID
+    var db_query = "DELETE FROM " + tableNameRevue + " WHERE `revueID` = '" + revueID + "'";
+    console.log("DB QUERY: ",db_query);
+    db.query(db_query, function(err,result,fields){
+        if(err) throw err;
+        else console.log("DB: deleteRow query succeeded!");
         if(reload){
             res.redirect(req.get('referer'));
         }
     });
-}
 
+    db_query = "SET SQL_SAFE_UPDATES=0;";
+    db_query += "DELETE FROM " + tableNameLink + " WHERE `revueID` = '" + revueID + "';";
+    db_query += "SET SQL_SAFE_UPDATES=1;";
 
-function insertRow_online(revueID,postBody){
-    // UPDATE or CREATE row in TABLE ONLINE_REVUES ... with revueID and elements of postBody
-}
-
-function deleteRow_waiting(revueID,reload,req,res){
-    // DELETE ROW from table WAITING_REVUES .... with revueID
-    var db_query = "DELETE FROM waiting_revues WHERE `revueID` = '" + revueID + "'";
-    console.log("DB QUERY: ",db_query);
+    console.log("db_query",db_query);
     db.query(db_query, function(err,result,fields){
         if(err) throw err;
-        else console.log("DB: deleteRow_waiting() query succeeded!");
-        if(reload){
-            //res.render(__dirname + '/public/views/index.ejs',{vartest: "variable"});
-            res.redirect(req.get('referer'));
-        }
+        else console.log("db query succeeded!"); 
     });
 }
 
@@ -377,126 +411,107 @@ function insertRowNode(d){
     });
 }
 
-function insertRowLinks(revueID,linkID){
-    var db_query = "REPLACE INTO `links` (`revueID`, `linkID`) VALUES ('" + revueID + "', '" + linkID + "')";
+function insertRowLinks(tableName, revueID,linkID){
+    var db_query = "REPLACE INTO `" + tableName + "` (`revueID`, `linkID`) VALUES ('" + revueID + "', '" + linkID + "')";
     db.query(db_query, function(err,result,fields){
         if(err) throw err;
         else console.log("DB: insertRowLinks() query succeeded!");
     });
 }
 
+// ******************** FORMULAIRE ****************************
+// journal submit
+app.post('/submit',function(req,res){
+    console.log("submit journals!");
+    logger.info("/submit");
+    const postBody = req.body;
+    console.log(postBody);
+    //console.log("name",postBody.name);
+    var bodyEmail = parseFormular(postBody);
+    console.log("Email:");
+    console.log(bodyEmail);
+    console.log("=> To be sent to:",postBody.user_name,postBody.user_email);
+    logger.info("=> To be sent to:",postBody.user_name,postBody.user_email); // check.. not sure if works
+    sendEmail(postBody.user_email,bodyEmail);
+    res.redirect(req.get('referer'));
+});
+
+function sendEmail(email,text){
+    console.log("--> sending email ");
+    logger.info("--> sending email ");
+    let transport = nodemailer.createTransport({
+        host: 'art-design-sciences-journals.org',
+        port: 2525,
+        auth: {
+           user: 'cms@art-design-sciences-journals.org',
+           pass: '***'
+        }
+    });
+    const message = {
+        from: 'cms@art-design-sciences-journals.org', // Sender address
+        to: '',         // List of recipients
+        subject: 'Design Your Model S | Tesla', // Subject line
+        text: 'Have the most fun you can in a car. Get your Tesla today!' // Plain text body
+    };
+    transport.sendMail(message, function(err, info) {
+        if (err) {
+          console.log(err)
+        } else {
+          console.log(info);
+        }
+    });
+}
+
+function parseFormular(pB){
 
 
+    if(!pB.ongoing) pB.ongoing = "no"; else pB.ongoing = "yes"; 
+    if(!pB.pr) pB.pr = "no";
 
-function createTables(){
+    var message = "Hello!\n\n";
 
-    /*
-    CREATE TABLE `magazines`.`waiting_revues` (`ID` INT NOT NULL,PRIMARY KEY (`ID`));
-    
-    ALTER TABLE `magazines`.`waiting_revues` 
-    CHANGE COLUMN `ID` `ID` INT(11) NOT NULL AUTO_INCREMENT ;
-
-    ALTER TABLE `magazines`.`waiting_revues` 
-    ADD UNIQUE INDEX `revueID_UNIQUE` (`revueID` ASC) VISIBLE;
-    ;
-
-    
-    */
-
-    /*
-    ALTER TABLE `magazines`.`online_revues` 
-    ADD COLUMN `revueID` VARCHAR(45) NULL AFTER `ID`,
-    ADD COLUMN `name` VARCHAR(45) NULL AFTER `revueID`,
-    ADD COLUMN `link` VARCHAR(45) NULL AFTER `name`,
-    ADD COLUMN `year_start` INT NULL AFTER `link`,
-    ADD COLUMN `year_end` VARCHAR(45) NULL AFTER `year_start`,
-    ADD COLUMN `ongoing` INT NULL AFTER `year_end`,
-    ADD COLUMN `frequency` VARCHAR(45) NULL AFTER `ongoing`,
-    ADD COLUMN `publisher` VARCHAR(45) NULL AFTER `frequency`,
-    ADD COLUMN `city` VARCHAR(45) NULL AFTER `publisher`,
-    ADD COLUMN `country` VARCHAR(45) NULL AFTER `city`,
-    ADD COLUMN `lat` INT NULL AFTER `country`,
-    ADD COLUMN `long` INT NULL AFTER `lat`,
-    ADD COLUMN `language` VARCHAR(45) NULL AFTER `long`,
-    ADD COLUMN `access` VARCHAR(45) NULL AFTER `language`,
-    ADD COLUMN `medium` VARCHAR(45) NULL AFTER `access`,
-    ADD COLUMN `about` VARCHAR(45) NULL AFTER `medium`,
-    ADD COLUMN `peer_review` VARCHAR(45) NULL AFTER `about`,
-    ADD COLUMN `note` VARCHAR(45) NULL AFTER `peer_review`;
-    */
-
-    /*
-    CREATE TABLE `magazines`.`nodes` (
-        `ID` INT NOT NULL AUTO_INCREMENT,
-        `parentNameID` VARCHAR(100) NULL,
-        `nameID` VARCHAR(100) NULL,
-        `name` VARCHAR(300) NULL,
-        `x` INT NULL,
-        `y` INT NULL,
-        `c` VARCHAR(45) NULL,
-        `angle` INT NULL,
-        PRIMARY KEY (`ID`),
-        UNIQUE INDEX `nameID_UNIQUE` (`nameID` ASC) VISIBLE);
-
-
-    INSERT INTO `magazines`.`nodes` (`parentNameID`, `nameID`) VALUES ('masterTest0', 'subTest1');
-
-    */
-
-    /*
-
-    CREATE TABLE `magazines`.`links` (
-        `ID` INT NOT NULL AUTO_INCREMENT,
-        `revueID` VARCHAR(45) NULL,
-        `linkID` VARCHAR(45) NULL,
-            PRIMARY KEY (`ID`));
-    */
+    message += "Journal's name:" + pB.name + "\n";
+    message += "Journal's source (link):" + pB.link + "\n";
+    message += "Publication since " + pB.year_start + " to " + pB.year_end + "\n";
+    message += "Ongoing: " + pB.ongoing + "\n";
+    message += "Frequency: " + pB.frequency + "\n";
+    message += "Publisher: " + pB.publisher + "\n";
+    message += "City: " + pB.city + "\n";
+    message += "Language: " + pB.language + "\n";
+    message += "Access: " + pB.access + "\n";
+    message += "Medium: " + pB.medium + "\n";
+    message += "About: " + pB.about + "\n";
+    message += "Peer review: " + pB.pr + "\n";
+    message += "Note: " + pB.note + "\n\n";
+    message += "KEYWORDS:\n";
+    // retrieve keywords from revue
+    var keywords = [];
+    // careful... ideally, we should retrieve these values(nbM,nbS,nbK) from the database.. same in cms.js
+    var nbM = 3;
+    var nbS = 25;
+    var nbK = 53;
+    for(var i=0; i<nbM; i++){
+        var keyM = "master" + i;
+        if(pB[keyM]){ keywords.push(keyM);}
+    }
+    for(var i=0;i<nbS; i++){
+        var keyS = "sub" + i;
+        if(pB[keyS]){ keywords.push(keyS); }
+    }
+    for(var i=0;i<nbK; i++){
+        var keyK = "key" + i;
+        if(pB[keyK]){ keywords.push(keyK); }
+    }
+    console.log(revueID,keywords);
+    keywords.forEach(function(d,i){
+        var name = db_nodes.find(function(k,j){ return k.nameID == d}).name;
+        message += name + " (ID = "+ d + ")\n";
+    });
+    message += "\n";
+    message += "Bye.";
+    return message;
 
 }
 
 server.listen(8080);
 
-/*
-
-
-function insertRow_waiting(revueID,postBody){
-    // UPDATE or CREATE row in TABLE WAITING_REVUES ... with revueID and elements of postBody
-    // INSERT INTO `magazines`.`magazine` 
-    //        (`idmagazine`, `name`, `link`, `year_start`, `year_end`, `lat`) 
-    //        VALUES ('3', 'revueTest', 'www.test.com', '1980', '1988', '45');
-    console.log("INSERT INTO ROW -> insertRow_waiting()");
-    var db_query = "INSERT INTO magazine" + 
-                    " (`idmagazine`, `name`, `link`, `year_start`, `year_end`, `lat`, `long`) " + 
-                    " VALUES ('4', 'revueTest2', 'www.test2.com', '1981', '1989', '46', `89`); ";
-    
-    //db_query = "INSERT IGNORE INTO magazine" + 
-    db_query = "REPLACE INTO magazine" + 
-                    " (`idmagazine`,`name`,`link`, `year_start`, `year_end`, `lat`, `long`) " + 
-                    " VALUES ('11','test','www.f.com','1980','1982','45','66'); ";
-    
-    db_query = "REPLACE INTO magazine" + 
-                    " (`idmagazine`,`name`,`link`, `year_start`, `year_end`, `lat`, `long`) " + 
-                    " VALUES ('11','test','www.f.com','1980','1982','45','66'); ";
-
-
-db_query = "INSERT INTO waiting_revues " + 
-            "(`revueID`) " + 
-            
-            "VALUES ('revue1')";
-/*
-            "(`revueID`, `name`, `link`, " + 
-            "`year_start`, `year_end`, `ongoing`, `frequency`, `publisher`, "+
-            "`city`, `country`, `lat`, `long`, `language`, " +
-            "`access`, `medium`, `about`, `peer_review`, `note`) " + 
-
-            "VALUES ('revue0', 'atest', 'ww', " +
-            "'1980', '1981', '0', 'bla', 'pub', " +
-            "'genf', 'CH', '88', '99', 'FR', " +
-            "'print', 'onlin', 'bb', '1', 'notenot')";*/
-/*
-            db.query(db_query, function(err,result,fields){
-                if(err) throw err;
-                else console.log("db query succeeded!");
-            });
-        }
-*/

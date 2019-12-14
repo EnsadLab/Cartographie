@@ -39,9 +39,9 @@ var startingCreateAllNodes = true;
 function createMasterNodes(){
 
   //console.log("master nodes",masterNodes);
-
+  
   // MASTER nodes
-  const node = svg.select("#nodes").selectAll("g")
+  const node = d3.select("#svg").select("#nodes").selectAll("g")
       .data(masterNodes)
       .enter()
       .append("g") // check diff with join!!
@@ -66,6 +66,8 @@ function createMasterNodes(){
         //return `translate(${d.x * width},${d.y * height})`;
       })
       ;
+
+
   var div_g = node.append("g")
   /*
       .on("mouseenter",function(d){
@@ -388,27 +390,6 @@ function createAnimNodes(){
 }
 
 function startAnimNodes(){
-  /*nodeAnims = [];
-  allNodes = [];
-  masterNodes.forEach(function(dM,i){
-    var anim = new Anim("#"+dM.id,dM.id,60,5,10,dM.absX,dM.absY);
-    anim.start();
-    //nodeAnims.push(anim);
-    //allNodes.push({id:dM.id,x:0,y:0,r:0,subs:[]});
-    allNodes.push({a:anim,subs:[]});
-    dM.subCategory.forEach(function(dS,j){
-        var anim = new Anim("#"+dS.id,dS.id,30,5,8,dS.absX,dS.absY);
-        anim.start();
-        allNodes[i].subs.push({a:anim,keywords:[]});
-        dS.keywords.forEach(function(dK,k){
-            var anim = new Anim("#"+dK.id,dK.id,10,2,4,dK.absX,dK.absY);
-            anim.start();
-            //nodeAnims[i][j].push(anim);
-            allNodes[i].subs[j].keywords.push({a:anim});
-        })
-    })
-  });*/
-
   for(var i=0; i<allNodes.length;i++){
     var masterPos = allNodes[i].a.resetNode(0,0);
     for(var j=0; j<allNodes[i].subs.length;j++){
@@ -422,38 +403,6 @@ function startAnimNodes(){
   //console.log("node anims",allNodes);
 }
 
-/*
-function startAnimNodes(){
-
-  //console.log("start anim");
-  masterAnims = [];
-  subAnims = [];
-  keyAnims = [];
-
-  nodeAnims = [][1][1];
-
-  for(var i=0; i<3; i++){
-    var anim = new Anim("#master"+i,"master"+i,60,5,10);
-    anim.start();
-    masterAnims.push(anim);
-    nodeAnims.push(anim);
-  }
-
-  for(var i=0; i<nbSubNodes;i++){
-    var anim = new Anim("#sub"+i,"sub"+i,30,5,8);
-    anim.start();
-    subAnims.push(anim);
-  }
-
-  for(var i=0; i<nbKeyNodes;i++){
-    var anim = new Anim("#key"+i,"key"+i,10,2,4);
-    anim.start();
-    keyAnims.push(anim);
-  }
-  animVizRunning = true;
-
-}
-*/
 
 function drawViz(){
   //animVizRunning = false;
@@ -475,31 +424,11 @@ function drawViz(){
   }
 }
 
-/*
-function drawViz(){
-  //console.log("drawviz");
-  if(animVizRunning){
-    //console.log("###############")
-    for(var i=0; i<masterAnims.length;i++){
-      masterAnims[i].update();
-    }
-
-    for(var i=0; i<subAnims.length;i++){
-      subAnims[i].update();
-    }
-
-    for(var i=0; i<keyAnims.length;i++){
-      keyAnims[i].update();
-    }
-  }
-}
-*/
-
 
 // TO CHECK: ALEX - master nodes grads and filter
 function createDefs(){
 
-  var defs = svg.append("defs");
+  var defs = d3.select("#svg").append("defs");
   var grads = defs.selectAll("radialGradient")
                           .data(masterNodes)
                           .enter()
@@ -524,10 +453,12 @@ var zoomViz;
 var sViz = 1.0;
 var tViz = [0,0];
 function initVisualisation(){
-
+  console.log("initVisualisation");
   if(!vizdataLoaded){
     animVizRunning = false;
+    
     createMasterNodes();
+    //return;
     loadAllRevuePoly();
     zoomViz = d3.zoom()
       //.scaleExtent([1, 10])
@@ -536,8 +467,8 @@ function initVisualisation(){
       .on("end", zoomendedViz);
     tViz = [0,0];
     sViz = 1.0;
-    svg.call(zoomViz);
-    //console.log("finished init visualisation");
+    d3.select("#svg").call(zoomViz);
+    console.log("finished init visualisation");
   }
 
 }
@@ -554,7 +485,7 @@ function recenterRevueOnViz(revueId){
   var offset = [x,y];
   var translateDiffX = -offset[0]*s + (mapwidth*0.5);
   var translateDiffY = -offset[1]*s + (mapheight*0.5);
-  svg.transition().duration(duration).call(zoomViz.transform,
+  d3.select("#svg").transition().duration(duration).call(zoomViz.transform,
       d3.zoomIdentity.translate(translateDiffX,translateDiffY).scale(s))
   ;
 }
@@ -563,7 +494,7 @@ function dezoomViz(){
   tViz = [0,0];
   sViz = 1.0;
   d3.selectAll("#nodes").attr("transform", "translate(" + tViz + ")scale(" + sViz + ")");
-  svg.call(zoomViz.transform,d3.zoomIdentity.translate(0,0).scale(sViz));
+  d3.select("#svg").call(zoomViz.transform,d3.zoomIdentity.translate(0,0).scale(sViz));
   //d3.selectAll("#nodes").transition().duration(1000).attr("transform", "translate(" + t + ")scale(" + s + ")");
 }
 

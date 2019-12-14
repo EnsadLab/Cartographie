@@ -5,6 +5,8 @@ var startYear = 1920;
 var endYear = 2019;
 var middleYear = 1980;
 
+var currentMaxYear = 2020;
+
 var w,h;
 
 var svgViewport;

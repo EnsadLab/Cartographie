@@ -28,6 +28,60 @@
 @Science : #1B6C47;
 
 
+.forMobile{
+	background: white;
+	width:calc(100vw - 50px);
+	height:100vh;
+	color:black;
+	position:absolute;
+	top:0;
+	left:0;
+	z-index:100;
+
+	font-family: "inknut_antiquabold";
+    text-align: left;
+    font-size: 28px;
+    margin: 0px;
+    line-height: 40px;
+	text-align: center;
+    padding:25px;
+    padding-top:100px;
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+	.forMobile{
+		display:block;
+	}
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+	.forMobile{
+		display:block;
+	}
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+	.forMobile{
+		display:block;
+	}
+}
+
+/* Large devices (laptops/desktops, 1024px and up) */
+@media only screen and (min-width: 1024px) {
+	.forMobile{
+		display:block;
+	}
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+	.forMobile{
+		display:none;
+	}
+}
 
 
 #nav-menu{
@@ -1208,6 +1262,7 @@ g {
 		opacity:1;
 		// display:block;
 	}
+
 
 	.close-btn{
 		background-image:url(../assets/ico_add.png);

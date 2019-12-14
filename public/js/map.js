@@ -309,11 +309,9 @@ function zoomed() {
 
 function initGeoMap(duration){
 
-  console.log("bla");
   createProjection();
   
   loadMap(duration);
-  console.log("bla B");
 
 }
 

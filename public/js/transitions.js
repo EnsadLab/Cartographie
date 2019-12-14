@@ -136,7 +136,7 @@ function startTransitionTimelineGeo(){
     var delay_axis = 300; // delay because axis disappears first
 
     morphTimelineToGeo(delay_axis); // change name.. morphing not done there
-    console.log(dataRevue);
+    //console.log(dataRevue);
     d3.selectAll(".timelineRect")
                 .transition()
                 .duration(800)
@@ -501,9 +501,10 @@ function loadAllRevuePoly(){
         var coordsDetail = [];
         var coordsData = [];
         var coordsDataDetail = [];
+       // return;
         d.links.forEach( function(l,i){
-            //console.log("link",l);
-            var bb = d3.select("#nodes").select("#" + l).select("g").select("circle").node().getBoundingClientRect();
+            var test = d3.select("#svg").select("#nodes").node();
+            var bb = d3.select("#svg").select("#nodes").select("#" + l).select("g").select("circle").node().getBoundingClientRect();
             var x = bb.x + bb.width*0.5;
             var y = bb.y + bb.height*0.5;
             //if(d.id == "revue3"){ console.log("x",x,"y",y);}

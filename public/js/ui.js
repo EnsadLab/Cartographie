@@ -80,10 +80,14 @@ function initController(){
     previousState = State.LOAD;
     state = State.LOAD;
     createMenu();
+
     // hide all ui elements
     showMenu(false);
+    
     showRevueDetail(false);
+    
     showObjMenu(false);
+    
     // start visualisation
     startViz();
 
@@ -130,20 +134,15 @@ function startGeo(comingFromReload){
     console.log("current state:",getName(state),"/ previous state:",getName(previousState));
 
     if(previousState == State.GEO_VIEW){
-        console.log("x");
         showMenu(false);
-        console.log("a");
         dezoomMapAndTriangles(500,true); // will delete all map objects at the end and reload
-        console.log("aa");
         //hideAndDeleteMap(500,true);
         //fadeAndDeleteTriangles(500);
         
         return;
     }
-    console.log("aaa");
-    if(comingFromReload) { console.log("one");initGeoMap(500);} // will show it as well
-    else {console.log("two");initGeoMap(800);}
-    console.log("b");
+    if(comingFromReload) { /*console.log("one");*/initGeoMap(500);} // will show it as well
+    else {/*console.log("two");*/initGeoMap(800);}
     if(previousState == State.LOAD){
         createGeoTriPath();
         showMenu(true);
@@ -175,8 +174,9 @@ function startViz(){
     previousState = state;
     state = State.VIZ_VIEW;
     console.log("current state:",getName(state),"/ previous state:",getName(previousState));
-
+    
     if(previousState == State.VIZ_VIEW){
+        console.log("previous state was VIZ_VIEW");
         showMenu(false);
         makeNodeDisappear(200,true);
         return;
@@ -458,7 +458,7 @@ function startObj(id){
             c = master.color;
         }else {
             fontSize = masterFontSizeOBJ; 
-            xText = 20 * scale; 
+            xText = 30 * scale; 
             textLength = masterTextLengthOBJ; 
             lineHeight = masterLineHeightOBJ;
             c = master.color;
@@ -468,39 +468,48 @@ function startObj(id){
 
         node.transition()
                 .duration(1000)     
-                .attr("transform",'translate('+ (xCenterObjView+x) + ',' + (yCenterObjView+y) + ')');
+                .attr("transform",'translate('+ (xCenterObjView+x) + ',' + (yCenterObjView+y) + ')')
+                .on('end',function(){
+                    if(d.id == id){
+                        if(id.startsWith("key")) node.select("text").attr("fill","black");
+                        node.select("text").attr("opacity","1.0");
+                    }
+                })
                 ;
+        var r = radiusObject;
+        if(d.id.startsWith("master")) r = radiusObjectMaster;
         if(d.id.startsWith("sub")){
             node.select("circle")
                 .transition()
                 .duration(1000)
                 .attr("opacity",defaultObjectOpacity)
                 .style("stroke-width",strokeWidthSubNodeOBJ)
-                .attr("r",radiusObject)
+                .attr("r",r)
                 ;
         } else{
             node.select("circle")
                 .transition()
                 .duration(1000)
                 .attr("opacity",defaultObjectOpacity)
-                .attr("r",radiusObject)
+                .attr("r",r)
                 ;
         }
 
 
+
         if(d.id.startsWith("key") || d.id.startsWith("sub")) {
-        node.select("text")
-                .text(t)
-                .attr("font-family","latoregular") // TO CHECK: ALEX changer typo objets label
-                .attr("text-anchor","start")
-                .attr("x",xText)
-                .attr("y",0)
-                .style("alignment-baseline","middle")
-                .attr("fill",c)
-                .attr("opacity","0.0")
-                .attr("font-size",fontSize)
-               // .call(wrap,textLength,lineHeight) // TO CHECK: ALEX labels sur plusieurs lignes
-                ;
+            node.select("text")
+                    .text(t)
+                    .attr("font-family","latoregular") // TO CHECK: ALEX changer typo objets label
+                    .attr("text-anchor","start")
+                    .attr("x",xText)
+                    .attr("y",0)
+                    .style("alignment-baseline","middle")
+                    .attr("fill",c)
+                    .attr("opacity","0.0")
+                    .attr("font-size",fontSize)
+                // .call(wrap,textLength,lineHeight) // TO CHECK: ALEX labels sur plusieurs lignes
+                    ;
         }else{
             node.select("text")
                 .text(t.toUpperCase())
@@ -515,6 +524,12 @@ function startObj(id){
                // .call(wrap,textLength,lineHeight) // TO CHECK: ALEX labels sur plusieurs lignes
                 ;
         }
+
+        if(d.id == id){
+            if(id.startsWith("key")) node.select("text").attr("fill","black");
+            node.select("text").attr("opacity","1.0");
+        }
+
     });
 
     // animate dash circles
@@ -889,7 +904,10 @@ function hideAndDeleteObjView(duration){
             .on("end",function(d){
                d3.select("#obj-nodes").selectAll("*").remove();
             })
-
+    d3.select("#obj-nodes").selectAll("text")
+            .transition()
+            .duration(duration)
+            .attr("opacity",0.0)
 }
 
 function showMenu(show){
@@ -1205,7 +1223,7 @@ function loadObjMenu(id,revueConnectedToObj,color){
     div.select("p").remove();
     if(revueConnectedToObj.length == 0){
         //div.select(".no-result").
-        div.append("p").attr("class","no-result").html("There are no journals related");
+        div.append("p").attr("class","no-result").html("There are no related journals");
     }else{
         var li = div.append("ul").selectAll("li")
                 // .data(fakeObjLinks)
@@ -1477,8 +1495,10 @@ if(!is_cms){
 */
     addBTN.addEventListener("click", function(){
         if(open){
+            
             showFormRevue(false); 
         }else{
+            emptyAddJournalFormular();
             showFormRevue(true);
         }
     });
@@ -1531,11 +1551,7 @@ function showFormRevue(show){
 
 
 
-
-
-
 function showAbout(s){
-    console.log("coucou");
     var about =  document.getElementsByClassName("about")[0];
 
     if(s){
@@ -1544,7 +1560,6 @@ function showAbout(s){
         closeAbout.addEventListener("click", function(){
             showAbout(false);
         });
-
         
     }else{
         about.className = "about";  

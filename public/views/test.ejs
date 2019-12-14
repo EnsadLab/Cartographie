@@ -1,0 +1,30 @@
+
+<!DOCTYPE html>
+<html>
+
+
+    <% include ./partials/head %>
+
+    <body>
+
+        <script>
+            var is_cms = true;
+        </script>
+        <!-- <p hidden id="test_hidden" value=<%= data.name %>></p> -->
+        <p hidden id="test_hidden" value="coucou"><%- JSON.stringify(data) %></p>
+        <p hidden id="test_hidden2" value="coucou"><%- JSON.stringify(dataAll) %></p>
+        <% if (data) { %>
+            <script>
+               var dataTest = JSON.parse('<%- JSON.stringify(data) %>');
+               console.log("datatata",dataTest);
+            </script>
+         <% } %>
+     <!--   <div  id="test_hidden2" value="blupblup" class="aaa"></div>
+        <div  id="test_hidden3" value='<%= dataAll %>'></div> class="aaa"></div>-->
+        <h5><%= data.name %></h5>
+        <h5><%= data.about %></h5>
+        <p hidden><%= data %></p>
+        <% include ./partials/footer %>
+        
+    </body>
+</html>

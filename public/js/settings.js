@@ -73,6 +73,7 @@ var thirdRadius = 300*scale * sf;
 var radiusOpacity = 0.2;
 var dasharrayNB = 6;
 var radiusObject = 12*scale * sf; 
+var radiusObjectMaster = 42*scale * sf; 
 var rMinObject = firstRadius;
 var rMaxObject = thirdRadius;
 
@@ -343,8 +344,7 @@ function wrap(text, width, lineHeight) {
 
 function wrapSub(text, width, lineHeight) {
     var debug = false;
-    console.log("coucou");
-    console.log("t",text.text());
+    //console.log("t",text.text());
     if(text.text().startsWith("Religion")) debug = true;
     text.each(function () {
         var text = d3.select(this),

@@ -1,7 +1,3 @@
-// here we listen to the server responses
-
-var socket = io.connect('http://localhost:8080');
-
 var USE_DB = false;
 var dataRevueFake;
 
@@ -124,6 +120,7 @@ function getWeight(){
                 console.log("[BUG]: latitude should be between -90 and 90",d.name);
             }
 
+            
             // FAKING STARTING AND END DATE
             if(!is_cms && d.time == undefined){
                 var xStart = getRandomInt(1950,2000);
@@ -230,18 +227,36 @@ function getFakeSubCategory(masterNodeId){
   }
 
 function initDB(){
-
+    console.log("-> initDB()");
     if(isSimulateDB){
         genDatas();
     } else{
-        genJsonFromDB();
+        //genJsonFromDB();
+        nodesFromDB.forEach(function(d,i){
+            //console.log("bef",d.name);
+            d.name = d.name.replace(/\&amp;/g,'&');
+            //str= str.replace(/\&lt;/g,'<');
+            //console.log("aft",d.name);
+        })
+        dataRevueFromDB.forEach(function(d,i){
+            d.name = d.name.replace(/\&amp;/g,'&');
+            d.link = d.link.replace(/\&amp;/g,'&');
+            d.publisher = d.publisher.replace(/\&amp;/g,'&');
+            d.about = d.about.replace(/\&amp;/g,'&');
+            d.about = d.about.replace(/\&#39;/g,"'");
+            d.note = d.note.replace(/\&amp;/g,'&');
+        })
+        convertDBNodesToJson(nodesFromDB);
+        generateKeywordsForForm(nodesFromDB);
+        convertDBRevueToJson(dataRevueFromDB);
+        addDBLinksToJsonRevues(linksFromDB);
     }
   
 }
 
 function genJsonFromDB(){
     console.log("******** genJsonFromDB *******");
-    socket.emit('getAllNodes');
+    // BACK socket.emit('getAllNodes');
     
 }
 
@@ -288,7 +303,7 @@ function convertDBNodesToJson(datas){
 
     //var nbMaster0 = uniqueLinks.filter( function(d){ return d.parent == "master0"}).length;
 
-    socket.emit('getAllRevuesOnline');
+    // BACK socket.emit('getAllRevuesOnline');
 }
 
 function convertDBRevueToJson(datas){
@@ -300,8 +315,11 @@ function convertDBRevueToJson(datas){
         dd.name = d.name;
         dd.link = d.link;
         dd.time = new Array(2);
-        dd.time[0] = d.yearStart;
-        dd.time[1] = d.yearEnd;
+        dd.time[0] = d.year_start;
+        dd.time[1] = d.year_end;
+        //console.log("d",d);
+        //console.log("time",dd.time,d.year_start,d.year_end,d.ongoing,currentMaxYear);
+        if(d.ongoing == 1) dd.time[1] = currentMaxYear;
         dd.publisher = d.publisher;
         dd.city = d.city;
         dd.locationCoords = new Array(2);
@@ -310,7 +328,7 @@ function convertDBRevueToJson(datas){
         dd.about = d.about;
         dataRevue.push(dd);
     });
-    socket.emit("getAllLinks");
+    // BACK socket.emit("getAllLinks");
 }
 
 function addDBLinksToJsonRevues(links){
@@ -318,12 +336,10 @@ function addDBLinksToJsonRevues(links){
         d.links = [];
         d.keywords = [];
         var revueLinks = links.filter(function(l,j){ return l.revueID == d.revueID});
-        //console.log("revue",d.name,d.id,d.revueID,revueLinks);
+        //console.log("revue !!!!",d.name,d.id,d.revueID,revueLinks);
         revueLinks.forEach(function(k,j){
             d.links.push(k.linkID);
-            //console.log("searching.....",k.linkID);
             var node = dataNodesFromDB.find(function(m,n){ return m.nameID == k.linkID});
-            //console.log("link node",node);
             d.keywords.push(node.name);
         });
     });

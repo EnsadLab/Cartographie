@@ -15,8 +15,10 @@
     "ejs": "^2.6.1",
     "express": "^4.16.4",
     "mysql": "^2.16.0",
+    "nodemailer": "^6.4.2",
     "serve-static": "^1.13.2",
     "socket.io": "^2.2.0",
-    "tsscmp": "^1.0.6"
+    "tsscmp": "^1.0.6",
+    "winston": "^3.2.1"
   }
 }
