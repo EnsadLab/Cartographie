@@ -105,7 +105,16 @@ function createMasterNodes(){
       ;
   // TO CHECK: ALEX typo des master nodes
   div_g.append("text")
-      .text(function(d){ return d.name.toUpperCase()})
+      .text(function(d){ 
+        console.log("name",d.name);
+        var t = d.name.toUpperCase();
+        /*if(t == "SOCIAL SCIENCES & HUMANITIES"){
+          t = "SOCIAL SCIENCES & HUMANITIES";
+          console.log(t);
+        }  */
+        return t;
+      
+      })
       // .text(d => d.name)
       .attr("font-family","latoheavy")
       .attr("text-anchor","middle")
@@ -113,7 +122,10 @@ function createMasterNodes(){
       // .attr("fill","white")
       .attr("fill", function(d){ return d.color})
       .attr("opacity",0.0)
+      .attr("x",function(d){ return 0;})
       .attr("y",0.0)
+      .attr("text-anchor","start")
+      .style("alignment-baseline","middle")
       .attr("font-size",masterFontSize)
       .on("mouseenter",function(d){
         d3.select(this).style("cursor", "pointer");
@@ -128,7 +140,10 @@ function createMasterNodes(){
       .transition()
       .duration(durationFadeAnim)
       .attr("opacity",1.0)
-      // .call(wrap,subTextLength,subLineHeight) //TO CHECK
+      .call(wrapMaster,masterTextLength,masterLineHeight)
+      .style("alignment-baseline","middle")
+      .style("text-anchor","middle")
+      .selectAll("tspan").style("alignment-baseline","middle")
       ; 
 
   // SUB nodes

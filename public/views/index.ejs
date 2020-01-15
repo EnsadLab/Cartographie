@@ -6,34 +6,7 @@
     <% include ./partials/head %>
 
     <body>
-        <script>
-                var nodesFromDB = [];
-                var dataRevueFromDB = [];
-                var linksFromDB = [];
-            </script>
-        
-                <% data_node.forEach(function(o) { %>
-                    <script>nodesFromDB.push({ID: '<%= o.ID %>', parentNameID: '<%= o.parentNameID %>', nameID: '<%= o.nameID %>',name: '<%= o.name %>'});</script>
-                <% }); %>
-                <% data_revue.forEach(function(o) { %>
-                    <script>dataRevueFromDB.push({ID: '<%= o.ID %>', revueID: '<%= o.revueID %>', name: '<%= o.name %>',
-                                                    link: '<%= o.link %>', year_start: '<%= o.year_start %>', year_end: '<%= o.year_end %>',
-                                                    ongoing: '<%= o.ongoing %>', frequency: '<%= o.frequency %>', publisher: '<%= o.publisher %>',
-                                                    city: '<%= o.city %>', country: '<%= o.country %>', lat: '<%= o.lat %>',
-                                                    long: '<%= o.long %>', access: '<%= o.access %>', medium: '<%= o.medium %>',
-                                                    about: '<%= o.about %>', peer_review: '<%= o.peer_review %>', note: '<%= o.note %>'
-                                                },);</script>
-                <% }); %>
-                <% data_links.forEach(function(o) { %>
-                    <script>linksFromDB.push({ID: '<%= o.ID %>', revueID: '<%= o.revueID %>', linkID: '<%= o.linkID %>'});</script>
-                <% }); %>
-        
-            <script>
-                console.log("nodesFromDB",nodesFromDB);
-                console.log("dataRevueFromDB",dataRevueFromDB);
-                console.log("linksFromDB",linksFromDB);
-            </script>
-
+           
         <div class="intro">
             <h1>
                 CARTOGRAPHIE ART/DESIGN-SCIENCES
@@ -49,6 +22,9 @@
             •
             <button class="add-btn" id="add-journal">Add a journal</button>
             <button id="btnAbout">About</button>
+           <!-- <button class="add-btn" id="btnSendEmailTest">Test</button> -->
+           <!-- <button class="add-btn" id="coucou">Test</button> -->
+            
         </nav>
 
         <script>var is_cms = false;</script>

@@ -3,27 +3,29 @@
 	
 		<div class="add-revue-form">
 			<div class="close-btn" id="close-form"></div>
-			
-			<form action="/submit" method="POST">
+			<form action="/submit" method="POST" id="journal_form">
+			<!-- <form> -->
 				<h2>Add your journal <br> •</h2>
 	
 	
 				<div class="fields">
 						<label for="name">Journal's name :</label>
-						<input type="text" required name="name">
+						<!-- <input type="text" required name="name"> -->
+						<input type="text" name="name" id="name">
 					<br>
 					
 						<label for="source">Journal's source (link) :</label>
-						<input type="text" name="link">
+						<input type="text" name="link" id="link">
 				</div>
 	
 				<div class="fields">
 					<label for="since_year">Publication since</label>
-					<input type="number" name="year_start" required>
+					<!-- <input type="number" name="year_start" required> -->
+					<input type="number" name="year_start" id="year_start">
 					<label for="to_year">to</label>
-					<input type="number" name="year_end">
+					<input type="number" name="year_end" id="year_end">
 					<br>
-					<input type="checkbox" id="ongoing" name="ongoing">
+					<input type="checkbox" id="ongoing" name="ongoing" id="ongoing">
 					<label for="ongoing">ongoing</label>
 				</div>
 	
@@ -47,10 +49,11 @@
 	
 				<div class="fields">
 					<label for="plublisher">Publisher / institution affiliation :</label>
-					<input type="text" name="publisher">
+					<input type="text" name="publisher" id="publisher">
 					<br>
 					<label for="country">City :</label>
-					<input type="text" name="city" required>
+					<!-- <input type="text" name="city" required> -->
+					<input type="text" name="city" id="city">
 					<br>
 					<label for="language">Language :</label>
 					<select name="language" id="language">
@@ -149,22 +152,23 @@
 					<div class="col">
 						<label for="about">About (up to 150 characters) :</label>
 						<br>
-						<textarea name="about" id="" cols="30" rows="10" maxlength="150" required></textarea>
+						<!-- <textarea name="about" id="about" cols="30" rows="10" maxlength="150" required></textarea> -->
+						<textarea name="about" id="about" cols="30" rows="10" maxlength="150"></textarea>
 					</div>
 					
 					<div class="col">
 						<label for="pr">Peer review :</label>
 						
-						<p><input type="radio" name="pr" value="yes"> yes</p>
+						<p><input type="radio" name="pr" id="peer_review_yes"> yes</p>
 						
-						<p><input type="radio" name="pr" value="no"> no</p>
+						<p><input type="radio" name="pr" id="peer_review_no"> no</p>
 					</div>
 				</div>
 	
 				<div class="fields">
 					<label for="note">Note :</label>
 					<br>
-					<textarea name="note" id="" cols="30" rows="10" maxlength="150"></textarea>
+					<textarea name="note" id="note" cols="30" rows="10" maxlength="150"></textarea>
 				</div>
 					
 					<div class="fields form-keywords" id="keywords_selection">
@@ -179,7 +183,7 @@
 							<div class="col-3 ss-humanities">
 								<ul>
 									<input type="checkbox" name="master1" id="master1">
-									<h3 id="master1">SS & HUMANITIES</h3>
+									<h3 id="master1">SOCIAL SCIENCES & HUMANITIES</h3>
 									<li id="master1_li"></li>
 								</ul>
 							</div>
@@ -197,14 +201,16 @@
 					<div class="infos">
 						<div class="col">
 							<label for="name">Your name :</label>
-							<input type="text" name="user_name">
+							<input type="text" name="user_name" id="user_name">
 						</div>
 						<div class="col">
 							<label for="name">Your e-mail :</label>
-							<input type="mail" name="user_email" required>
+							<!-- <input type="mail" name="user_email" required> -->
+							<input type="mail" name="user_email" id="user_email">
 						</div>
 					</div>
-					<input id="add_jounal_submit" type="submit" value="submit my journal" formaction="/submit">
+					<input id="add_jounal_submit" type="submit" value="submit my journal">
+
 				</div>
 	
 	

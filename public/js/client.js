@@ -125,7 +125,7 @@ function getWeight(){
             if(!is_cms && d.time == undefined){
                 var xStart = getRandomInt(1950,2000);
                 var xEnd = getRandomInt(30,50) + xStart;
-                xEnd = 2019;
+                xEnd = 2020;
                 d.time = [xStart,xEnd];
                 console.log("[DATAS]: faking time datas for revue",d.name,"with id",d.id);
                 nbFakeTimes++;
@@ -239,12 +239,13 @@ function initDB(){
             //console.log("aft",d.name);
         })
         dataRevueFromDB.forEach(function(d,i){
+            //console.log(d);
             d.name = d.name.replace(/\&amp;/g,'&');
             d.link = d.link.replace(/\&amp;/g,'&');
             d.publisher = d.publisher.replace(/\&amp;/g,'&');
             d.about = d.about.replace(/\&amp;/g,'&');
             d.about = d.about.replace(/\&#39;/g,"'");
-            d.note = d.note.replace(/\&amp;/g,'&');
+            if(d.note) d.note = d.note.replace(/\&amp;/g,'&');
         })
         convertDBNodesToJson(nodesFromDB);
         generateKeywordsForForm(nodesFromDB);

@@ -59,6 +59,8 @@ var keywordsTextLength = 70*scale * sf;
 var keywordsLineHeight = 7*scale * sf; 
 var subTextLength = 50*scale * sf;
 var subLineHeight = 15*scale * sf;
+var masterTextLength = 200*scale * sf;
+var masterLineHeight = 25*scale * sf;
 
 // OBJ VIEW
 var defaultObjectOpacity = 0.7;
@@ -296,6 +298,51 @@ function testWrap(){
       .call(wrap,subTextLength,subLineHeight)
       ; 
 
+}
+
+function wrapMaster(text,width,lineHeight){
+   // console.log("yes");
+    text.each(function () {
+        var text = d3.select(this),
+            words = text.text().split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0, 
+            x = text.attr("x"),
+            y = text.attr("y"),
+            dy = 0;
+
+                d3.select(this).selectAll("tspan").remove();
+            
+                tspan = text.text(null)
+                            .append("tspan")
+                            .attr("x", x)
+                            .attr("y", y)
+                            .attr("dy", dy);
+
+            while (word = words.pop()) {
+                line.push(word);
+                tspan.text(line.join(" "));
+                if (tspan.node().getComputedTextLength() > width) {
+                    line.pop();
+                    tspan.text(line.join(" "));
+                    line = [word];
+                    tspan = text.append("tspan")
+                                .attr("x", x)
+                                .attr("y", y)
+                                .attr("dy", ++lineNumber * lineHeight + dy)
+                                .text(word);
+                }
+            }
+            var yCentered = +y - ((lineNumber) * lineHeight) * 0.5;
+           // console.log("??",text.text());
+             //   console.log("yes!!!");
+                d3.select(this).attr("y",yCentered)
+                    .selectAll("tspan")
+                    .attr("y",yCentered)
+                ;
+
+    });
 }
 
 // TO CHECK

@@ -514,10 +514,11 @@ function startObj(id){
             node.select("text")
                 .text(t.toUpperCase())
                 .attr("font-family","latoheavy") // TO CHECK: ALEX changer typo objets label
-                .attr("text-anchor","start")
+                .attr("text-anchor","end")
                 .attr("x",xText)
                 .attr("y",0)
                 .style("alignment-baseline","middle")
+                .style("text-anchor","start")
                 .attr("fill",c)
                 .attr("opacity","0.0")
                 .attr("font-size",fontSize)

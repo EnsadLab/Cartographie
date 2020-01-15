@@ -39,6 +39,7 @@ d3.select("#cms_buttonSaveWaiting").on("click", function(){
     console.log("cms_buttoonSaveWaiting button  has been clicked");
     checkCmsParameters();
 });
+
 d3.select("#cms_buttonSave").on("click", function(){
 
     console.log("cms_buttonSave button has been clicked");
@@ -46,13 +47,120 @@ d3.select("#cms_buttonSave").on("click", function(){
 
 }); // POST BUTTON
 
+
 // FORMULAR ADD_JOURNAL
-d3.select("#add_jounal_submit").on("click", function(){
-
+var values_ok = false;
+document.getElementById("add_jounal_submit").addEventListener("click", function(event){
+    event.preventDefault();
     console.log("add_jounal_submit button has been clicked");
-    //checkFormParameters();
 
-}); // POST BUTTON
+    checkFormParameters();
+
+    if(!values_ok){ return; }
+    console.log("All required datas were entered");
+
+    var div = d3.select("#form_add_journals");
+
+    var msg = "name=" + div.select("#name").property("value");
+    msg += "&link=" + div.select("#link").property("value"); 
+    msg += "&year_start=" + div.select("#year_start").property("value");
+    msg += "&year_end=" + div.select("#year_end").property("value");
+    msg += "&ongoing=" + div.select("#ongoing").property("checked"); 
+    msg += "&frequency=" + div.select("#frequency").property("value");
+    msg += "&publisher=" + div.select("#publisher").property("value");
+    msg += "&city=" + div.select("#city").property("value");
+    msg += "&language=" + div.select("#language").property("value");
+    msg += "&access=" + div.select("#access").property("value");
+    msg += "&medium=" + div.select("#medium").property("value");
+    msg += "&about=" + div.select("#about").property("value");
+    msg += "&pr_yes=" + div.select("#peer_review_yes").property("checked"); 
+    msg += "&pr_no=" + div.select("#peer_review_no").property("checked"); 
+    msg += "&note=" + div.select("#note").property("value");
+    msg += "&user_name=" + div.select("#user_name").property("value");
+    msg += "&user_email=" + div.select("#user_email").property("value");
+    msg += "&keywords=";
+
+    var keywords = "";
+    var d = div.select("#keywords_selection");
+    for(var i=0; i<nbM; i++){
+        var keyM = "master" + i;
+        var r = d.select("#"+keyM).property("checked");
+        if(r){
+            var n = d.select("#"+keyM).property("name");
+            //var name = dataNodesFromDB.find(function(i){ return i.nameID == n}).name;
+            //name = name.replace(/\s/g,"_");
+            //console.log("name",name);
+            keywords += n + "_";
+        }
+    }
+    for(var i=0;i<nbS; i++){
+        var keyS = "sub" + i;
+        var r = d.select("#"+keyS).property("checked");
+        if(r){
+            var n = d.select("#"+keyS).property("name");
+            //var name = dataNodesFromDB.find(function(i){ return i.nameID == n}).name;
+            //name = name.replace(/\s/g,"_");
+            //console.log("name",name);
+            keywords += n + "_";
+        }
+    }
+    for(var i=0;i<nbK; i++){
+        var keyK = "key" + i;
+        var r = d.select("#"+keyK).property("checked");
+        if(r){
+            var n = d.select("#"+keyK).property("name");
+            //var name = dataNodesFromDB.find(function(i){ return i.nameID == n}).name;
+            //name = name.replace(/\s/g,"_");
+            //console.log("name",name);
+            keywords += n + "_";
+        }
+    }
+
+    msg += keywords;
+
+   showFormRevue(false);
+
+   d3.request("/submit")
+   .header("X-Requested-With", "XMLHttpRequest")
+   .header("Content-Type", "application/x-www-form-urlencoded")
+   .post(msg, sendEmailBack);
+
+ 
+});
+
+
+function sendEmailBack(){
+    console.log("-> sendEmailBack");
+}
+
+function testSend(){
+
+    var obj= {'msg': [
+        {
+        "username": "testuser1",
+        "firstName": "test",
+        "lastName": "user1",
+        "password": "password1"
+        },
+        {
+        "username": "testuser2",
+        "firstName": "test",
+        "lastName": "user2",
+        "password": "password2"
+        }
+    ]};
+    
+    request.post({
+        url: 'your website.com',
+        body: obj,
+        json: true
+        }, function(error, response, body){
+        console.log(body);
+    });
+
+}
+
+
 
 d3.select("#cms_test3").on("click", function(){
     console.log("yeep");
@@ -61,6 +169,7 @@ d3.select("#cms_test3").on("click", function(){
         .header("Content-Type", "application/x-www-form-urlencoded")
         .post("revueID=revue1&type=online", dataReturned);
 });
+
 
 function dataReturned(data){
     console.log("dataReturned",data,data.response);
@@ -119,11 +228,6 @@ function sendJsonLinksToDatabase(){
 }
 
 
-// Search input
-var options = {
-    valueNames: [ 'revue-title' ]
-};
-
 function showCms(){
 
     //sendJsonToDatabase();
@@ -155,11 +259,12 @@ function showCms(){
 }
 
 // Search input
-/*
+
 var options_cms = {
     valueNames: [ 'revue-title-cms' ]
 };
-*/
+
+
 
 function createCmsMenu(){
 
@@ -339,12 +444,12 @@ function showRevue(revue,revueID){
     cms.select("#city").property("value",revue.city); 
     cms.select("#lat").property("value",revue.long);
     cms.select("#long").property("value",revue.lat); 
-    console.log("lan??",revue.language);
+  //  console.log("lan??",revue.language);
     cms.select("#language").property("value",revue.language); 
     cms.select("#access").property("value",revue.access); 
     cms.select("#medium").property("value",revue.medium); 
     cms.select("#about").property("value",revue.about); 
-    console.log("peer_review ???",revue.peer_review);
+   // console.log("peer_review ???",revue.peer_review);
     //if(revue.peer_review == 0) cms.select("#peer_review").property("value","yes");  // TODO: check boolean -> ask ALEX
     if(revue.peer_review == 1) cms.select("#peer_review_yes").property("checked",true);  // TODO: check boolean -> ask ALEX
     else cms.select("#peer_review_no").property("checked",true);
@@ -410,25 +515,27 @@ function emptyFormular(){
 function emptyAddJournalFormular(){
     console.log("emptyAddJournalFormular");
     var div = d3.select("#form_add_journals");
-    /*
+    
     div.select("#name").property("value","");
     div.select("#link").property("value","");
     div.select("#year_start").property("value",""); 
     div.select("#year_end").property("value","");
     div.select("#ongoing").property("checked",false); 
-    */
+    
     div.select("#frequency").property("value",""); 
-   // div.select("#publisher").property("value",""); 
-   // div.select("#city").property("value",""); 
+    div.select("#publisher").property("value",""); 
+    div.select("#city").property("value",""); 
     div.select("#language").property("value",""); 
     div.select("#access").property("value",""); 
     div.select("#medium").property("value",""); 
-    /*
+    
     div.select("#about").property("value",""); 
     div.select("#peer_review_yes").property("checked",false);
     div.select("#peer_review_no").property("checked",false);
     div.select("#note").property("value",""); 
-    */
+    div.select("#user_name").property("value",""); 
+    div.select("#user_email").property("value",""); 
+    
 
     var d = div.select("#keywords_selection");
     for(var i=0; i<nbM; i++){
@@ -499,8 +606,40 @@ if(is_cms){
 
 function checkFormParameters(){
     // check number of keywords
-    var checked = 0;
+
     var div = d3.select("#form_add_journals");
+    var m = div.select("#name").property("value");
+    if(m == ""){
+        values_ok = false;
+        alert("Please insert the journal's name.");
+        return;
+    }
+    m = div.select("#year_start").property("value");
+    if(m == ""){
+        values_ok = false;
+        alert("Please insert the starting year of the publication.");
+        return;
+    }
+    m = div.select("#city").property("value");
+    if(m == ""){
+        values_ok = false;
+        alert("Please insert the city.");
+        return;
+    }
+    m = div.select("#about").property("value");
+    if(m == ""){
+        values_ok = false;
+        alert("Please insert the 'About' section.");
+        return;
+    }
+    m = div.select("#user_email").property("value");
+    if(m == ""){
+        values_ok = false;
+        alert("Please insert your e-mail.");
+        return;
+    }
+
+    var checked = 0;
     for(var i=0; i<nbM; i++){
         var keyM = "master" + i;
         var c = div.select("#"+keyM).property("checked");
@@ -518,7 +657,10 @@ function checkFormParameters(){
     }
     console.log("nb checked",checked);
     if(checked < 3){
+        values_ok = false;
         alert("You need to choose 3 keywords at least");
+    }else{
+        values_ok = true;
     }
 }
 
@@ -561,24 +703,5 @@ function checkCmsParameters(){
 
 function checkKeywords(){
 
-    /*
-    var keywords = $(".form-keywords input");
-    var checked = 0;
-
-    for (var i = 0; i < keywords.length; i++) {
-        
-        if(keywords.eq(i).is(':checked')){
-            checked = checked + 1;
-        }
-
-    }
-
-    if(checked>=3){
-        return true;
-    }else{
-        return false;
-    }
-
-    return false;
-    */
 }
+

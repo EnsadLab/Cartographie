@@ -24,14 +24,15 @@ const logConfiguration = {
 
 const logger = winston.createLogger(logConfiguration);
 
+var db_nodes;
 
 // Basic function to validate credentials for example
 function check (name, pass) {
     var valid = true
    
     // Simple method to prevent short-circut and use timing-safe compare
-    valid = compare(name, 'personne') && valid
-    valid = compare(pass, 'sisi') && valid
+    valid = compare(name, 'ensad') && valid
+    valid = compare(pass, 'e1n2s3a4d5') && valid
    
     return valid;
 }
@@ -61,7 +62,7 @@ if(USE_DB){
             host: database__connection__host,
             user: database__connection__user,
             password: database__connection__password,
-            database: database__connection__database,
+            database: "artdesvensadtabl",
             multipleStatements: true,
         });
     }
@@ -111,7 +112,31 @@ app.get('/', function (req, res){
             //console.log(results[1]);
             //console.log(results[2]);
             logger.info("database OK");
-            res.render(__dirname + '/public/views/index.ejs',{data_node: results[0], data_revue: results[1], data_links: results[2]});
+            //res.render(__dirname + '/public/views/index.ejs',{data_node: results[0], data_revue: results[1], data_links: results[2]});
+            res.render(__dirname + '/public/views/index.ejs');
+            //res.render(__dirname + '/public/views/index.ejs',{data_node: results[0], data_revue: results[1]});
+        });
+    }
+    //res.render(__dirname + '/public/views/index.ejs',{vartest: "variable"});
+})
+
+
+app.post('/viz', function (req, res){
+    console.log("/viz");
+    logger.info("/viz");
+    if(USE_DB){
+        var sql = "SELECT * FROM nodes; SELECT * FROM online_revues; SELECT * FROM online_links";
+        db.query(sql, function(error, results, fields) {
+            if (error) {
+                throw error;
+            }
+            //console.log(results[0]);
+            //console.log(results[1]);
+            //console.log(results[2]);
+            logger.info("database OK");
+            //db_nodes = results[0];
+            res.send({data_node: results[0], data_revue: results[1], data_links: results[2]});
+            //res.send({data_node: 1234, data_revue: 3333, data_links: "coucou"});
         });
     }
     //res.render(__dirname + '/public/views/index.ejs',{vartest: "variable"});
@@ -419,45 +444,56 @@ function insertRowLinks(tableName, revueID,linkID){
     });
 }
 
-// ******************** FORMULAIRE ****************************
-// journal submit
-app.post('/submit',function(req,res){
+
+app.post("/",function(req,res){
+    res.redirect(req.get('referer'));
+})
+
+
+app.post('/submit',function(req,res, next){
     console.log("submit journals!");
     logger.info("/submit");
     const postBody = req.body;
     console.log(postBody);
-    //console.log("name",postBody.name);
+    //console.log("name",postBody.name); // to test quickly
     var bodyEmail = parseFormular(postBody);
     console.log("Email:");
     console.log(bodyEmail);
     console.log("=> To be sent to:",postBody.user_name,postBody.user_email);
     logger.info("=> To be sent to:",postBody.user_name,postBody.user_email); // check.. not sure if works
+
     sendEmail(postBody.user_email,bodyEmail);
+
     res.redirect(req.get('referer'));
 });
 
 function sendEmail(email,text){
     console.log("--> sending email ");
     logger.info("--> sending email ");
+    logger.info(email);
     let transport = nodemailer.createTransport({
-        host: 'art-design-sciences-journals.org',
-        port: 2525,
-        auth: {
-           user: 'cms@art-design-sciences-journals.org',
-           pass: '***'
-        }
+        host: 'ssl0.ovh.net',
+        port: 587, // 465?? => les deux marchent...
+        // removed..........
     });
     const message = {
         from: 'cms@art-design-sciences-journals.org', // Sender address
-        to: '',         // List of recipients
-        subject: 'Design Your Model S | Tesla', // Subject line
-        text: 'Have the most fun you can in a car. Get your Tesla today!' // Plain text body
+        to: 'contact@art-design-sciences-journals.org',         // List of recipientss
+        subject: 'New journal', // Subject line
+        text: "", // Plain text body
+        html: text
     };
     transport.sendMail(message, function(err, info) {
+        console.log("!!!!! sendMail");
+        logger.info("!!!!! sendMail");
         if (err) {
-          console.log(err)
+          console.log(err);
+          logger.info(err);
+          throw err; 
         } else {
           console.log(info);
+          logger.info(info);
+          
         }
     });
 }
@@ -465,26 +501,28 @@ function sendEmail(email,text){
 function parseFormular(pB){
 
 
-    if(!pB.ongoing) pB.ongoing = "no"; else pB.ongoing = "yes"; 
-    if(!pB.pr) pB.pr = "no";
+    if(pB.ongoing == "true") pB.ongoing = "yes"; else pB.ongoing = "no"; 
+    if(pB.pr_yes == "true" && pB.pr_no == "false") pB.pr = "yes";
+    else if(pB.pr_yes == "false" && pB.pr_no == "true") pB.pr = "no";
+    else pB.pr = "undefined";
 
-    var message = "Hello!\n\n";
+    var message = "<html> Hello! <br><br><br>" 
+    message += "<b>Journal's name:</b> " + pB.name + "<br>";
+    message += "<b>Journal's source (link):</b> " + pB.link + "<br>";
+    message += "<b>Publication since </b> " + pB.year_start + " to " + pB.year_end + "<br>";
+    message += "<b>Ongoing:</b> " + pB.ongoing + "<br>";
+    message += "<b>Frequency:</b> " + pB.frequency + "<br>";
+    message += "<b>Publisher:</b> " + pB.publisher + "<br>";
+    message += "<b>City:</b> " + pB.city + "<br>";
+    message += "<b>Language:</b> " + pB.language + "<br>";
+    message += "<b>Access:</b> " + pB.access + "<br>";
+    message += "<b>Medium:</b> " + pB.medium + "<br>";
+    message += "<b>About:</b> " + pB.about + "<br>";
+    message += "<b>Peer review:</b> " + pB.pr + "<br>";
+    message += "<b>Note:</b> " + pB.note + "<br><br>";
 
-    message += "Journal's name:" + pB.name + "\n";
-    message += "Journal's source (link):" + pB.link + "\n";
-    message += "Publication since " + pB.year_start + " to " + pB.year_end + "\n";
-    message += "Ongoing: " + pB.ongoing + "\n";
-    message += "Frequency: " + pB.frequency + "\n";
-    message += "Publisher: " + pB.publisher + "\n";
-    message += "City: " + pB.city + "\n";
-    message += "Language: " + pB.language + "\n";
-    message += "Access: " + pB.access + "\n";
-    message += "Medium: " + pB.medium + "\n";
-    message += "About: " + pB.about + "\n";
-    message += "Peer review: " + pB.pr + "\n";
-    message += "Note: " + pB.note + "\n\n";
-    message += "KEYWORDS:\n";
     // retrieve keywords from revue
+    /*
     var keywords = [];
     // careful... ideally, we should retrieve these values(nbM,nbS,nbK) from the database.. same in cms.js
     var nbM = 3;
@@ -502,13 +540,24 @@ function parseFormular(pB){
         var keyK = "key" + i;
         if(pB[keyK]){ keywords.push(keyK); }
     }
-    console.log(revueID,keywords);
+    console.log("keywords:",keywords);
+
     keywords.forEach(function(d,i){
-        var name = db_nodes.find(function(k,j){ return k.nameID == d}).name;
-        message += name + " (ID = "+ d + ")\n";
+        //var name = db_nodes.find(function(k,j){ return k.nameID == d}).name;
+        //message += name + " (ID = "+ d + ")\n";
+        message += "KEY: " + d + "<br>";
     });
-    message += "\n";
+    */
+
+    message += "<b>Keywords:</b> " + pB.keywords;
+    
+    message += "<br><br>";
+    message += "<b>name:</b> " + pB.user_name + "<br>";
+    message += "<b>email:</b> " + pB.user_email + "<br><br><br>";
     message += "Bye.";
+
+    + "</html>";
+    
     return message;
 
 }

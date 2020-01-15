@@ -265,7 +265,29 @@ document.addEventListener("DOMContentLoaded", function(event) {
     if(is_cms){
         initCms();
     }else{
-        init();
+        
+        d3.request("/viz")
+            .header("X-Requested-With", "XMLHttpRequest")
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .post("", dataReturnedForViz);
+            
     }
 });
+
+var nodesFromDB = [];
+var dataRevueFromDB = [];
+var linksFromDB = [];
+function dataReturnedForViz(data){
+   // console.log("dataReturned",data,data.response);
+    //console.log(data.response);
+    var datas = JSON.parse(data.response);
+    //console.log(datas);
+    nodesFromDB = datas.data_node;
+    dataRevueFromDB = datas.data_revue;
+    linksFromDB = datas.data_links;
+    //console.log("nodesFromDB",nodesFromDB);
+    //console.log("dataRevueFromDB",dataRevueFromDB);
+    //console.log("linksFromDB",linksFromDB);
+    init();
+}
 
